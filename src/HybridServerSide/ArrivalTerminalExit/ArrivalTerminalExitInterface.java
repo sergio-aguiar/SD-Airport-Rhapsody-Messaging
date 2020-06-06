@@ -16,20 +16,12 @@ public class ArrivalTerminalExitInterface {
     {
         Message outMessage = null;
 
-        switch(inMessage.getMessageType()) {
-            case 0:
-                break;
-            case 1:
-                break;
-            default:
-                throw new MessageException("Invalid message type.");
-        }
+        if (inMessage.getMessageType() != 8)
+            throw new MessageException("Invalid message type.");
 
-        switch(inMessage.getMessageType()) {
-            case 0:
-                break;
-            case 1:
-                break;
+        if (inMessage.getMessageType() == 8) {
+            arrivalTerminalExit.goHome(inMessage.getPassengerID());
+            outMessage = new Message(Message.MessageType.PA_ATE_GO_HOME.getMessageCode(), null);
         }
 
         return (outMessage);

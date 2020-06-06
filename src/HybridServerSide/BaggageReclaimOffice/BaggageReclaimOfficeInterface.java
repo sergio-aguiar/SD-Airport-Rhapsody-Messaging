@@ -16,20 +16,18 @@ public class BaggageReclaimOfficeInterface {
     {
         Message outMessage = null;
 
-        switch(inMessage.getMessageType()) {
-            case 0:
-                break;
-            case 1:
-                break;
-            default:
-                throw new MessageException("Invalid message type.");
+        if(inMessage.getMessageType() == 12) {
+            if (inMessage.isThereNoFirstArgument())
+                throw new MessageException("Argument \"missingBags\" not supplied.", inMessage);
+            if (((int) inMessage.getFirstArgument()) < 0)
+                throw new MessageException("Argument \"missingBags\" was given an incorrect value.", inMessage);
+        } else {
+            throw new MessageException("Invalid message type.");
         }
 
-        switch(inMessage.getMessageType()) {
-            case 0:
-                break;
-            case 1:
-                break;
+        if(inMessage.getMessageType() == 12) {
+            baggageReclaimOffice.reportMissingBags(inMessage.getPassengerID(), (int) inMessage.getFirstArgument());
+            outMessage = new Message(Message.MessageType.PA_BRO_REPORT_MISSING_BAGS.getMessageCode(), null);
         }
 
         return (outMessage);

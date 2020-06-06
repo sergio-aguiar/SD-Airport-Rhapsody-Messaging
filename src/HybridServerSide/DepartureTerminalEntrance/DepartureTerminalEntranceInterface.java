@@ -16,20 +16,13 @@ public class DepartureTerminalEntranceInterface {
     {
         Message outMessage = null;
 
-        switch(inMessage.getMessageType()) {
-            case 0:
-                break;
-            case 1:
-                break;
-            default:
-                throw new MessageException("Invalid message type.");
+        if(inMessage.getMessageType() != 13) {
+            throw new MessageException("Invalid message type.");
         }
 
-        switch(inMessage.getMessageType()) {
-            case 0:
-                break;
-            case 1:
-                break;
+        if(inMessage.getMessageType() == 13) {
+            departureTerminalEntrance.prepareNextLeg(inMessage.getPassengerID());
+            outMessage = new Message(Message.MessageType.PA_DTE_PREPARE_NEXT_LEG.getMessageCode(), null);
         }
 
         return (outMessage);

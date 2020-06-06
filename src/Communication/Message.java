@@ -69,6 +69,7 @@ public class Message implements Serializable {
         this.messageType = messageType;
         this.passengerID = passengerID;
         this.isPorterMessage = false;
+        this.currentIteration = -1;
         this.firstArgument = null;
         this.secondArgument = null;
         this.returnInfo = null;
@@ -85,6 +86,7 @@ public class Message implements Serializable {
         this.messageType = messageType;
         this.passengerID = passengerID;
         this.isPorterMessage = false;
+        this.currentIteration = -1;
         this.firstArgument = firstArgument;
         this.secondArgument = null;
         this.returnInfo = null;
@@ -101,6 +103,7 @@ public class Message implements Serializable {
         this.messageType = messageType;
         this.passengerID = passengerID;
         this.isPorterMessage = false;
+        this.currentIteration = -1;
         this.firstArgument = firstArgument;
         this.secondArgument = secondArgument;
         this.returnInfo = null;
@@ -117,6 +120,7 @@ public class Message implements Serializable {
         this.messageType = messageType;
         this.passengerID = -1;
         this.isPorterMessage = isPorterMessage;
+        this.currentIteration = -1;
         this.firstArgument = null;
         this.secondArgument = null;
         this.returnInfo = null;
@@ -133,6 +137,7 @@ public class Message implements Serializable {
         this.messageType = messageType;
         this.passengerID = -1;
         this.isPorterMessage = isPorterMessage;
+        this.currentIteration = -1;
         this.firstArgument = firstArgument;
         this.secondArgument = null;
         this.returnInfo = null;
@@ -149,6 +154,7 @@ public class Message implements Serializable {
         this.messageType = messageType;
         this.passengerID = -1;
         this.isPorterMessage = isPorterMessage;
+        this.currentIteration = -1;
         this.firstArgument = firstArgument;
         this.secondArgument = secondArgument;
         this.returnInfo = null;
@@ -168,6 +174,8 @@ public class Message implements Serializable {
         this.passengerID = passengerID;
         this.isPorterMessage = false;
         this.currentIteration = currentIteration;
+        this.firstArgument = null;
+        this.secondArgument = null;
         this.returnInfo = null;
     }
 
@@ -185,6 +193,8 @@ public class Message implements Serializable {
         this.passengerID = -1;
         this.isPorterMessage = isPorterMessage;
         this.currentIteration = currentIteration;
+        this.firstArgument = null;
+        this.secondArgument = null;
         this.returnInfo = null;
     }
 
@@ -193,6 +203,11 @@ public class Message implements Serializable {
             throw new MessageException("Non-existent message type.");
 
         this.messageType = messageType;
+        this.passengerID = -1;
+        this.isPorterMessage = false;
+        this.currentIteration = -1;
+        this.firstArgument = null;
+        this.secondArgument = null;
         this.returnInfo = returnInfo;
     }
 
@@ -212,8 +227,24 @@ public class Message implements Serializable {
         return this.currentIteration;
     }
 
+    public Object getFirstArgument() {
+        return this.firstArgument;
+    }
+
+    public Object getSecondArgument() {
+        return this.secondArgument;
+    }
+
     public Object getReturnInfo() {
         return this.returnInfo;
+    }
+
+    public boolean isThereNoFirstArgument() {
+        return this.firstArgument == null;
+    }
+
+    public boolean isThereNoSecondArgument() {
+        return this.secondArgument == null;
     }
 
     public boolean isThereNoReturnInfo() {
