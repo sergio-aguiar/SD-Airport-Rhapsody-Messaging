@@ -108,7 +108,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         try {
             maxReached = this.maxCrossFlightPassengers == this.crossFlightPassengerCount;
         } catch (Exception e) {
-            System.out.println("AL: incrementCrossFLightPassengerCount: " + e.toString());
+            System.out.println("AL: incrementCrossFlightPassengerCount: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
@@ -122,7 +122,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         try {
             this.crossFlightPassengerCount++;
         } catch (Exception e) {
-            System.out.println("AL: incrementCrossFLightPassengerCount: " + e.toString());
+            System.out.println("AL: incrementCrossFlightPassengerCount: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }

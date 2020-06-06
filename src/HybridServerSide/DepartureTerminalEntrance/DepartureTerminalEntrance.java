@@ -2,6 +2,7 @@ package HybridServerSide.DepartureTerminalEntrance;
 
 import ClientSide.Interfaces.DTEPassenger;
 import HybridServerSide.ArrivalTerminalExit.ArrivalTerminalExit;
+import HybridServerSide.Interfaces.DTEforATE;
 import HybridServerSide.Repository.Repository;
 
 import java.util.concurrent.locks.Condition;
@@ -11,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author sergiaguiar
  * @author marcomacedo
  */
-public class DepartureTerminalEntrance implements DTEPassenger {
+public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
     /**
      * The class's ReentrantLock instance.
      */
@@ -57,6 +58,7 @@ public class DepartureTerminalEntrance implements DTEPassenger {
      * Function that gets the number of passengers waiting for the last one to arrive at their final destination inside the airport.
      * @return the number of passengers waiting for the last one to arrive at their final destination inside the airport.
      */
+    @Override
     public int getWaitingPassengers() {
         int tmpWaitingPassengers = 0;
         this.reentrantLock.lock();
@@ -72,6 +74,7 @@ public class DepartureTerminalEntrance implements DTEPassenger {
     /**
      * Function that signals every waiting passenger.
      */
+    @Override
     public void signalWaitingPassengers() {
         this.reentrantLock.lock();
         try {
