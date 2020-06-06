@@ -18,13 +18,11 @@ public interface ATTQBusDriver {
     public boolean announcingBusBoarding();
 	/**
      * The bus driver drives towards the Departure Terminal Transfer Quay.
-     * @param bid The bus driver's ID.
      * @return the number of passenger being taken inside the bus.
      */
-    public int goToDepartureTerminal(int bid);
+    public int goToDepartureTerminal();
 	/**
      * The bus driver parks the bus and gets ready for possibly a new trip.
-     * @param bid The bus driver's ID.
      */
-    public void parkTheBus(int bid);
+    public void parkTheBus();
 }

@@ -129,11 +129,10 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
     }
     /**
      * The porter checks whether he is still needed in the future. If so, he awaits the next flight. He stops otherwise.
-     * @param pid The porter's ID.
      * @return true if the porter isn't needed anymore and false otherwise.
      */
     @Override
-    public boolean takeARest(int pid) {
+    public boolean takeARest() {
         boolean done = (this.flightNumber == this.totalFlights - 1 && this.bagsInThePlane.size() == 0);
         this.reentrantLock.lock();
         try {
@@ -167,11 +166,10 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
     }
     /**
      * The porter tries to collect a bag from the plane's hold.
-     * @param pid The Porter's ID.
      * @return the bag's owner ID as a String, or an empty String if the plane is empty of bags.
      */
     @Override
-    public String tryToCollectABag(int pid) {
+    public String tryToCollectABag() {
         String returnVal = "";
         this.reentrantLock.lock();
         try {

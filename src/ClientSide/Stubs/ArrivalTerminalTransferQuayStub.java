@@ -1,7 +1,11 @@
 package ClientSide.Stubs;
 
+import ClientSide.ClientCom.ClientCom;
 import ClientSide.Interfaces.ATTQBusDriver;
 import ClientSide.Interfaces.ATTQPassenger;
+import Communication.Message;
+import Communication.MessageException;
+import genclass.GenericIO;
 
 public class ArrivalTerminalTransferQuayStub implements ATTQPassenger, ATTQBusDriver  {
 
@@ -20,7 +24,41 @@ public class ArrivalTerminalTransferQuayStub implements ATTQPassenger, ATTQBusDr
      */
     @Override
     public boolean hasDaysWorkEnded() {
-        return false;
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: hasDaysWorkEnded: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.BD_ATTQ_HAS_DAYS_WORK_ENDED.getMessageCode(), false);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: hasDaysWorkEnded: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.BD_ATTQ_HAS_DAYS_WORK_ENDED.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATTQStub: hasDaysWorkEnded: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+
+        if(inMessage.isThereNoReturnInfo()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATTQStub: hasDaysWorkEnded: The return value is missing!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+
+        return (boolean) inMessage.getReturnInfo();
     }
 
     /**
@@ -30,28 +68,120 @@ public class ArrivalTerminalTransferQuayStub implements ATTQPassenger, ATTQBusDr
      */
     @Override
     public boolean announcingBusBoarding() {
-        return false;
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: announcingBusBoarding: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.BD_ATTQ_ANNOUNCING_BUS_BOARDING.getMessageCode(), false);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: announcingBusBoarding: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.BD_ATTQ_ANNOUNCING_BUS_BOARDING.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATTQStub: announcingBusBoarding: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+
+        if(inMessage.isThereNoReturnInfo()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATTQStub: announcingBusBoarding: The return value is missing!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+
+        return (boolean) inMessage.getReturnInfo();
     }
 
     /**
      * The bus driver drives towards the Departure Terminal Transfer Quay.
      *
-     * @param bid The bus driver's ID.
      * @return the number of passenger being taken inside the bus.
      */
     @Override
-    public int goToDepartureTerminal(int bid) {
-        return 0;
+    public int goToDepartureTerminal() {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: goToDepartureTerminal: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.BD_ATTQ_GO_TO_DEPARTURE_TERMINAL.getMessageCode(), false);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: goToDepartureTerminal: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.BD_ATTQ_GO_TO_DEPARTURE_TERMINAL.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATTQStub: goToDepartureTerminal: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+
+        if(inMessage.isThereNoReturnInfo()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATTQStub: goToDepartureTerminal: The return value is missing!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+
+        return (int) inMessage.getReturnInfo();
     }
 
     /**
      * The bus driver parks the bus and gets ready for possibly a new trip.
      *
-     * @param bid The bus driver's ID.
      */
     @Override
-    public void parkTheBus(int bid) {
+    public void parkTheBus() {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
 
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: parkTheBus: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.BD_ATTQ_PARK_THE_BUS.getMessageCode(), false);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: parkTheBus: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.BD_ATTQ_PARK_THE_BUS.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATTQStub: parkTheBus: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
     }
 
     /**
@@ -61,7 +191,33 @@ public class ArrivalTerminalTransferQuayStub implements ATTQPassenger, ATTQBusDr
      */
     @Override
     public void takeABus(int pid) {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
 
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: takeABus: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.PA_ATTQ_TAKE_A_BUS.getMessageCode(), pid);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: takeABus: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.PA_ATTQ_TAKE_A_BUS.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATTQStub: takeABus: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
     }
 
     /**
@@ -72,6 +228,40 @@ public class ArrivalTerminalTransferQuayStub implements ATTQPassenger, ATTQBusDr
      */
     @Override
     public int enterTheBus(int pid) {
-        return 0;
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: enterTheBus: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.PA_ATTQ_ENTER_THE_BUS.getMessageCode(), pid);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: enterTheBus: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.PA_ATTQ_ENTER_THE_BUS.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATTQStub: enterTheBus: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+
+        if(inMessage.isThereNoReturnInfo()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATTQStub: enterTheBus: The return value is missing!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+
+        return (int) inMessage.getReturnInfo();
     }
 }

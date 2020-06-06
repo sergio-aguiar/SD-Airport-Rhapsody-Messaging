@@ -107,11 +107,10 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
     }
     /**
      * The Porter carries their held bag to the Baggage Collection Point.
-     * @param pid The porter's ID.
      * @param bagID The porter's held bag's owner's ID.
      */
     @Override
-    public void carryItToAppropriateStore(int pid, int bagID) {
+    public void carryItToAppropriateStore(int bagID) {
         this.reentrantLock.lock();
         try {
             this.repository.porterCarryBagToBaggageCollectionPoint();

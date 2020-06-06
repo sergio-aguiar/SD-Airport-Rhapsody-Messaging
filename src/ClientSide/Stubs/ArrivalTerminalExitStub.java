@@ -1,6 +1,10 @@
 package ClientSide.Stubs;
 
+import ClientSide.ClientCom.ClientCom;
 import ClientSide.Interfaces.ATEPassenger;
+import Communication.Message;
+import Communication.MessageException;
+import genclass.GenericIO;
 
 public class ArrivalTerminalExitStub implements ATEPassenger {
 
@@ -19,6 +23,32 @@ public class ArrivalTerminalExitStub implements ATEPassenger {
      */
     @Override
     public void goHome(int pid) {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
 
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": ATEStub: goHome: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.PA_ATE_GO_HOME.getMessageCode(), pid);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": ATEStub: goHome: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.PA_ATE_GO_HOME.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATEStub: goHome: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
     }
 }

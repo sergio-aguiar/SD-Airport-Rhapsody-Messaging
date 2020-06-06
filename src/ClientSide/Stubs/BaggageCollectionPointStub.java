@@ -1,7 +1,11 @@
 package ClientSide.Stubs;
 
+import ClientSide.ClientCom.ClientCom;
 import ClientSide.Interfaces.BCPPassenger;
 import ClientSide.Interfaces.BCPPorter;
+import Communication.Message;
+import Communication.MessageException;
+import genclass.GenericIO;
 
 public class BaggageCollectionPointStub implements BCPPassenger, BCPPorter {
 
@@ -21,18 +25,77 @@ public class BaggageCollectionPointStub implements BCPPassenger, BCPPorter {
      */
     @Override
     public boolean goCollectABag(int pid) {
-        return false;
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": BCPQStub: goCollectABag: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.PA_BCP_GO_COLLECT_A_BAG.getMessageCode(), pid);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": BCPQStub: goCollectABag: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.PA_BCP_GO_COLLECT_A_BAG.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": BCPQStub: goCollectABag: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+
+        if(inMessage.isThereNoReturnInfo()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": BCPQStub: goCollectABag: The return value is missing!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+
+        return (boolean) inMessage.getReturnInfo();
     }
 
     /**
      * The Porter carries their held bag to the Baggage Collection Point.
      *
-     * @param pid   The porter's ID.
      * @param bagID The porter's held bag's owner's ID.
      */
     @Override
-    public void carryItToAppropriateStore(int pid, int bagID) {
+    public void carryItToAppropriateStore(int bagID) {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
 
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": BCPQStub: carryItToAppropriateStore: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.PO_BCP_CARRY_IT_TO_APPROPRIATE_STORE.getMessageCode(), true, bagID);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": BCPQStub: carryItToAppropriateStore: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.PO_BCP_CARRY_IT_TO_APPROPRIATE_STORE.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": BCPQStub: carryItToAppropriateStore: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
     }
 
     /**
@@ -42,6 +105,32 @@ public class BaggageCollectionPointStub implements BCPPassenger, BCPPorter {
      */
     @Override
     public void noMoreBagsToCollect(int pid) {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
 
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": BCPQStub: noMoreBagsToCollect: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.PO_BCP_NO_MORE_BAGS_TO_COLLECT.getMessageCode(), true, pid);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": BCPQStub: noMoreBagsToCollect: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.PO_BCP_NO_MORE_BAGS_TO_COLLECT.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": BCPQStub: noMoreBagsToCollect: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
     }
 }

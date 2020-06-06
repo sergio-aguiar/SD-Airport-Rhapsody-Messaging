@@ -41,11 +41,10 @@ public class TemporaryStorageArea implements TSAPorter {
     }
     /**
      * The Porter carries their held bag to the Temporary Storage Area.
-     * @param pid The porter's ID.
      * @param bagID The porter's held bag's owner's ID.
      */
     @Override
-    public void carryItToAppropriateStore(int pid, int bagID) {
+    public void carryItToAppropriateStore(int bagID) {
         this.reentrantLock.lock();
         try {
             this.repository.porterCarryBagToTemporaryStorageArea();

@@ -9,5 +9,5 @@ public class RepositoryStub {
         this.serverHostName = hostName;
         this.serverHostPort = hostPort;
     }
-    
+
 }

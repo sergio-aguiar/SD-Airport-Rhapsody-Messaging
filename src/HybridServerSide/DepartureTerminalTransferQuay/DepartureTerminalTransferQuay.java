@@ -70,10 +70,9 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
     }
     /**
      * The bus driver drives towards the Arrival Terminal Transfer Quay.
-     * @param bid The bus driver's ID.
      */
     @Override
-    public void goToArrivalTerminal(int bid) {
+    public void goToArrivalTerminal() {
         this.reentrantLock.lock();
         try {
             this.passengersThatArrived = 0;
@@ -106,13 +105,12 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
     }
     /**
      * The bus driver parks the Bus and let's teh passengers off.
-     * @param bid The bus driver's ID.
      * @param passengersThatArrived The number of passengers that arrived aboard the bus.
      * @param flightNumber The bus driver's estimated flight number.
      * @return The current flight number.
      */
     @Override
-    public int parkTheBusAndLetPassOff(int bid, int passengersThatArrived, int flightNumber) {
+    public int parkTheBusAndLetPassOff(int passengersThatArrived, int flightNumber) {
         this.reentrantLock.lock();
         try {
             this.repository.busDriverParkingTheBusAndLettingPassengersOff();

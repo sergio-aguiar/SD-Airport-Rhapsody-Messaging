@@ -54,55 +54,146 @@ public class Message implements Serializable {
     private int passengerID;
     private boolean isPorterMessage;
     private int currentIteration;
+    private Object firstArgument;
+    private Object secondArgument;
+    private Object returnInfo;
 
-    public Message(int messageType, int passengerID, boolean isPorterMessage) throws MessageException {
+    public Message(int messageType, int passengerID) throws MessageException {
         if(messageType < 0 || messageType > 19)
             throw new MessageException("Non-existent message type.");
-        if(passengerID < 0) {
-            if(messageType > 5 && messageType < 15)
-                throw new MessageException("Passenger message type given for an invalid passengerID.");
-            if(!isPorterMessage && messageType > 5)
-                throw new MessageException("Invalid message type for a Bus Driver message.");
-            if(isPorterMessage && messageType < 15)
-                throw new MessageException("Invalid message type for a Porter message.");
-        }
-        else {
-            if(isPorterMessage)
-                throw new MessageException("Porter messages must not have a valid (>=0) passengerID.");
-            if(messageType < 6 || messageType > 14)
-                throw new MessageException("Invalid message type for a Passenger message.");
-        }
+        if(passengerID < 0)
+            throw new MessageException("Invalid passengerID given.");
+        if(messageType < 6 || messageType > 14)
+            throw new MessageException("Invalid message type for a Passenger message.");
 
         this.messageType = messageType;
         this.passengerID = passengerID;
-        this.isPorterMessage = isPorterMessage;
+        this.isPorterMessage = false;
+        this.firstArgument = null;
+        this.secondArgument = null;
+        this.returnInfo = null;
     }
 
-    public Message(int messageType, int passengerID, boolean isPorterMessage, int currentIteration)
-            throws MessageException {
+    public Message(int messageType, int passengerID, Object firstArgument) throws MessageException {
+        if(messageType < 0 || messageType > 19)
+            throw new MessageException("Non-existent message type.");
+        if(passengerID < 0)
+            throw new MessageException("Invalid passengerID given.");
+        if(messageType < 6 || messageType > 14)
+            throw new MessageException("Invalid message type for a Passenger message.");
+
+        this.messageType = messageType;
+        this.passengerID = passengerID;
+        this.isPorterMessage = false;
+        this.firstArgument = firstArgument;
+        this.secondArgument = null;
+        this.returnInfo = null;
+    }
+
+    public Message(int messageType, int passengerID, Object firstArgument, Object secondArgument) throws MessageException {
+        if(messageType < 0 || messageType > 19)
+            throw new MessageException("Non-existent message type.");
+        if(passengerID < 0)
+            throw new MessageException("Invalid passengerID given.");
+        if(messageType < 6 || messageType > 14)
+            throw new MessageException("Invalid message type for a Passenger message.");
+
+        this.messageType = messageType;
+        this.passengerID = passengerID;
+        this.isPorterMessage = false;
+        this.firstArgument = firstArgument;
+        this.secondArgument = secondArgument;
+        this.returnInfo = null;
+    }
+
+    public Message(int messageType, boolean isPorterMessage) throws MessageException {
+        if(messageType < 0 || messageType > 19)
+            throw new MessageException("Non-existent message type.");
+        if(!isPorterMessage && messageType > 5)
+            throw new MessageException("Invalid message type for a Bus Driver message.");
+        if(isPorterMessage && messageType < 15)
+            throw new MessageException("Invalid message type for a Porter message.");
+
+        this.messageType = messageType;
+        this.passengerID = -1;
+        this.isPorterMessage = isPorterMessage;
+        this.firstArgument = null;
+        this.secondArgument = null;
+        this.returnInfo = null;
+    }
+
+    public Message(int messageType, boolean isPorterMessage, Object firstArgument) throws MessageException {
+        if(messageType < 0 || messageType > 19)
+            throw new MessageException("Non-existent message type.");
+        if(!isPorterMessage && messageType > 5)
+            throw new MessageException("Invalid message type for a Bus Driver message.");
+        if(isPorterMessage && messageType < 15)
+            throw new MessageException("Invalid message type for a Porter message.");
+
+        this.messageType = messageType;
+        this.passengerID = -1;
+        this.isPorterMessage = isPorterMessage;
+        this.firstArgument = firstArgument;
+        this.secondArgument = null;
+        this.returnInfo = null;
+    }
+
+    public Message(int messageType, boolean isPorterMessage, Object firstArgument, Object secondArgument) throws MessageException {
+        if(messageType < 0 || messageType > 19)
+            throw new MessageException("Non-existent message type.");
+        if(!isPorterMessage && messageType > 5)
+            throw new MessageException("Invalid message type for a Bus Driver message.");
+        if(isPorterMessage && messageType < 15)
+            throw new MessageException("Invalid message type for a Porter message.");
+
+        this.messageType = messageType;
+        this.passengerID = -1;
+        this.isPorterMessage = isPorterMessage;
+        this.firstArgument = firstArgument;
+        this.secondArgument = secondArgument;
+        this.returnInfo = null;
+    }
+
+    public Message(int messageType, int passengerID, int currentIteration) throws MessageException {
         if(currentIteration < 0)
             throw new MessageException("Invalid iteration value. The value must not be negative.");
         if(messageType < 0 || messageType > 19)
-            throw new MessageException("Non-existent message type. Message types are within range [0-19].");
-        if(passengerID < 0) {
-            if(messageType > 5 && messageType < 15)
-                throw new MessageException("Passenger message type given for an invalid (<0) passengerID.");
-            if(!isPorterMessage && messageType > 5)
-                throw new MessageException("Invalid message type for a Bus Driver message.");
-            if(isPorterMessage && messageType < 15)
-                throw new MessageException("Invalid message type for a Porter message.");
-        }
-        else {
-            if(isPorterMessage)
-                throw new MessageException("Porter messages must not have a valid (>=0) passengerID.");
-            if(messageType < 6 || messageType > 14)
-                throw new MessageException("Invalid message type for a Passenger message.");
-        }
+            throw new MessageException("Non-existent message type.");
+        if(passengerID < 0)
+            throw new MessageException("Invalid passengerID given.");
+        if(messageType < 6 || messageType > 14)
+            throw new MessageException("Invalid message type for a Passenger message.");
 
         this.messageType = messageType;
         this.passengerID = passengerID;
+        this.isPorterMessage = false;
+        this.currentIteration = currentIteration;
+        this.returnInfo = null;
+    }
+
+    public Message(int messageType, boolean isPorterMessage, int currentIteration) throws MessageException {
+        if(currentIteration < 0)
+            throw new MessageException("Invalid iteration value. The value must not be negative.");
+        if(messageType < 0 || messageType > 19)
+            throw new MessageException("Non-existent message type.");
+        if(!isPorterMessage && messageType > 5)
+            throw new MessageException("Invalid message type for a Bus Driver message.");
+        if(isPorterMessage && messageType < 15)
+            throw new MessageException("Invalid message type for a Porter message.");
+
+        this.messageType = messageType;
+        this.passengerID = -1;
         this.isPorterMessage = isPorterMessage;
         this.currentIteration = currentIteration;
+        this.returnInfo = null;
+    }
+
+    public Message(int messageType, Object returnInfo) throws MessageException {
+        if(messageType < 0 || messageType > 19)
+            throw new MessageException("Non-existent message type.");
+
+        this.messageType = messageType;
+        this.returnInfo = returnInfo;
     }
 
     public int getMessageType() {
@@ -121,13 +212,22 @@ public class Message implements Serializable {
         return this.currentIteration;
     }
 
+    public Object getReturnInfo() {
+        return this.returnInfo;
+    }
+
+    public boolean isThereNoReturnInfo() {
+        return this.returnInfo == null;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
-                "messageType=" + MessageType.getNameByMessageCode(this.messageType) +
-                ", passengerID=" + this.passengerID +
-                ", isPorterMessage=" + this.isPorterMessage +
-                ", currentIteration=" + this.currentIteration +
+                "messageType=" + messageType +
+                ", passengerID=" + passengerID +
+                ", isPorterMessage=" + isPorterMessage +
+                ", currentIteration=" + currentIteration +
+                ", returnInfo=" + returnInfo +
                 '}';
     }
 }
