@@ -154,6 +154,52 @@ public class Repository {
 
         this.logStart();
     }
+
+    /**
+     * Repository constructor.
+     */
+    public Repository() throws IOException {
+
+        this.reentrantLock = new ReentrantLock(true);
+
+        this.porterInitiated = false;
+        this.porterState = PorterThread.PorterStates.WAITING_FOR_A_PLANE_TO_LAND;
+        this.numberOfLuggageAtTheStoreRoom = 0;
+        this.numberOfLuggageOnConveyor = 0;
+
+        this.busDriverInitiated = false;
+        this.busDriverState = BusDriverThread.BusDriverStates.PARKING_AT_THE_ARRIVAL_TERMINAL;
+
+        this.numberOfBagsThatWereLost = 0;
+    }
+
+    public void setInitialState(int flightNumber, int numberOfPassengerLuggageAtThePlane, int busSeatNumber, int totalPassengers,
+                                PassengerThread.PassengerAndBagSituations[] passengerSituations, int[] passengerLuggageAtStart,
+                                Bag[][][] luggagePerFlight) throws IOException {
+
+        this.flightNumber = flightNumber;
+        this.numberOfLuggageAtThePlane = numberOfPassengerLuggageAtThePlane;
+
+        this.busSeats = new String[busSeatNumber];
+        this.busWaitingQueue = new String[totalPassengers];
+        Arrays.fill(this.busSeats, "-");
+        Arrays.fill(this.busWaitingQueue, "-");
+
+        this.passengersInitiated = new boolean[totalPassengers];
+        Arrays.fill(this.passengersInitiated, false);
+        this.passengerStates = new PassengerThread.PassengerStates[totalPassengers];
+        Arrays.fill(this.passengerStates, PassengerThread.PassengerStates.AT_THE_DISEMBARKING_ZONE);
+        this.passengerSituations = passengerSituations;
+        this.passengerLuggageAtStart = passengerLuggageAtStart;
+        this.passengerLuggageCollected = new int[totalPassengers];
+        Arrays.fill(this.passengerLuggageCollected, 0);
+
+        this.calculatePassengerSituations();
+        this.calculateBagsThatShouldHaveBeenOnThePlane(luggagePerFlight);
+
+        this.logStart();
+    }
+
     /**
      * Function that generates the start of the log file.
      */

@@ -2,6 +2,7 @@ package HybridServerSide.ArrivalTerminalTransferQuay;
 
 import ClientSide.Interfaces.ATTQBusDriver;
 import ClientSide.Interfaces.ATTQPassenger;
+import ClientSide.Stubs.ArrivalLoungeStub;
 import HybridServerSide.ArrivalLounge.ArrivalLounge;
 import HybridServerSide.Repository.Repository;
 import HybridServerSide.Stubs.RepositoryStub;
@@ -34,11 +35,11 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
      /**
      * Total number of passengers per flight.
      */
-    private final int totalPassengers;
+    private int totalPassengers;
     /**
      * Number of seats in the bus.
      */
-    private final int busSeatNumber;
+    private int busSeatNumber;
     /**
      * Number of passengers in the bus waiting queue.
      */
@@ -58,7 +59,7 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
     /**
      * Array with the bus seat positions.
      */
-    private final String[] busSeats;
+    private String[] busSeats;
     /**
      * Array with the bus waiting queue positions.
      */
@@ -66,7 +67,7 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
     /**
      * The class's ArrivalLounge instance.
      */
-    private ArrivalLounge al;
+    private ArrivalLoungeStub arrivalLoungeStub;
     /**
      * The class's RepositoryStub instance.
      */
@@ -76,9 +77,9 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
      * @param repositoryStub repositoryStub.
      * @param totalPassengers Number of total passengers.
      * @param busSeatNumber Bus seat number.
-     * @param al The class's ArrivalLounge instance.
+     * @param arrivalLoungeStub The class's ArrivalLounge instance.
      */
-    public ArrivalTerminalTransferQuay(RepositoryStub repositoryStub, int totalPassengers, int busSeatNumber, ArrivalLounge al){
+    public ArrivalTerminalTransferQuay(RepositoryStub repositoryStub, int totalPassengers, int busSeatNumber, ArrivalLoungeStub arrivalLoungeStub){
         this.reentrantLock = new ReentrantLock(true);
         this.busQueueCondition = this.reentrantLock.newCondition();
         this.busLeavingCondition = this.reentrantLock.newCondition();
@@ -93,9 +94,36 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
         this.busWaitingQueue = new String[totalPassengers];
         Arrays.fill(this.busSeats, "-");
         Arrays.fill(this.busWaitingQueue, "-");
-        this.al = al;
+        this.arrivalLoungeStub = arrivalLoungeStub;
         this.repositoryStub = repositoryStub;
     }
+    /**
+     * Arrival Terminal Transfer Quay constructor.
+     * @param repositoryStub repositoryStub.
+     * @param arrivalLoungeStub The class's ArrivalLounge instance.
+     */
+    public ArrivalTerminalTransferQuay(RepositoryStub repositoryStub, ArrivalLoungeStub arrivalLoungeStub){
+        this.reentrantLock = new ReentrantLock(true);
+        this.busQueueCondition = this.reentrantLock.newCondition();
+        this.busLeavingCondition = this.reentrantLock.newCondition();
+        this.busDriverCondition = this.reentrantLock.newCondition();
+        this.queuedPassengers = 0;
+        this.passengersInBus = 0;
+        this.passengersSignaled = 0;
+        this.busBoarding = false;
+        this.arrivalLoungeStub = arrivalLoungeStub;
+        this.repositoryStub = repositoryStub;
+    }
+
+    public void setInitialState(int totalPassengers, int busSeatNumber) {
+        this.totalPassengers = totalPassengers;
+        this.busSeatNumber = busSeatNumber;
+        this.busSeats = new String[busSeatNumber];
+        this.busWaitingQueue = new String[totalPassengers];
+        Arrays.fill(this.busSeats, "-");
+        Arrays.fill(this.busWaitingQueue, "-");
+    }
+
     /**
      * Function that adds passengers to the waiting queue.
      * @param pid The passenger's ID.
@@ -178,7 +206,7 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
         try {
             do {
                 this.busDriverCondition.awaitNanos(100);
-                if(al.passengersNoLongerNeedTheBus()) return false;
+                if(arrivalLoungeStub.passengersNoLongerNeedTheBus()) return false;
             } while(this.queuedPassengers == 0);
             this.busBoarding = true;
             for(int i = 0; i < this.busSeatNumber && i < this.queuedPassengers; i++) {
@@ -221,7 +249,7 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
      */
     @Override
     public boolean hasDaysWorkEnded() {
-        boolean dayEnded = this.al.passengersNoLongerNeedTheBus();
+        boolean dayEnded = this.arrivalLoungeStub.passengersNoLongerNeedTheBus();
         this.reentrantLock.lock();
         try {
             this.repositoryStub.busDriverInitiated();
@@ -279,7 +307,7 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
         this.reentrantLock.lock();
         try {
             busPassengers = this.passengersInBus;
-            for(int i = 0; i < busPassengers; i++) al.incrementCrossFlightPassengerCount();
+            for(int i = 0; i < busPassengers; i++) arrivalLoungeStub.incrementCrossFlightPassengerCount();
             this.repositoryStub.busDriverGoingToDepartureTerminal();
             this.busLeavingCondition.signalAll();
         } catch (Exception e) {

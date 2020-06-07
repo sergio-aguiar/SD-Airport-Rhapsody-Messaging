@@ -22,11 +22,11 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
     /**
      * Array of Condition instances (one for each passenger) where each passenger waits for one of their bags to be put onto the conveyor belt.
      */
-    private final Condition[] passengerLuggageConditions;
+    private Condition[] passengerLuggageConditions;
     /**
      * Array that contains the amount of luggage waiting to be collected by each passenger.
      */
-    private final int[] passengerLuggageNumber;
+    private int[] passengerLuggageNumber;
     /**
      * Attribute that states whether there are any more bags on the conveyor belt or not.
      */
@@ -54,6 +54,25 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
         this.bcpBags = new ArrayList<>();
         this.repositoryStub = repositoryStub;
     }
+
+    /**
+     * BaggageCollectionPoint constructor.
+     * @param repositoryStub A reference to a repositoryStub object.
+     */
+    public BaggageCollectionPoint(RepositoryStub repositoryStub) {
+        this.reentrantLock = new ReentrantLock(true);
+        this.noMoreBags = false;
+        this.bcpBags = new ArrayList<>();
+        this.repositoryStub = repositoryStub;
+    }
+
+    public void setInitialState(int totalPassengers) {
+        this.passengerLuggageConditions = new Condition[totalPassengers];
+        for(int c = 0; c < totalPassengers; c++) this.passengerLuggageConditions[c] = this.reentrantLock.newCondition();
+        this.passengerLuggageNumber = new int[totalPassengers];
+        Arrays.fill(this.passengerLuggageNumber, 0);
+    }
+
     /**
      * Function that checks whether a passenger's bag is on the conveyor belt.
      * @param pid The passenger's ID.

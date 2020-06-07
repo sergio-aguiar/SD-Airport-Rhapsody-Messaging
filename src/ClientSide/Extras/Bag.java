@@ -2,7 +2,11 @@ package ClientSide.Extras;
 
 import ClientSide.Passenger.PassengerThread;
 
-public class Bag {
+import java.io.Serializable;
+
+public class Bag implements Serializable {
+
+    private static final long serialVersionUID = 4444L;
 
     private final int passengerID;
     private PassengerThread.PassengerAndBagSituations bagSituation;

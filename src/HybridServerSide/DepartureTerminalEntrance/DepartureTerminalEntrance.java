@@ -29,7 +29,7 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
     /**
      * Total number of passengers per flight.
      */
-    private final int totalPassengers;
+    private int totalPassengers;
     /**
      * Number of passengers waiting for the last one to arrive at their final destination inside the airport.
      */
@@ -55,6 +55,23 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
         this.waitingPassengers = 0;
         this.repositoryStub = repositoryStub;
     }
+
+    /**
+     * DepartureTerminalEntrance constructor.
+     * @param repositoryStub A reference to a repository object.
+     */
+    public DepartureTerminalEntrance(RepositoryStub repositoryStub) {
+        this.reentrantLock = new ReentrantLock(true);
+        this.passengerCondition = this.reentrantLock.newCondition();
+        this.allSignaled = false;
+        this.waitingPassengers = 0;
+        this.repositoryStub = repositoryStub;
+    }
+
+    public void setInitialState(int totalPassengers) {
+        this.totalPassengers = totalPassengers;
+    }
+
      /**
      * Function that gets the number of passengers waiting for the last one to arrive at their final destination inside the airport.
      * @return the number of passengers waiting for the last one to arrive at their final destination inside the airport.

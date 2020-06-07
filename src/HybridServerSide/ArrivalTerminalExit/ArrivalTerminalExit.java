@@ -29,7 +29,7 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
     /**
      * Total number of passengers per flight.
      */
-    private final int totalPassengers;
+    private int totalPassengers;
     /**
      * Number of passengers waiting for the last one to arrive at their final destination inside the airport.
      */
@@ -54,6 +54,20 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
         this.totalPassengers = totalPassengers;
         this.repositoryStub = repositoryStub;
     }
+    /**
+     * ArrivalTerminalExit constructor.
+     */
+    public ArrivalTerminalExit(RepositoryStub repositoryStub) {
+        this.reentrantLock = new ReentrantLock(true);
+        this.passengerCondition = this.reentrantLock.newCondition();
+        this.allSignaled = false;
+        this.repositoryStub = repositoryStub;
+    }
+
+    public void setInitialState(int totalPassengers) {
+        this.totalPassengers = totalPassengers;
+    }
+
     /**
      * Function that sets the reference to a DepartureTerminalEntrance object.
      * @param dte A reference to a DepartureTerminalEntrance object.

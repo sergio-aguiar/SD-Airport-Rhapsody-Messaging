@@ -27,7 +27,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
     /**
      * The total amount of passengers throughout every planned flight.
      */
-    private final int maxCrossFlightPassengers;
+    private int maxCrossFlightPassengers;
     /**
      * A count for the amount of passengers throughout every planned flight who have made it past where the bus driver is needed.
      */
@@ -35,7 +35,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
     /**
      * Total number of passengers per flight.
      */
-    private final int totalPassengers;
+    private int totalPassengers;
     /**
      * Number of Passengers that arrived at airport on the current flight.
      */
@@ -51,7 +51,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
     /**
      * Array that contains the bags of each passenger per flight.
      */
-    private final Bag[][][] luggagePerFlight;
+    private Bag[][][] luggagePerFlight;
     /**
      * Stack that contains the bags currently in the plane.
      */
@@ -81,6 +81,27 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         this.bagArrayToStack(0);
         this.repositoryStub = repositoryStub;
     }
+    /**
+     * ArrivalLounge constructor.
+     */
+    public ArrivalLounge(RepositoryStub repositoryStub) {
+        this.reentrantLock = new ReentrantLock();
+        this.porterCondition = this.reentrantLock.newCondition();
+        this.crossFlightPassengerCount = 0;
+        this.passengersThatArrived = 0;
+        this.flightNumber = 0;
+        this.bagsInThePlane = new Stack<>();
+        this.repositoryStub = repositoryStub;
+    }
+
+    public void setInitialState(int totalPassengers, int totalFlights, Bag[][][] luggagePerFlight) {
+        this.maxCrossFlightPassengers = totalFlights * totalPassengers;
+        this.totalPassengers = totalPassengers;
+        this.totalFlights = totalFlights;
+        this.luggagePerFlight = luggagePerFlight;
+        this.bagArrayToStack(0);
+    }
+
     /**
      * Function that fills the plane's bag Stack depending on the current flight number.
      * @param flightNumber Flight number.

@@ -2,6 +2,8 @@ package ClientSide.Passenger;
 
 import ClientSide.Interfaces.*;
 
+import java.io.Serializable;
+
 
 /**
  * Passenger Thread: executes the Passenger's life-cycle.
@@ -12,7 +14,7 @@ public class PassengerThread extends Thread {
 	/**
      * Enumerate with the Passenger states.
      */
-    public enum PassengerStates {
+    public enum PassengerStates implements Serializable {
         AT_THE_DISEMBARKING_ZONE("WSD"),
         AT_THE_LUGGAGE_COLLECTION_POINT("LCP"),
         AT_THE_LUGGAGE_RECLAIM_OFFICE("BRO"),
@@ -21,6 +23,9 @@ public class PassengerThread extends Thread {
         TERMINAL_TRANSFER("TRT"),
         AT_THE_DEPARTURE_TRANSFER_TERMINAL("DTT"),
         ENTERING_THE_DEPARTURE_TERMINAL("EDT");
+
+        private static final long serialVersionUID = 5555L;
+
         /**
          * Enum's descriptive String.
          */
