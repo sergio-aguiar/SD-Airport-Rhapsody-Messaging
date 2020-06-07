@@ -104,6 +104,8 @@ public class AirportRhapsodyMain {
         Arrays.fill(totalLuggagePerFlight, 0);
         generateStartingData();
 
+        
+
 /*        ArrivalLounge arrivalLoungeMonitor = new ArrivalLounge(repositoryMonitor, n, k, passengerBags);
         ArrivalTerminalExit arrivalTerminalExitMonitor = new ArrivalTerminalExit(repositoryMonitor, n);
         ArrivalTerminalTransferQuay arrivalTerminalTransferQuayMonitor = new ArrivalTerminalTransferQuay(repositoryMonitor, n, t, arrivalLoungeMonitor);

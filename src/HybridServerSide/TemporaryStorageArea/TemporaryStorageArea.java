@@ -2,6 +2,7 @@ package HybridServerSide.TemporaryStorageArea;
 
 import ClientSide.Interfaces.TSAPorter;
 import HybridServerSide.Repository.Repository;
+import HybridServerSide.Stubs.RepositoryStub;
 
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
@@ -23,15 +24,15 @@ public class TemporaryStorageArea implements TSAPorter {
     /**
      * The class's Repository instance.
      */
-    private final Repository repository;
+    private final RepositoryStub repositoryStub;
     /**
      * TemporaryStorageArea constructor.
-     * @param repository A reference to a repository object.
+     * @param repositoryStub A reference to a repository object.
      */
-    public TemporaryStorageArea(Repository repository) {
+    public TemporaryStorageArea(RepositoryStub repositoryStub) {
         this.reentrantLock = new ReentrantLock(true);
         this.tsaBags = new ArrayList<>();
-        this.repository = repository;
+        this.repositoryStub = repositoryStub;
     }
     /**
      * Function that allows for a transition to a new flight (new plane landing simulation).
@@ -47,7 +48,7 @@ public class TemporaryStorageArea implements TSAPorter {
     public void carryItToAppropriateStore(int bagID) {
         this.reentrantLock.lock();
         try {
-            this.repository.porterCarryBagToTemporaryStorageArea();
+            this.repositoryStub.porterCarryBagToTemporaryStorageArea();
             this.tsaBags.add(bagID);
         } catch (Exception e) {
             System.out.println("TSA: carryItToAppropriateStore: " + e.toString());

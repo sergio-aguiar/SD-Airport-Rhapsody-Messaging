@@ -4,6 +4,7 @@ import ClientSide.Extras.Bag;
 import ClientSide.Interfaces.ALPassenger;
 import ClientSide.Interfaces.ALPorter;
 import HybridServerSide.Repository.Repository;
+import HybridServerSide.Stubs.RepositoryStub;
 
 import java.util.Stack;
 import java.util.concurrent.locks.Condition;
@@ -58,15 +59,15 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
     /**
      * The class's Repository instance.
      */
-    private final Repository repository;
+    private final RepositoryStub repositoryStub;
     /**
      * ArrivalLounge constructor.
-     * @param repository A reference to a repository object.
+     * @param repositoryStub A reference to a RepositoryStub object.
      * @param totalPassengers Total number of passengers per flight.
      * @param totalFlights Total number of flights.
      * @param luggagePerFlight Array that contains the bags of each passenger per flight.
      */
-    public ArrivalLounge(Repository repository, int totalPassengers, int totalFlights, Bag[][][] luggagePerFlight) {
+    public ArrivalLounge(RepositoryStub repositoryStub, int totalPassengers, int totalFlights, Bag[][][] luggagePerFlight) {
         this.reentrantLock = new ReentrantLock();
         this.porterCondition = this.reentrantLock.newCondition();
         this.maxCrossFlightPassengers = totalFlights * totalPassengers;
@@ -78,7 +79,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         this.luggagePerFlight = luggagePerFlight;
         this.bagsInThePlane = new Stack<>();
         this.bagArrayToStack(0);
-        this.repository = repository;
+        this.repositoryStub = repositoryStub;
     }
     /**
      * Function that fills the plane's bag Stack depending on the current flight number.
@@ -136,7 +137,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         boolean done = (this.flightNumber == this.totalFlights - 1 && this.bagsInThePlane.size() == 0);
         this.reentrantLock.lock();
         try {
-            this.repository.porterInitiated();
+            this.repositoryStub.porterInitiated();
             if(!done) this.porterCondition.await();
         } catch (Exception e) {
             System.out.println("AL: takeARest: " + e.toString());
@@ -154,7 +155,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
     public void whatShouldIDo(int pid, String situation) {
         this.reentrantLock.lock();
         try {
-            this.repository.passengerInitiated(pid);
+            this.repositoryStub.passengerInitiated(pid);
             this.passengersThatArrived++;
             if(situation.equals("FDT")) this.incrementCrossFlightPassengerCount();
             if(this.passengersThatArrived == this.totalPassengers) this.porterCondition.signal();
@@ -175,9 +176,9 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         try {
             if(!this.bagsInThePlane.isEmpty()) {
                 returnVal = this.bagsInThePlane.pop().toString();
-                this.repository.porterTryCollectingBagFromPlane(true);
+                this.repositoryStub.porterTryCollectingBagFromPlane(true);
             }
-            this.repository.porterTryCollectingBagFromPlane(false);
+            this.repositoryStub.porterTryCollectingBagFromPlane(false);
         } catch (Exception e) {
             System.out.println("AL: tryToCollectABag: " + e.toString());
         } finally {
@@ -193,7 +194,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
     public void goCollectABag(int pid) {
         this.reentrantLock.lock();
         try {
-            this.repository.passengerGoingToCollectABag(pid);
+            this.repositoryStub.passengerGoingToCollectABag(pid);
         } catch (Exception e) {
             System.out.println("AL: goCollectABag: " + e.toString());
         } finally {

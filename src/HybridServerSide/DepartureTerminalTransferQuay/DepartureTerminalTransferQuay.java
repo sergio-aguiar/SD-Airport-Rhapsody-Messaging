@@ -3,6 +3,7 @@ package HybridServerSide.DepartureTerminalTransferQuay;
 import ClientSide.Interfaces.DTTQBusDriver;
 import ClientSide.Interfaces.DTTQPassenger;
 import HybridServerSide.Repository.Repository;
+import HybridServerSide.Stubs.RepositoryStub;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -44,12 +45,12 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
     /**
      * The class's Repository instance.
      */
-    private final Repository repository;
+    private final RepositoryStub repositoryStub;
     /**
      * DepartureTerminalTransferQuay constructor.
-     * @param repository A reference to a repository object.
+     * @param repositoryStub A reference to a repository object.
      */
-    public DepartureTerminalTransferQuay(Repository repository) {
+    public DepartureTerminalTransferQuay(RepositoryStub repositoryStub) {
         this.reentrantLock = new ReentrantLock(true);
         this.passengerCondition = this.reentrantLock.newCondition();
         this.busDriverCondition = this.reentrantLock.newCondition();
@@ -57,7 +58,7 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
         this.passengersThatLeftTheBus = 0;
         this.canLeaveTheBus = false;
         this.flightNumber = 0;
-        this.repository = repository;
+        this.repositoryStub = repositoryStub;
     }
     /**
      * Function that allows for a transition to a new flight (new plane landing simulation).
@@ -77,7 +78,7 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
         try {
             this.passengersThatArrived = 0;
             this.passengersThatLeftTheBus = 0;
-            this.repository.busDriverGoingToArrivalTerminal();
+            this.repositoryStub.busDriverGoingToArrivalTerminal();
         } catch(Exception e) {
             System.out.println("DTTQ: goToArrivalTerminal: " + e.toString());
         } finally {
@@ -96,7 +97,7 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
             if(!this.canLeaveTheBus) this.passengerCondition.await();
             this.passengersThatLeftTheBus++;
             if(this.passengersThatLeftTheBus == this.passengersThatArrived) this.busDriverCondition.signal();
-            this.repository.passengerLeavingTheBus(pid, seat);
+            this.repositoryStub.passengerLeavingTheBus(pid, seat);
         } catch(Exception e) {
             System.out.println("DTTQ: leaveTheBus: " + e.toString());
         } finally {
@@ -113,7 +114,7 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
     public int parkTheBusAndLetPassOff(int passengersThatArrived, int flightNumber) {
         this.reentrantLock.lock();
         try {
-            this.repository.busDriverParkingTheBusAndLettingPassengersOff();
+            this.repositoryStub.busDriverParkingTheBusAndLettingPassengersOff();
             this.passengersThatArrived = passengersThatArrived;
             this.passengerCondition.signalAll();
             this.canLeaveTheBus = true;

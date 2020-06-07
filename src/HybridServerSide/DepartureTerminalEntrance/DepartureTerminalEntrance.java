@@ -4,6 +4,7 @@ import ClientSide.Interfaces.DTEPassenger;
 import HybridServerSide.ArrivalTerminalExit.ArrivalTerminalExit;
 import HybridServerSide.Interfaces.DTEforATE;
 import HybridServerSide.Repository.Repository;
+import HybridServerSide.Stubs.RepositoryStub;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,19 +41,19 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
     /**
      * Instance of Repository.
      */
-    private final Repository repository;
+    private final RepositoryStub repositoryStub;
     /**
      * DepartureTerminalEntrance constructor.
-     * @param repository A reference to a repository object.
+     * @param repositoryStub A reference to a repository object.
      * @param totalPassengers Total number of passengers per flight.
      */
-    public DepartureTerminalEntrance(Repository repository, int totalPassengers) {
+    public DepartureTerminalEntrance(RepositoryStub repositoryStub, int totalPassengers) {
         this.reentrantLock = new ReentrantLock(true);
         this.passengerCondition = this.reentrantLock.newCondition();
         this.allSignaled = false;
         this.totalPassengers = totalPassengers;
         this.waitingPassengers = 0;
-        this.repository = repository;
+        this.repositoryStub = repositoryStub;
     }
      /**
      * Function that gets the number of passengers waiting for the last one to arrive at their final destination inside the airport.
@@ -106,7 +107,7 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
      */
     @Override
     public void prepareNextLeg(int pid) {
-        this.repository.passengerPreparingNextLeg(pid);
+        this.repositoryStub.passengerPreparingNextLeg(pid);
 
         this.reentrantLock.lock();
         try {

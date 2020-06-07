@@ -39,7 +39,27 @@ public class Message implements Serializable {
         DTTQ_PREPARE_FOR_NEXT_FLIGHT(29),
         TSA_PREPARE_FOR_NEXT_FLIGHT(30),
         REP_PREPARE_FOR_NEXT_FLIGHT(31),
-        REP_FINAL_REPORT(32);
+        REP_FINAL_REPORT(32),
+        REP_PORTER_INITIATED(33),
+        REP_PASSENGER_INITIATED(34),
+        REP_PORTER_TRY_COLLECTING_BAG_FROM_PLANE(35),
+        REP_PASSENGER_GOING_TO_COLLECT_A_BAG(36),
+        REP_PASSENGER_ENTERING_THE_BUG(37),
+        REP_PASSENGER_GOING_HOME(38),
+        REP_BUS_DRIVER_INITIATED(39),
+        REP_BUS_DRIVER_PARKING_THE_BUS(40),
+        REP_PASSENGER_GETTING_INTO_THE_WAITING_QUEUE(41),
+        REP_PASSENGER_TAKING_A_BUS(42),
+        REP_BUS_DRIVER_GOING_TO_DEPARTURE_TERMINAL(43),
+        REP_PASSENGER_COLLECTING_A_BAG(44),
+        REP_PORTER_CARRY_BAG_TO_BAGGAGE_COLLECTION_POINT(45),
+        REP_PORTER_ANNOUNCING_NO_MORE_BAGS_TO_COLLECT(46),
+        REP_PASSENGER_REPORTING_MISSING_BAGS(47),
+        REP_PASSENGER_PREPARING_NEXT_LEG(48),
+        REP_BUS_DRIVER_GOING_TO_ARRIVAL_TERMINAL(49),
+        REP_PASSENGER_LEAVING_THE_BUS(50),
+        REP_BUS_DRIVER_PARKING_THE_BUS_AND_LETTING_PASS_OFF(51),
+        REP_PORTER_CARRY_BAG_TO_TEMPORARY_STORAGE_AREA(52);
 
         private int messageCode;
 
@@ -73,7 +93,7 @@ public class Message implements Serializable {
     private Object returnInfo;
 
     public Message(int messageType, int passengerID) throws MessageException {
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
         if(passengerID < 0)
             throw new MessageException("Invalid passengerID given.");
@@ -91,7 +111,7 @@ public class Message implements Serializable {
     }
 
     public Message(int messageType, int passengerID, Object firstArgument) throws MessageException {
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
         if(passengerID < 0)
             throw new MessageException("Invalid passengerID given.");
@@ -109,7 +129,7 @@ public class Message implements Serializable {
     }
 
     public Message(int messageType, int passengerID, Object firstArgument, Object secondArgument) throws MessageException {
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
         if(passengerID < 0)
             throw new MessageException("Invalid passengerID given.");
@@ -127,7 +147,7 @@ public class Message implements Serializable {
     }
 
     public Message(int messageType, boolean isPorterMessage) throws MessageException {
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
         if(!isPorterMessage && messageType > 5)
             throw new MessageException("Invalid message type for a Bus Driver message.");
@@ -145,7 +165,7 @@ public class Message implements Serializable {
     }
 
     public Message(int messageType, boolean isPorterMessage, Object firstArgument) throws MessageException {
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
         if(!isPorterMessage && messageType > 5)
             throw new MessageException("Invalid message type for a Bus Driver message.");
@@ -163,7 +183,7 @@ public class Message implements Serializable {
     }
 
     public Message(int messageType, boolean isPorterMessage, Object firstArgument, Object secondArgument) throws MessageException {
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
         if(!isPorterMessage && messageType > 5)
             throw new MessageException("Invalid message type for a Bus Driver message.");
@@ -181,7 +201,7 @@ public class Message implements Serializable {
     }
 
     public Message(int messageType, boolean isPorterMessage, boolean isAreaRequest) throws MessageException {
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
         if(isAreaRequest) {
             if(isPorterMessage)
@@ -206,7 +226,7 @@ public class Message implements Serializable {
     }
 
     public Message(int messageType, boolean isPorterMessage, boolean isAreaRequest, Object firstArgument) throws MessageException {
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
         if(isAreaRequest) {
             if(isPorterMessage)
@@ -231,7 +251,7 @@ public class Message implements Serializable {
     }
 
     public Message(int messageType, boolean isPorterMessage, boolean isAreaRequest, Object firstArgument, Object secondArgument) throws MessageException {
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
         if(isAreaRequest) {
             if(isPorterMessage)
@@ -258,7 +278,7 @@ public class Message implements Serializable {
     public Message(int messageType, int passengerID, int currentIteration) throws MessageException {
         if(currentIteration < 0)
             throw new MessageException("Invalid iteration value. The value must not be negative.");
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
         if(passengerID < 0)
             throw new MessageException("Invalid passengerID given.");
@@ -277,7 +297,7 @@ public class Message implements Serializable {
     public Message(int messageType, boolean isPorterMessage, int currentIteration) throws MessageException {
         if(currentIteration < 0)
             throw new MessageException("Invalid iteration value. The value must not be negative.");
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
         if(!isPorterMessage && messageType > 5)
             throw new MessageException("Invalid message type for a Bus Driver message.");
@@ -294,7 +314,7 @@ public class Message implements Serializable {
     }
 
     public Message(int messageType, Object returnInfo) throws MessageException {
-        if(messageType < 0 || messageType > 32)
+        if(messageType < 0 || messageType > 52)
             throw new MessageException("Non-existent message type.");
 
         this.messageType = messageType;

@@ -2,6 +2,7 @@ package HybridServerSide.BaggageReclaimOffice;
 
 import ClientSide.Interfaces.BROPassenger;
 import HybridServerSide.Repository.Repository;
+import HybridServerSide.Stubs.RepositoryStub;
 
 import java.util.concurrent.locks.ReentrantLock;
 /**Baggage Reclaim Office: Where passengers report missing bags.
@@ -17,14 +18,14 @@ public class BaggageReclaimOffice implements BROPassenger {
     /**
      * The class's Repository instance.
      */
-    private final Repository repository;
+    private final RepositoryStub repositoryStub;
     /**
      * BaggageReclaimOffice constructor.
-     * @param repository repository.
+     * @param repositoryStub RepositoryStub.
      */
-    public BaggageReclaimOffice(Repository repository) {
+    public BaggageReclaimOffice(RepositoryStub repositoryStub) {
         this.reentrantLock = new ReentrantLock(true);
-        this.repository = repository;
+        this.repositoryStub = repositoryStub;
     }
     /**
      * Passengers report how many missing bags they have.
@@ -35,7 +36,7 @@ public class BaggageReclaimOffice implements BROPassenger {
     public void reportMissingBags(int pid, int missingBags) {
         this.reentrantLock.lock();
         try {
-            this.repository.passengerReportingMissingBags(pid, missingBags);
+            this.repositoryStub.passengerReportingMissingBags(pid, missingBags);
         } catch (Exception e) {
             System.out.println("BRO: reportMissingBags: " + e.toString());
         } finally {

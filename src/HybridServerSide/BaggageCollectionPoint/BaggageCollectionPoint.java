@@ -3,6 +3,7 @@ package HybridServerSide.BaggageCollectionPoint;
 import ClientSide.Interfaces.BCPPassenger;
 import ClientSide.Interfaces.BCPPorter;
 import HybridServerSide.Repository.Repository;
+import HybridServerSide.Stubs.RepositoryStub;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,13 +38,13 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
     /**
      * The class's Repository instance.
      */
-    private final Repository repository;
+    private final RepositoryStub repositoryStub;
     /**
      * BaggageCollectionPoint constructor.
-     * @param repository A reference to a repository object.
+     * @param repositoryStub A reference to a repositoryStub object.
      * @param totalPassengers Total number of passengers per flight.
      */
-    public BaggageCollectionPoint(Repository repository, int totalPassengers) {
+    public BaggageCollectionPoint(RepositoryStub repositoryStub, int totalPassengers) {
         this.reentrantLock = new ReentrantLock(true);
         this.passengerLuggageConditions = new Condition[totalPassengers];
         for(int c = 0; c < totalPassengers; c++) this.passengerLuggageConditions[c] = this.reentrantLock.newCondition();
@@ -51,7 +52,7 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
         this.noMoreBags = false;
         Arrays.fill(this.passengerLuggageNumber, 0);
         this.bcpBags = new ArrayList<>();
-        this.repository = repository;
+        this.repositoryStub = repositoryStub;
     }
     /**
      * Function that checks whether a passenger's bag is on the conveyor belt.
@@ -93,7 +94,7 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
                 if (this.passengerLuggageNumber[pid] == 0) this.passengerLuggageConditions[pid].await();
                 if (this.isPassengerBagInCollectionPoint(pid)) {
                     this.claimBagFromBaggageCollectionPoint(pid);
-                    this.repository.passengerCollectingABag(pid);
+                    this.repositoryStub.passengerCollectingABag(pid);
                     this.passengerLuggageNumber[pid]--;
                     success = true;
                 }
@@ -113,7 +114,7 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
     public void carryItToAppropriateStore(int bagID) {
         this.reentrantLock.lock();
         try {
-            this.repository.porterCarryBagToBaggageCollectionPoint();
+            this.repositoryStub.porterCarryBagToBaggageCollectionPoint();
             this.bcpBags.add(bagID);
             this.passengerLuggageNumber[bagID]++;
             this.passengerLuggageConditions[bagID].signal();
@@ -133,7 +134,7 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
         try {
             for(Condition c : this.passengerLuggageConditions) c.signal();
             this.noMoreBags = true;
-            this.repository.porterAnnouncingNoMoreBagsToCollect();
+            this.repositoryStub.porterAnnouncingNoMoreBagsToCollect();
         } catch (Exception e) {
             System.out.print("BCP: noMoreBagsToCollect: " + e.toString());
         } finally {

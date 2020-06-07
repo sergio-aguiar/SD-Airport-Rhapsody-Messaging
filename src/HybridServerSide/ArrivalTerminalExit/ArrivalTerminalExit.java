@@ -4,6 +4,7 @@ import ClientSide.Interfaces.ATEPassenger;
 import HybridServerSide.DepartureTerminalEntrance.DepartureTerminalEntrance;
 import HybridServerSide.Interfaces.ATEforDTE;
 import HybridServerSide.Repository.Repository;
+import HybridServerSide.Stubs.RepositoryStub;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -38,20 +39,20 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
      */
     private DepartureTerminalEntrance dte;
     /**
-     * The class's Repository instance.
+     * The class's RepositoryStub instance.
      */
-    private final Repository repository;
+    private final RepositoryStub repositoryStub;
     /**
      * ArrivalTerminalExit constructor.
-     * @param repository A reference to a repository object.
+     * @param repositoryStub A reference to a RepositoryStub object.
      * @param totalPassengers Total number of passengers per flight.
      */
-    public ArrivalTerminalExit(Repository repository, int totalPassengers) {
+    public ArrivalTerminalExit(RepositoryStub repositoryStub, int totalPassengers) {
         this.reentrantLock = new ReentrantLock(true);
         this.passengerCondition = this.reentrantLock.newCondition();
         this.allSignaled = false;
         this.totalPassengers = totalPassengers;
-        this.repository = repository;
+        this.repositoryStub = repositoryStub;
     }
     /**
      * Function that sets the reference to a DepartureTerminalEntrance object.
@@ -105,7 +106,7 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
      */
     @Override
     public void goHome(int pid) {
-        this.repository.passengerGoingHome(pid);
+        this.repositoryStub.passengerGoingHome(pid);
 
         this.reentrantLock.lock();
         try {
