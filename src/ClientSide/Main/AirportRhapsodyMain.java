@@ -4,6 +4,9 @@ import ClientSide.BusDriver.BusDriverThread;
 import ClientSide.Passenger.PassengerThread;
 import ClientSide.Porter.PorterThread;
 import ClientSide.Extras.Bag;
+import ClientSide.Stubs.*;
+import HybridServerSide.ArrivalLounge.ArrivalLounge;
+import genclass.GenericIO;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -61,29 +64,47 @@ public class AirportRhapsodyMain {
      */
     private static final int[] totalLuggagePerFlight = new int[k];
 
+    private static final String serverHostName = "localhost";
+    private static int ALServerPort = 4000;
+    private static int ATEServerPort = 4001;
+    private static int ATTQServerPort = 4002;
+    private static int BCPServerPort = 4003;
+    private static int BROServerPort = 4004;
+    private static int DTEServerPort = 4005;
+    private static int DTTQServerPort = 4006;
+    private static int TSAServerPort = 4007;
+    private static int REPServerPort = 4008;
 
-/*    *//**
-     * The class's Repository instance.
-     *//*
-    private static Repository repositoryMonitor;*/
-
+    private static ArrivalLoungeStub arrivalLoungeStub;
+    private static ArrivalTerminalExitStub arrivalTerminalExitStub;
+    private static ArrivalTerminalTransferQuayStub arrivalTerminalTransferQuayStub;
+    private static BaggageCollectionPointStub baggageCollectionPointStub;
+    private static BaggageReclaimOfficeStub baggageReclaimOfficeStub;
+    private static DepartureTerminalEntranceStub departureTerminalEntranceStub;
+    private static DepartureTerminalTransferQuayStub departureTerminalTransferQuayStub;
+    private static TemporaryStorageAreaStub temporaryStorageAreaStub;
+    private static RepositoryStub repositoryStub;
 
     /**
      * The class's main function.
      * @param args The function's command line arguments (not used).
      */
     public static void main(String[] args) {
+
+        repositoryStub = new RepositoryStub(serverHostName, REPServerPort);
+        arrivalLoungeStub = new ArrivalLoungeStub(serverHostName, ALServerPort);
+        arrivalTerminalExitStub = new ArrivalTerminalExitStub(serverHostName, ATEServerPort);
+        arrivalTerminalTransferQuayStub = new ArrivalTerminalTransferQuayStub(serverHostName, ATTQServerPort);
+        baggageCollectionPointStub = new BaggageCollectionPointStub(serverHostName, BCPServerPort);
+        baggageReclaimOfficeStub = new BaggageReclaimOfficeStub(serverHostName, BROServerPort);
+        departureTerminalEntranceStub = new DepartureTerminalEntranceStub(serverHostName, DTEServerPort);
+        departureTerminalTransferQuayStub = new DepartureTerminalTransferQuayStub(serverHostName, DTTQServerPort);
+        temporaryStorageAreaStub = new TemporaryStorageAreaStub(serverHostName, TSAServerPort);
+
         Arrays.fill(totalLuggagePerFlight, 0);
         generateStartingData();
 
-        /*try {
-            repositoryMonitor = new Repository(0, totalLuggagePerFlight[0], t, n, passengerSituations[0],
-                    passengerLuggage[0], passengerBags);
-        } catch (IOException e) {
-            System.err.println("Main: Starting the repository: " + e.toString());
-        }
-
-        ArrivalLounge arrivalLoungeMonitor = new ArrivalLounge(repositoryMonitor, n, k, passengerBags);
+/*        ArrivalLounge arrivalLoungeMonitor = new ArrivalLounge(repositoryMonitor, n, k, passengerBags);
         ArrivalTerminalExit arrivalTerminalExitMonitor = new ArrivalTerminalExit(repositoryMonitor, n);
         ArrivalTerminalTransferQuay arrivalTerminalTransferQuayMonitor = new ArrivalTerminalTransferQuay(repositoryMonitor, n, t, arrivalLoungeMonitor);
         BaggageCollectionPoint baggageCollectionPointMonitor = new BaggageCollectionPoint(repositoryMonitor, n);
@@ -93,34 +114,34 @@ public class AirportRhapsodyMain {
         TemporaryStorageArea temporaryStorageAreaMonitor = new TemporaryStorageArea(repositoryMonitor);
 
         arrivalTerminalExitMonitor.setDte(departureTerminalEntranceMonitor);
-        departureTerminalEntranceMonitor.setAte(arrivalTerminalExitMonitor);
+        departureTerminalEntranceMonitor.setAte(arrivalTerminalExitMonitor);*/
 
-        BusDriverThread busDriver = new BusDriverThread(0, arrivalTerminalTransferQuayMonitor, departureTerminalTransferQuayMonitor);
-        PorterThread porter = new PorterThread(0, arrivalLoungeMonitor, baggageCollectionPointMonitor, temporaryStorageAreaMonitor);*/
+        BusDriverThread busDriver = new BusDriverThread(0, arrivalTerminalTransferQuayStub, departureTerminalTransferQuayStub);
+        PorterThread porter = new PorterThread(0, arrivalLoungeStub, baggageCollectionPointStub, temporaryStorageAreaStub);
 
-/*        for(int f = 0; f < k; f++) {
+        for(int f = 0; f < k; f++) {
             for(int passenger = 0; passenger < n; passenger++) {
                 passengers[f][passenger] = new PassengerThread(passenger, passengerLuggage[f][passenger],
-                        passengerSituations[f][passenger], arrivalLoungeMonitor, arrivalTerminalExitMonitor,
-                        arrivalTerminalTransferQuayMonitor, baggageCollectionPointMonitor, departureTerminalEntranceMonitor,
-                        departureTerminalTransferQuayMonitor, baggageReclaimOfficeMonitor);
+                        passengerSituations[f][passenger], arrivalLoungeStub, arrivalTerminalExitStub,
+                        arrivalTerminalTransferQuayStub, baggageCollectionPointStub, departureTerminalEntranceStub,
+                        departureTerminalTransferQuayStub, baggageReclaimOfficeStub);
             }
-        }*/
+        }
 
- /*       busDriver.start();
-        porter.start();*/
+        busDriver.start();
+        porter.start();
 
         for(int flight = 0; flight < k; flight++) {
-/*            if(flight != 0) {
-                repositoryMonitor.prepareForNextFlight(totalLuggagePerFlight[flight], passengerSituations[flight]);
-                arrivalLoungeMonitor.prepareForNextFlight();
-                arrivalTerminalExitMonitor.prepareForNextFlight();
-                arrivalTerminalTransferQuayMonitor.prepareForNextFlight();
-                baggageCollectionPointMonitor.prepareForNextFlight();
-                departureTerminalEntranceMonitor.prepareForNextFlight();
-                departureTerminalTransferQuayMonitor.prepareForNextFlight();
-                temporaryStorageAreaMonitor.prepareForNextFlight();
-            }*/
+            if(flight != 0) {
+                repositoryStub.prepareForNextFlight(totalLuggagePerFlight[flight], passengerSituations[flight]);
+                arrivalLoungeStub.prepareForNextFlight();
+                arrivalTerminalExitStub.prepareForNextFlight();
+                arrivalTerminalTransferQuayStub.prepareForNextFlight();
+                baggageCollectionPointStub.prepareForNextFlight();
+                departureTerminalEntranceStub.prepareForNextFlight();
+                departureTerminalTransferQuayStub.prepareForNextFlight();
+                temporaryStorageAreaStub.prepareForNextFlight();
+            }
 
             for(PassengerThread passengerThread : passengers[flight]) passengerThread.start();
 
@@ -131,14 +152,14 @@ public class AirportRhapsodyMain {
             }
         }
 
-/*        try {
+        try {
             busDriver.join();
             porter.join();
         } catch(InterruptedException e) {
             System.out.println("Main: Interrupted - joins2: " + e.toString());
-        }*/
+        }
 
-        // repositoryMonitor.finalReport();
+        repositoryStub.finalReport();
     }
     /**
      * Function that pseudo-randomly generates the initial case for every flight.

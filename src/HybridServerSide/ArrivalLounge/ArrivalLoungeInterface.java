@@ -25,6 +25,7 @@ public class ArrivalLoungeInterface {
             case 7:
             case 15:
             case 16:
+            case 24:
                 break;
             default:
                 throw new MessageException("Invalid message type.");
@@ -47,6 +48,9 @@ public class ArrivalLoungeInterface {
                 String result16 = arrivalLounge.tryToCollectABag();
                 outMessage = new Message(Message.MessageType.PO_AL_TRY_TO_COLLECT_A_BAG.getMessageCode(), result16);
                 break;
+            case 24:
+                arrivalLounge.prepareForNextFlight();
+                outMessage = new Message(Message.MessageType.AL_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), null);
         }
 
         return (outMessage);

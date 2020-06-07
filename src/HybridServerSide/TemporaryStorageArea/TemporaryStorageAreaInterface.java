@@ -16,18 +16,27 @@ public class TemporaryStorageAreaInterface {
     {
         Message outMessage = null;
 
-        if(inMessage.getMessageType() == 19) {
-            if (inMessage.isThereNoFirstArgument())
-                throw new MessageException("Argument \"bagID\" not supplied.", inMessage);
-            if (((int) inMessage.getFirstArgument()) < 0)
-                throw new MessageException("Argument \"bagID\" was given an incorrect value.", inMessage);
-        } else {
-            throw new MessageException("Invalid message type.");
+        switch(inMessage.getMessageType()) {
+            case 19:
+                if (inMessage.isThereNoFirstArgument())
+                    throw new MessageException("Argument \"bagID\" not supplied.", inMessage);
+                if (((int) inMessage.getFirstArgument()) < 0)
+                    throw new MessageException("Argument \"bagID\" was given an incorrect value.", inMessage);
+                break;
+            case 30:
+                break;
+            default:
+                throw new MessageException("Invalid message type.");
         }
 
-        if (inMessage.getMessageType() == 19) {
-            temporaryStorageArea.carryItToAppropriateStore((int) inMessage.getFirstArgument());
-            outMessage = new Message(Message.MessageType.PO_TSA_CARRY_IT_TO_APPROPRIATE_STORE.getMessageCode(), null);
+        switch(inMessage.getMessageType()) {
+            case 19:
+                temporaryStorageArea.carryItToAppropriateStore((int) inMessage.getFirstArgument());
+                outMessage = new Message(Message.MessageType.PO_TSA_CARRY_IT_TO_APPROPRIATE_STORE.getMessageCode(), null);
+                break;
+            case 30:
+                temporaryStorageArea.prepareForNextFlight();
+                outMessage = new Message(Message.MessageType.TSA_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), null);
         }
 
         return (outMessage);

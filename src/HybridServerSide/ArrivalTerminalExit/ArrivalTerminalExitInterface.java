@@ -12,19 +12,27 @@ public class ArrivalTerminalExitInterface {
         this.arrivalTerminalExit = arrivalTerminalExit;
     }
 
-    public Message processAndReply(Message inMessage) throws MessageException
-    {
+    public Message processAndReply(Message inMessage) throws MessageException {
         Message outMessage = null;
 
-        if (inMessage.getMessageType() != 8)
-            throw new MessageException("Invalid message type.");
+        switch (inMessage.getMessageType()) {
+            case 8:
+            case 25:
+                break;
+            default:
+                throw new MessageException("Invalid message type.");
+        }
 
-        if (inMessage.getMessageType() == 8) {
-            arrivalTerminalExit.goHome(inMessage.getPassengerID());
-            outMessage = new Message(Message.MessageType.PA_ATE_GO_HOME.getMessageCode(), null);
+        switch (inMessage.getMessageType()) {
+            case 8:
+                arrivalTerminalExit.goHome(inMessage.getPassengerID());
+                outMessage = new Message(Message.MessageType.PA_ATE_GO_HOME.getMessageCode(), null);
+                break;
+            case 25:
+                arrivalTerminalExit.prepareForNextFlight();
+                outMessage = new Message(Message.MessageType.ATE_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), null);
         }
 
         return (outMessage);
     }
-
 }

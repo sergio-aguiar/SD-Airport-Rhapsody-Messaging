@@ -25,7 +25,7 @@ public class BaggageReclaimOfficeInterface {
             throw new MessageException("Invalid message type.");
         }
 
-        if(inMessage.getMessageType() == 12) {
+        if (inMessage.getMessageType() == 12) {
             baggageReclaimOffice.reportMissingBags(inMessage.getPassengerID(), (int) inMessage.getFirstArgument());
             outMessage = new Message(Message.MessageType.PA_BRO_REPORT_MISSING_BAGS.getMessageCode(), null);
         }

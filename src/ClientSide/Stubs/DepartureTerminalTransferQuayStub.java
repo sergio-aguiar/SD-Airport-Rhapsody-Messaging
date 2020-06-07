@@ -134,4 +134,34 @@ public class DepartureTerminalTransferQuayStub implements DTTQPassenger, DTTQBus
         }
         clientCom.close();
     }
+
+    public void prepareForNextFlight() {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": DTTQStub: prepareForNextFlight: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.DTTQ_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), false, true);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": DTTQStub: prepareForNextFlight: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.DTTQ_PREPARE_FOR_NEXT_FLIGHT.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": DTTQStub: prepareForNextFlight: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+    }
 }

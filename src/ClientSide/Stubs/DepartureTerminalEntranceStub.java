@@ -31,21 +31,51 @@ public class DepartureTerminalEntranceStub implements DTEPassenger {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                System.out.println("Thread " + Thread.currentThread().getName() + ": DTEQStub: prepareNextLeg: " + e.toString());
+                System.out.println("Thread " + Thread.currentThread().getName() + ": DTEStub: prepareNextLeg: " + e.toString());
             }
         }
 
         try {
             outMessage = new Message(Message.MessageType.PA_DTE_PREPARE_NEXT_LEG.getMessageCode(), pid);
         } catch(MessageException e) {
-            System.out.println("Thread " + Thread.currentThread().getName() + ": DTEQStub: prepareNextLeg: " + e.toString());
+            System.out.println("Thread " + Thread.currentThread().getName() + ": DTEStub: prepareNextLeg: " + e.toString());
         }
 
         clientCom.writeObject(outMessage);
         inMessage = (Message) clientCom.readObject();
 
         if(inMessage.getMessageType() != Message.MessageType.PA_DTE_PREPARE_NEXT_LEG.getMessageCode()) {
-            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": DTEQStub: prepareNextLeg: Incorrect message type!");
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": DTEStub: prepareNextLeg: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+    }
+
+    public void prepareForNextFlight() {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": DTEStub: prepareForNextFlight: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.DTE_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), false, true);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": TEStub: prepareForNextFlight: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.DTE_PREPARE_FOR_NEXT_FLIGHT.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": DTEStub: prepareForNextFlight: Incorrect message type!");
             GenericIO.writelnString(inMessage.toString());
             System.exit(1);
         }

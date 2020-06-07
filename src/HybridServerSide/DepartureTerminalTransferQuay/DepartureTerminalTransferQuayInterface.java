@@ -28,6 +28,7 @@ public class DepartureTerminalTransferQuayInterface {
                     throw new MessageException("Argument \"flightNumber\" was given an incorrect value.", inMessage);
                 break;
             case 5:
+            case 29:
                 break;
             case 14:
                 if(inMessage.isThereNoFirstArgument())
@@ -52,6 +53,9 @@ public class DepartureTerminalTransferQuayInterface {
                 departureTerminalTransferQuay.leaveTheBus(inMessage.getPassengerID(), (int) inMessage.getFirstArgument());
                 outMessage = new Message(Message.MessageType.PA_DTTQ_LEAVE_THE_BUS.getMessageCode(), null);
                 break;
+            case 29:
+                departureTerminalTransferQuay.prepareForNextFlight();
+                outMessage = new Message(Message.MessageType.DTTQ_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), null);
         }
 
         return (outMessage);

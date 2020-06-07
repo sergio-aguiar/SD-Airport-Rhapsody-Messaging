@@ -77,10 +77,10 @@ public class BusDriverThread extends Thread {
     public void run() {
         while(!this.attqBusDriver.hasDaysWorkEnded()) {
             if(!this.attqBusDriver.announcingBusBoarding()) break;
-            this.passengersBeingTaken = this.attqBusDriver.goToDepartureTerminal(this.bid);
-            this.flightNumber = this.dttqBusDriver.parkTheBusAndLetPassOff(this.bid, this.passengersBeingTaken, this.flightNumber);
-            this.dttqBusDriver.goToArrivalTerminal(this.bid);
-            this.attqBusDriver.parkTheBus(this.bid);
+            this.passengersBeingTaken = this.attqBusDriver.goToDepartureTerminal();
+            this.flightNumber = this.dttqBusDriver.parkTheBusAndLetPassOff(this.passengersBeingTaken, this.flightNumber);
+            this.dttqBusDriver.goToArrivalTerminal();
+            this.attqBusDriver.parkTheBus();
         }
     }
 }

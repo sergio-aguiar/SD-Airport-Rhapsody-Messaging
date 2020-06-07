@@ -18,6 +18,8 @@ public class BaggageCollectionPointInterface {
 
         switch(inMessage.getMessageType()) {
             case 11:
+            case 27:
+                break;
             case 17:
                 if(inMessage.isThereNoFirstArgument())
                     throw new MessageException("Argument \"bagID\" not supplied.", inMessage);
@@ -47,6 +49,9 @@ public class BaggageCollectionPointInterface {
                 baggageCollectionPoint.noMoreBagsToCollect((int) inMessage.getFirstArgument());
                 outMessage = new Message(Message.MessageType.PO_BCP_NO_MORE_BAGS_TO_COLLECT.getMessageCode(), null);
                 break;
+            case 27:
+                baggageCollectionPoint.prepareForNextFlight();
+                outMessage = new Message(Message.MessageType.BCP_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), null);
         }
 
         return (outMessage);

@@ -23,6 +23,7 @@ public class ArrivalTerminalTransferQuayInterface {
             case 3:
             case 9:
             case 10:
+            case 26:
                 break;
             default:
                 throw new MessageException("Invalid message type.");
@@ -53,6 +54,9 @@ public class ArrivalTerminalTransferQuayInterface {
                 int result10 = arrivalTerminalTransferQuay.enterTheBus(inMessage.getPassengerID());
                 outMessage = new Message(Message.MessageType.PA_ATTQ_ENTER_THE_BUS.getMessageCode(), result10);
                 break;
+            case 26:
+                arrivalTerminalTransferQuay.prepareForNextFlight();
+                outMessage = new Message(Message.MessageType.ATTQ_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), null);
         }
 
         return (outMessage);

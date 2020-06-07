@@ -77,14 +77,14 @@ public class PorterThread extends Thread {
      */
    @Override
     public void run() {
-        while(!this.alPorter.takeARest(this.pid)) {
-            String tmpBag = this.alPorter.tryToCollectABag(this.pid);
+        while(!this.alPorter.takeARest()) {
+            String tmpBag = this.alPorter.tryToCollectABag();
             while(!tmpBag.equals("")) {
                 this.bagData = tmpBag.split(",");
                 if(this.bagData[1].equals(PassengerThread.PassengerAndBagSituations.FDT.toString()))
-                    this.bcpPorter.carryItToAppropriateStore(this.pid, Integer.parseInt(this.bagData[0]));
-                else this.tsaPorter.carryItToAppropriateStore(this.pid, Integer.parseInt(this.bagData[0]));
-                tmpBag = this.alPorter.tryToCollectABag(this.pid);
+                    this.bcpPorter.carryItToAppropriateStore(Integer.parseInt(this.bagData[0]));
+                else this.tsaPorter.carryItToAppropriateStore(Integer.parseInt(this.bagData[0]));
+                tmpBag = this.alPorter.tryToCollectABag();
             }
             this.bcpPorter.noMoreBagsToCollect(this.pid);
         }
