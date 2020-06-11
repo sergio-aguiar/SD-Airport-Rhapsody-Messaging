@@ -1,6 +1,7 @@
 package ClientSide.Stubs;
 
 import ClientSide.ClientCom.ClientCom;
+import ClientSide.Extras.Bag;
 import ClientSide.Interfaces.ALPassenger;
 import ClientSide.Interfaces.ALPorter;
 import Communication.Message;
@@ -202,6 +203,36 @@ public class ArrivalLoungeStub implements ALPassenger, ALPorter {
 
         if(inMessage.getMessageType() != Message.MessageType.AL_PREPARE_FOR_NEXT_FLIGHT.getMessageCode()) {
             GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ALStub: prepareForNextFlight: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+    }
+
+    public void setInitialState(int totalPassengers, int totalFlights, Bag[][][] luggagePerFlight) {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": ALStub: setInitialState: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.AL_SET_INITIAL_STATE.getMessageCode(), (Object) totalPassengers, totalFlights, luggagePerFlight);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": ALStub: setInitialState: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.AL_SET_INITIAL_STATE.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ALStub: setInitialState: Incorrect message type!");
             GenericIO.writelnString(inMessage.toString());
             System.exit(1);
         }

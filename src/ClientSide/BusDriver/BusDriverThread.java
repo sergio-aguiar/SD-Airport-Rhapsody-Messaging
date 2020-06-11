@@ -82,5 +82,6 @@ public class BusDriverThread extends Thread {
             this.dttqBusDriver.goToArrivalTerminal();
             this.attqBusDriver.parkTheBus();
         }
+        System.out.println("BUS DRIVER FINISHED: " + this.bid);
     }
 }

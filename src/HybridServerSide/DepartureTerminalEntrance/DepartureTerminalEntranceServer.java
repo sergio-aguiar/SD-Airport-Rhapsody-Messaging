@@ -4,6 +4,8 @@ import HybridServerSide.BaggageCollectionPoint.BaggageCollectionPoint;
 import HybridServerSide.BaggageCollectionPoint.BaggageCollectionPointInterface;
 import HybridServerSide.BaggageCollectionPoint.BaggageCollectionPointProxy;
 import HybridServerSide.ServerCom.ServerCom;
+import HybridServerSide.Stubs.ArrivalTerminalExitStub;
+import HybridServerSide.Stubs.RepositoryStub;
 import genclass.GenericIO;
 
 public class DepartureTerminalEntranceServer {
@@ -16,23 +18,36 @@ public class DepartureTerminalEntranceServer {
         DepartureTerminalEntranceInterface departureTerminalEntranceInterface;
         DepartureTerminalEntranceProxy departureTerminalEntranceProxy;
 
+        RepositoryStub repositoryStub;
+        ArrivalTerminalExitStub arrivalTerminalExitStub;
+
         ServerCom serverCom;
         ServerCom serverComL;
-
-        int totalPassengers;
 
         serverCom = new ServerCom(serverPort);
         serverCom.start();
 
-        // departureTerminalEntrance = new DepartureTerminalEntrance();
-        // departureTerminalEntranceInterface = new DepartureTerminalEntranceInterface(departureTerminalEntrance);
+        repositoryStub = new RepositoryStub("localhost", 4008);
+        arrivalTerminalExitStub = new ArrivalTerminalExitStub("localhost", 4001);
+
+        departureTerminalEntrance = new DepartureTerminalEntrance(repositoryStub, arrivalTerminalExitStub);
+        departureTerminalEntranceInterface = new DepartureTerminalEntranceInterface(departureTerminalEntrance);
 
         GenericIO.writelnString("DepartureTerminalEntranceServer now listening!");
 
-        while(true) {
-            serverComL = serverCom.accept();
-            // departureTerminalEntranceProxy = new DepartureTerminalEntranceProxy(serverComL, departureTerminalEntranceInterface);
+        boolean running = true;
+        while(running) {
+            try {
+                serverComL = serverCom.accept();
+                departureTerminalEntranceProxy = new DepartureTerminalEntranceProxy(serverComL, departureTerminalEntranceInterface);
+                departureTerminalEntranceProxy.start();
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
         }
+
+        serverCom.end();
+        System.out.println("DTEServer stopped.");
     }
 
 }

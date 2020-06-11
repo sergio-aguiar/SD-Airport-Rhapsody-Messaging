@@ -1,6 +1,7 @@
 package ClientSide.Stubs;
 
 import ClientSide.ClientCom.ClientCom;
+import ClientSide.Extras.Bag;
 import ClientSide.Interfaces.DTEPassenger;
 import Communication.Message;
 import Communication.MessageException;
@@ -76,6 +77,36 @@ public class DepartureTerminalEntranceStub implements DTEPassenger {
 
         if(inMessage.getMessageType() != Message.MessageType.DTE_PREPARE_FOR_NEXT_FLIGHT.getMessageCode()) {
             GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": DTEStub: prepareForNextFlight: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+    }
+
+    public void setInitialState(int totalPassengers) {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": DTEStub: setInitialState: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.DTE_SET_INITIAL_STATE.getMessageCode(), (Object) totalPassengers, null, null);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": DTEStub: setInitialState: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.DTE_SET_INITIAL_STATE.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": DTEStub: setInitialState: Incorrect message type!");
             GenericIO.writelnString(inMessage.toString());
             System.exit(1);
         }

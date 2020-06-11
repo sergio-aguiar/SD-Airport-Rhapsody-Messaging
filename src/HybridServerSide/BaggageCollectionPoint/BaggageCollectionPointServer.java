@@ -4,6 +4,7 @@ import HybridServerSide.ArrivalTerminalTransferQuay.ArrivalTerminalTransferQuay;
 import HybridServerSide.ArrivalTerminalTransferQuay.ArrivalTerminalTransferQuayInterface;
 import HybridServerSide.ArrivalTerminalTransferQuay.ArrivalTerminalTransferQuayProxy;
 import HybridServerSide.ServerCom.ServerCom;
+import HybridServerSide.Stubs.RepositoryStub;
 import genclass.GenericIO;
 
 public class BaggageCollectionPointServer {
@@ -16,23 +17,34 @@ public class BaggageCollectionPointServer {
         BaggageCollectionPointInterface baggageCollectionPointInterface;
         BaggageCollectionPointProxy baggageCollectionPointProxy;
 
+        RepositoryStub repositoryStub;
+
         ServerCom serverCom;
         ServerCom serverComL;
-
-        int totalPassengers;
 
         serverCom = new ServerCom(serverPort);
         serverCom.start();
 
-        // baggageCollectionPoint = new BaggageCollectionPoint();
-        // baggageCollectionPointInterface = new BaggageCollectionPointInterface(baggageCollectionPoint);
+        repositoryStub = new RepositoryStub("localhost", 4008);
+
+        baggageCollectionPoint = new BaggageCollectionPoint(repositoryStub);
+        baggageCollectionPointInterface = new BaggageCollectionPointInterface(baggageCollectionPoint);
 
         GenericIO.writelnString("BaggageCollectionPointServer now listening!");
 
-        while(true) {
-            serverComL = serverCom.accept();
-            // baggageCollectionPointProxy = new BaggageCollectionPointProxy(serverComL, baggageCollectionPointInterface);
+        boolean running = true;
+        while(running) {
+            try {
+                serverComL = serverCom.accept();
+                baggageCollectionPointProxy = new BaggageCollectionPointProxy(serverComL, baggageCollectionPointInterface);
+                baggageCollectionPointProxy.start();
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
         }
+
+        serverCom.end();
+        System.out.println("BCPServer stopped.");
     }
 
 }

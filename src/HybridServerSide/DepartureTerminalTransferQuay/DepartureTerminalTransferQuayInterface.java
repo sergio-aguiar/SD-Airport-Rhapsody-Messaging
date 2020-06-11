@@ -37,13 +37,13 @@ public class DepartureTerminalTransferQuayInterface {
                     throw new MessageException("Argument \"seat\" was given an incorrect value.", inMessage);
                 break;
             default:
-                throw new MessageException("Invalid message type.");
+                throw new MessageException("Invalid message type: " + inMessage.getMessageType());
         }
 
         switch(inMessage.getMessageType()) {
             case 4:
                 int result4 = departureTerminalTransferQuay.parkTheBusAndLetPassOff((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument());
-                outMessage = new Message(Message.MessageType.BD_DTTQ_PARK_THE_BUS_AND_LET_PASS_OFF.getMessageCode(), result4);
+                outMessage = new Message(Message.MessageType.BD_DTTQ_PARK_THE_BUS_AND_LET_PASS_OFF.getMessageCode(), (Object) result4);
                 break;
             case 5:
                 departureTerminalTransferQuay.goToArrivalTerminal();

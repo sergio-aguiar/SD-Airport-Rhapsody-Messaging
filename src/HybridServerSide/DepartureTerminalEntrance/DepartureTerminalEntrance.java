@@ -4,6 +4,7 @@ import ClientSide.Interfaces.DTEPassenger;
 import HybridServerSide.ArrivalTerminalExit.ArrivalTerminalExit;
 import HybridServerSide.Interfaces.DTEforATE;
 import HybridServerSide.Repository.Repository;
+import HybridServerSide.Stubs.ArrivalTerminalExitStub;
 import HybridServerSide.Stubs.RepositoryStub;
 
 import java.util.concurrent.locks.Condition;
@@ -37,7 +38,7 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
     /**
      * The class's instance of the Arrival Terminal Exit.
      */
-    private ArrivalTerminalExit ate;
+    private ArrivalTerminalExitStub ate;
     /**
      * Instance of Repository.
      */
@@ -60,11 +61,12 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
      * DepartureTerminalEntrance constructor.
      * @param repositoryStub A reference to a repository object.
      */
-    public DepartureTerminalEntrance(RepositoryStub repositoryStub) {
+    public DepartureTerminalEntrance(RepositoryStub repositoryStub, ArrivalTerminalExitStub ate) {
         this.reentrantLock = new ReentrantLock(true);
         this.passengerCondition = this.reentrantLock.newCondition();
         this.allSignaled = false;
         this.waitingPassengers = 0;
+        this.ate = ate;
         this.repositoryStub = repositoryStub;
     }
 
@@ -103,13 +105,6 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
         } finally {
             this.reentrantLock.unlock();
         }
-    }
-    /**
-     * Function that sets the reference to a ArrivalTerminalExit object.
-     * @param ate A reference to an ArrivalTerminalExit object.
-     */
-    public void setAte(ArrivalTerminalExit ate) {
-        this.ate = ate;
     }
     /**
      * Function that allows for a transition to a new flight (new plane landing simulation).

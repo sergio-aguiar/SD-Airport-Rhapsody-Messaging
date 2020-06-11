@@ -21,26 +21,27 @@ public class RepositoryServer {
         ServerCom serverCom;
         ServerCom serverComL;
 
-        int flightNumber;
-        int numberOfPassengerLuggageAtThePlane;
-        int busSeatNumber;
-        int totalPassengers;
-        PassengerThread.PassengerAndBagSituations[] passengerSituations;
-        int[] passengerLuggageAtStart;
-        Bag[][][] luggagePerFlight;
-
         serverCom = new ServerCom(serverPort);
         serverCom.start();
 
-        // repository = new Repository(flightNumber, numberOfPassengerLuggageAtThePlane, busSeatNumber, totalPassengers, passengerSituations, passengerLuggageAtStart, luggagePerFlight);
-        // repositoryInterface = new RepositoryInterface(repository);
+        try {
+            repository = new Repository();
+            repositoryInterface = new RepositoryInterface(repository);
 
-        GenericIO.writelnString("RepositoryServer now listening!");
+            GenericIO.writelnString("RepositoryServer now listening!");
 
-        while(true) {
-            serverComL = serverCom.accept();
-            // repositoryProxy = new RepositoryProxy(serverComL, repositoryInterface);
+            boolean running = true;
+            while(running) {
+                serverComL = serverCom.accept();
+                repositoryProxy = new RepositoryProxy(serverComL, repositoryInterface);
+                repositoryProxy.start();
+            }
+        } catch(Exception e) {
+            System.out.print(e.toString());
         }
+
+        serverCom.end();
+        System.out.println("REPServer stopped.");
     }
 
 }

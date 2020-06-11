@@ -26,7 +26,7 @@ public class TemporaryStorageAreaInterface {
             case 30:
                 break;
             default:
-                throw new MessageException("Invalid message type.");
+                throw new MessageException("Invalid message type: " + inMessage.getMessageType());
         }
 
         switch(inMessage.getMessageType()) {

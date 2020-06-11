@@ -32,14 +32,20 @@ public class BaggageCollectionPointInterface {
                 if(((int) inMessage.getFirstArgument()) < 0)
                     throw new MessageException("Argument \"pid\" was given an incorrect value.", inMessage);
                 break;
+            case 58:
+                if(inMessage.isThereNoFirstArgument())
+                    throw new MessageException("Argument \"totalPassengers\" not supplied.", inMessage);
+                if(((int) inMessage.getFirstArgument()) < 0)
+                    throw new MessageException("Argument \"totalPassengers\" was given an incorrect value.", inMessage);
+                break;
             default:
-                throw new MessageException("Invalid message type.");
+                throw new MessageException("Invalid message type: " + inMessage.getMessageType());
         }
 
         switch(inMessage.getMessageType()) {
             case 11:
                 boolean result11 = baggageCollectionPoint.goCollectABag(inMessage.getPassengerID());
-                outMessage = new Message(Message.MessageType.PA_BCP_GO_COLLECT_A_BAG.getMessageCode(), result11);
+                outMessage = new Message(Message.MessageType.PA_BCP_GO_COLLECT_A_BAG.getMessageCode(), (Object) result11);
                 break;
             case 17:
                 baggageCollectionPoint.carryItToAppropriateStore((int) inMessage.getFirstArgument());
@@ -52,6 +58,10 @@ public class BaggageCollectionPointInterface {
             case 27:
                 baggageCollectionPoint.prepareForNextFlight();
                 outMessage = new Message(Message.MessageType.BCP_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), null);
+                break;
+            case 58:
+                baggageCollectionPoint.setInitialState((int) inMessage.getFirstArgument());
+                outMessage = new Message(Message.MessageType.BCP_SET_INITIAL_STATE.getMessageCode(), null);
         }
 
         return (outMessage);

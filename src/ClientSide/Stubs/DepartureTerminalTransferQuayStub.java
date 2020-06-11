@@ -39,7 +39,7 @@ public class DepartureTerminalTransferQuayStub implements DTTQPassenger, DTTQBus
         }
 
         try {
-            outMessage = new Message(Message.MessageType.BD_DTTQ_PARK_THE_BUS_AND_LET_PASS_OFF.getMessageCode(), false, passengersThatArrived, flightNumber);
+            outMessage = new Message(Message.MessageType.BD_DTTQ_PARK_THE_BUS_AND_LET_PASS_OFF.getMessageCode(), false, (Object) passengersThatArrived, (Object) flightNumber);
         } catch(MessageException e) {
             System.out.println("Thread " + Thread.currentThread().getName() + ": DTTQStub: parkTheBusAndLetPassOff: " + e.toString());
         }

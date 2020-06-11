@@ -1,6 +1,7 @@
 package ClientSide.Stubs;
 
 import ClientSide.ClientCom.ClientCom;
+import ClientSide.Extras.Bag;
 import ClientSide.Passenger.PassengerThread;
 import Communication.Message;
 import Communication.MessageException;
@@ -72,6 +73,40 @@ public class RepositoryStub {
 
         if(inMessage.getMessageType() != Message.MessageType.REP_FINAL_REPORT.getMessageCode()) {
             GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": RepositoryStub: finalReport: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+    }
+
+
+    public void setInitialState(int flightNumber, int numberOfPassengerLuggageAtThePlane, int busSeatNumber, int totalPassengers,
+                                PassengerThread.PassengerAndBagSituations[] passengerSituations, int[] passengerLuggageAtStart,
+                                Bag[][][] luggagePerFlight) {
+
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": REPStub: setInitialState: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.REP_SET_INITIAL_STATE.getMessageCode(), flightNumber, numberOfPassengerLuggageAtThePlane, busSeatNumber, totalPassengers, passengerSituations, passengerLuggageAtStart, luggagePerFlight);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": REPStub: setInitialState: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.REP_SET_INITIAL_STATE.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": REPStub: setInitialState: Incorrect message type!");
             GenericIO.writelnString(inMessage.toString());
             System.exit(1);
         }

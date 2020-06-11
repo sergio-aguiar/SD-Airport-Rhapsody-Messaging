@@ -294,4 +294,34 @@ public class ArrivalTerminalTransferQuayStub implements ATTQPassenger, ATTQBusDr
         }
         clientCom.close();
     }
+
+    public void setInitialState(int totalPassengers, int busSeatNumber) {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: setInitialState: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.ATTQ_SET_INITIAL_STATE.getMessageCode(), (Object) totalPassengers, busSeatNumber, null);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": ATTQStub: setInitialState: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.ATTQ_SET_INITIAL_STATE.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ATTQStub: setInitialState: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+    }
 }

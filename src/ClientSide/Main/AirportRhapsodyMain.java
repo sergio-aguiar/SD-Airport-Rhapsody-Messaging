@@ -104,19 +104,13 @@ public class AirportRhapsodyMain {
         Arrays.fill(totalLuggagePerFlight, 0);
         generateStartingData();
 
-
-
-/*        ArrivalLounge arrivalLoungeMonitor = new ArrivalLounge(repositoryMonitor, n, k, passengerBags);
-        ArrivalTerminalExit arrivalTerminalExitMonitor = new ArrivalTerminalExit(repositoryMonitor, n);
-        ArrivalTerminalTransferQuay arrivalTerminalTransferQuayMonitor = new ArrivalTerminalTransferQuay(repositoryMonitor, n, t, arrivalLoungeMonitor);
-        BaggageCollectionPoint baggageCollectionPointMonitor = new BaggageCollectionPoint(repositoryMonitor, n);
-        BaggageReclaimOffice baggageReclaimOfficeMonitor = new BaggageReclaimOffice(repositoryMonitor);
-        DepartureTerminalEntrance departureTerminalEntranceMonitor = new DepartureTerminalEntrance(repositoryMonitor, n);
-        DepartureTerminalTransferQuay departureTerminalTransferQuayMonitor = new DepartureTerminalTransferQuay(repositoryMonitor);
-        TemporaryStorageArea temporaryStorageAreaMonitor = new TemporaryStorageArea(repositoryMonitor);
-
-        arrivalTerminalExitMonitor.setDte(departureTerminalEntranceMonitor);
-        departureTerminalEntranceMonitor.setAte(arrivalTerminalExitMonitor);*/
+        repositoryStub.setInitialState(0, totalLuggagePerFlight[0], t, n, passengerSituations[0],
+                passengerLuggage[0], passengerBags);
+        arrivalLoungeStub.setInitialState(n, k, passengerBags);
+        arrivalTerminalExitStub.setInitialState(n);
+        arrivalTerminalTransferQuayStub.setInitialState(n, t);
+        baggageCollectionPointStub.setInitialState(n);
+        departureTerminalEntranceStub.setInitialState(n);
 
         BusDriverThread busDriver = new BusDriverThread(0, arrivalTerminalTransferQuayStub, departureTerminalTransferQuayStub);
         PorterThread porter = new PorterThread(0, arrivalLoungeStub, baggageCollectionPointStub, temporaryStorageAreaStub);

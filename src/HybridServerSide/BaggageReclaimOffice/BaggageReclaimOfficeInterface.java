@@ -22,7 +22,7 @@ public class BaggageReclaimOfficeInterface {
             if (((int) inMessage.getFirstArgument()) < 0)
                 throw new MessageException("Argument \"missingBags\" was given an incorrect value.", inMessage);
         } else {
-            throw new MessageException("Invalid message type.");
+            throw new MessageException("Invalid message type: " + inMessage.getMessageType());
         }
 
         if (inMessage.getMessageType() == 12) {

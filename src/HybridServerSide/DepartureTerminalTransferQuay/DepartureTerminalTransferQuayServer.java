@@ -4,6 +4,7 @@ import HybridServerSide.DepartureTerminalEntrance.DepartureTerminalEntrance;
 import HybridServerSide.DepartureTerminalEntrance.DepartureTerminalEntranceInterface;
 import HybridServerSide.DepartureTerminalEntrance.DepartureTerminalEntranceProxy;
 import HybridServerSide.ServerCom.ServerCom;
+import HybridServerSide.Stubs.RepositoryStub;
 import genclass.GenericIO;
 
 public class DepartureTerminalTransferQuayServer {
@@ -16,21 +17,33 @@ public class DepartureTerminalTransferQuayServer {
         DepartureTerminalTransferQuayInterface departureTerminalTransferQuayInterface;
         DepartureTerminalTransferQuayProxy departureTerminalTransferQuayProxy;
 
+        RepositoryStub repositoryStub;
+
         ServerCom serverCom;
         ServerCom serverComL;
 
         serverCom = new ServerCom(serverPort);
         serverCom.start();
 
-        // departureTerminalTransferQuay = new DepartureTerminalTransferQuay();
-        // departureTerminalTransferQuayInterface = new DepartureTerminalTransferQuayInterface(departureTerminalTransferQuay);
+        repositoryStub = new RepositoryStub("localhost", 4008);
+
+        departureTerminalTransferQuay = new DepartureTerminalTransferQuay(repositoryStub);
+        departureTerminalTransferQuayInterface = new DepartureTerminalTransferQuayInterface(departureTerminalTransferQuay);
 
         GenericIO.writelnString("DepartureTerminalTransferQuayServer now listening!");
 
-        while(true) {
-            serverComL = serverCom.accept();
-            // departureTerminalTransferQuayProxy = new DepartureTerminalTransferQuayProxy(serverComL, departureTerminalTransferQuayInterface);
+        boolean running = true;
+        while(running) {
+            try {
+                serverComL = serverCom.accept();
+                departureTerminalTransferQuayProxy = new DepartureTerminalTransferQuayProxy(serverComL, departureTerminalTransferQuayInterface);
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
         }
+
+        serverCom.end();
+        System.out.println("DTTQServer stopped.");
     }
 
 }

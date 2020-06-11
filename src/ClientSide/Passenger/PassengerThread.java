@@ -174,5 +174,6 @@ public class PassengerThread extends Thread {
             this.dttqPassenger.leaveTheBus(this.pid, this.busSeat);
             this.dtePassenger.prepareNextLeg(this.pid);
         }
+        System.out.println("PASSENGER FINISHED: " + this.pid);
     }
 }

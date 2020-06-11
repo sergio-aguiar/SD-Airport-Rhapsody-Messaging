@@ -163,4 +163,34 @@ public class BaggageCollectionPointStub implements BCPPassenger, BCPPorter {
         }
         clientCom.close();
     }
+
+    public void setInitialState(int totalPassengers) {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": BCPStub: setInitialState: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.BCP_SET_INITIAL_STATE.getMessageCode(), (Object) totalPassengers, null, null);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": BCPStub: setInitialState: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.BCP_SET_INITIAL_STATE.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": BCPStub: setInitialState: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+    }
 }

@@ -6,6 +6,7 @@ import HybridServerSide.Repository.Repository;
 import HybridServerSide.Repository.RepositoryInterface;
 import HybridServerSide.Repository.RepositoryProxy;
 import HybridServerSide.ServerCom.ServerCom;
+import HybridServerSide.Stubs.RepositoryStub;
 import genclass.GenericIO;
 
 public class TemporaryStorageAreaServer {
@@ -18,21 +19,34 @@ public class TemporaryStorageAreaServer {
         TemporaryStorageAreaInterface temporaryStorageAreaInterface;
         TemporaryStorageAreaProxy temporaryStorageAreaProxy;
 
+        RepositoryStub repositoryStub;
+
         ServerCom serverCom;
         ServerCom serverComL;
 
         serverCom = new ServerCom(serverPort);
         serverCom.start();
 
-        // temporaryStorageArea = new TemporaryStorageArea();
-        // temporaryStorageAreaInterface = new TemporaryStorageAreaInterface(temporaryStorageArea);
+        repositoryStub = new RepositoryStub("localhost", 4008);
+
+        temporaryStorageArea = new TemporaryStorageArea(repositoryStub);
+        temporaryStorageAreaInterface = new TemporaryStorageAreaInterface(temporaryStorageArea);
 
         GenericIO.writelnString("TemporaryStorageAreaServer now listening!");
 
-        while(true) {
-            serverComL = serverCom.accept();
-            // temporaryStorageAreaProxy = new TemporaryStorageAreaProxy(serverComL, temporaryStorageAreaProxy;
+        boolean running = true;
+        while(running) {
+            try {
+                serverComL = serverCom.accept();
+                temporaryStorageAreaProxy = new TemporaryStorageAreaProxy(serverComL, temporaryStorageAreaInterface);
+                temporaryStorageAreaProxy.start();
+            } catch (Exception e) {
+                System.out.println(e.toString());
+            }
         }
+
+        serverCom.end();
+        System.out.println("TSAServer stopped.");
     }
 
 }

@@ -299,7 +299,7 @@ public class RepositoryStub {
         }
 
         try {
-            outMessage = new Message(Message.MessageType.REP_PASSENGER_GETTING_INTO_THE_WAITING_QUEUE.getMessageCode(), false, true, (Object) pid);
+            outMessage = new Message(Message.MessageType.REP_PASSENGER_TAKING_A_BUS.getMessageCode(), false, true, (Object) pid);
         } catch(MessageException e) {
             System.out.println("Thread " + Thread.currentThread().getName() + ": REPStub: passengerTakingABus: " + e.toString());
         }
@@ -307,7 +307,7 @@ public class RepositoryStub {
         clientCom.writeObject(outMessage);
         inMessage = (Message) clientCom.readObject();
 
-        if(inMessage.getMessageType() != Message.MessageType.REP_PASSENGER_GETTING_INTO_THE_WAITING_QUEUE.getMessageCode()) {
+        if(inMessage.getMessageType() != Message.MessageType.REP_PASSENGER_TAKING_A_BUS.getMessageCode()) {
             GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": REPStub: passengerTakingABus: Incorrect message type!");
             GenericIO.writelnString(inMessage.toString());
             System.exit(1);

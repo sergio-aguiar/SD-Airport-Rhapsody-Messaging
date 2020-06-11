@@ -4,6 +4,7 @@ import ClientSide.Interfaces.ATEPassenger;
 import HybridServerSide.DepartureTerminalEntrance.DepartureTerminalEntrance;
 import HybridServerSide.Interfaces.ATEforDTE;
 import HybridServerSide.Repository.Repository;
+import HybridServerSide.Stubs.DepartureTerminalEntranceStub;
 import HybridServerSide.Stubs.RepositoryStub;
 
 import java.util.concurrent.locks.Condition;
@@ -37,7 +38,7 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
     /**
      * The class's instance of the Departure Terminal Entrance.
      */
-    private DepartureTerminalEntrance dte;
+    private DepartureTerminalEntranceStub dte;
     /**
      * The class's RepositoryStub instance.
      */
@@ -57,10 +58,11 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
     /**
      * ArrivalTerminalExit constructor.
      */
-    public ArrivalTerminalExit(RepositoryStub repositoryStub) {
+    public ArrivalTerminalExit(RepositoryStub repositoryStub, DepartureTerminalEntranceStub dte) {
         this.reentrantLock = new ReentrantLock(true);
         this.passengerCondition = this.reentrantLock.newCondition();
         this.allSignaled = false;
+        this.dte = dte;
         this.repositoryStub = repositoryStub;
     }
 
@@ -68,13 +70,6 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
         this.totalPassengers = totalPassengers;
     }
 
-    /**
-     * Function that sets the reference to a DepartureTerminalEntrance object.
-     * @param dte A reference to a DepartureTerminalEntrance object.
-     */
-    public void setDte(DepartureTerminalEntrance dte) {
-        this.dte = dte;
-    }
     /**
      * Function that gets the number of passengers waiting for the last one to arrive at their final destination inside the airport.
      * @return The number of passengers waiting for the last one to arrive at their final destination inside the airport.

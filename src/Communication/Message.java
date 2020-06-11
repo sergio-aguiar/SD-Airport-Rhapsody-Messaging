@@ -59,7 +59,15 @@ public class Message implements Serializable {
         REP_BUS_DRIVER_GOING_TO_ARRIVAL_TERMINAL(49),
         REP_PASSENGER_LEAVING_THE_BUS(50),
         REP_BUS_DRIVER_PARKING_THE_BUS_AND_LETTING_PASS_OFF(51),
-        REP_PORTER_CARRY_BAG_TO_TEMPORARY_STORAGE_AREA(52);
+        REP_PORTER_CARRY_BAG_TO_TEMPORARY_STORAGE_AREA(52),
+        AL_PASSENGERS_NO_LONGER_NEED_THE_BUS(53),
+        AL_INCREMENT_CROSS_FLIGHT_PASSENGER_COUNT(54),
+        AL_SET_INITIAL_STATE(55),
+        ATE_SET_INITIAL_STATE(56),
+        ATTQ_SET_INITIAL_STATE(57),
+        BCP_SET_INITIAL_STATE(58),
+        DTE_SET_INITIAL_STATE(59),
+        REP_SET_INITIAL_STATE(60);
 
         private int messageCode;
 
@@ -90,15 +98,20 @@ public class Message implements Serializable {
     private int currentIteration;
     private Object firstArgument;
     private Object secondArgument;
+    private Object thirdArgument;
+    private Object fourthArgument;
+    private Object fifthArgument;
+    private Object sixthArgument;
+    private Object seventhArgument;
     private Object returnInfo;
 
     public Message(int messageType, int passengerID) throws MessageException {
-        if(messageType < 0 || messageType > 52)
-            throw new MessageException("Non-existent message type.");
+        if(messageType < 0 || messageType > 60)
+            throw new MessageException("Non-existent message type: " + messageType);
         if(passengerID < 0)
-            throw new MessageException("Invalid passengerID given.");
+            throw new MessageException("Invalid passengerID given: " + passengerID);
         if(messageType < 6 || messageType > 14)
-            throw new MessageException("Invalid message type for a Passenger message.");
+            throw new MessageException("Invalid message type for a Passenger message: " + messageType);
 
         this.messageType = messageType;
         this.passengerID = passengerID;
@@ -107,16 +120,21 @@ public class Message implements Serializable {
         this.currentIteration = -1;
         this.firstArgument = null;
         this.secondArgument = null;
+        this.thirdArgument = null;
+        this.fourthArgument = null;
+        this.fifthArgument = null;
+        this.sixthArgument = null;
+        this.seventhArgument = null;
         this.returnInfo = null;
     }
 
     public Message(int messageType, int passengerID, Object firstArgument) throws MessageException {
-        if(messageType < 0 || messageType > 52)
-            throw new MessageException("Non-existent message type.");
+        if(messageType < 0 || messageType > 60)
+            throw new MessageException("Non-existent message type: " + messageType);
         if(passengerID < 0)
-            throw new MessageException("Invalid passengerID given.");
+            throw new MessageException("Invalid passengerID given: " + passengerID);
         if(messageType < 6 || messageType > 14)
-            throw new MessageException("Invalid message type for a Passenger message.");
+            throw new MessageException("Invalid message type for a Passenger message: " + messageType);
 
         this.messageType = messageType;
         this.passengerID = passengerID;
@@ -125,16 +143,21 @@ public class Message implements Serializable {
         this.currentIteration = -1;
         this.firstArgument = firstArgument;
         this.secondArgument = null;
+        this.thirdArgument = null;
+        this.fourthArgument = null;
+        this.fifthArgument = null;
+        this.sixthArgument = null;
+        this.seventhArgument = null;
         this.returnInfo = null;
     }
 
     public Message(int messageType, int passengerID, Object firstArgument, Object secondArgument) throws MessageException {
-        if(messageType < 0 || messageType > 52)
-            throw new MessageException("Non-existent message type.");
+        if(messageType < 0 || messageType > 60)
+            throw new MessageException("Non-existent message type: " + messageType);
         if(passengerID < 0)
-            throw new MessageException("Invalid passengerID given.");
+            throw new MessageException("Invalid passengerID given: " + passengerID);
         if(messageType < 6 || messageType > 14)
-            throw new MessageException("Invalid message type for a Passenger message.");
+            throw new MessageException("Invalid message type for a Passenger message: " + messageType);
 
         this.messageType = messageType;
         this.passengerID = passengerID;
@@ -143,16 +166,21 @@ public class Message implements Serializable {
         this.currentIteration = -1;
         this.firstArgument = firstArgument;
         this.secondArgument = secondArgument;
+        this.thirdArgument = null;
+        this.fourthArgument = null;
+        this.fifthArgument = null;
+        this.sixthArgument = null;
+        this.seventhArgument = null;
         this.returnInfo = null;
     }
 
     public Message(int messageType, boolean isPorterMessage) throws MessageException {
-        if(messageType < 0 || messageType > 52)
-            throw new MessageException("Non-existent message type.");
+        if(messageType < 0 || messageType > 60)
+            throw new MessageException("Non-existent message type: " + messageType);
         if(!isPorterMessage && messageType > 5)
-            throw new MessageException("Invalid message type for a Bus Driver message.");
+            throw new MessageException("Invalid message type for a Bus Driver message: " + messageType);
         if(isPorterMessage && (messageType < 15 || messageType > 19))
-            throw new MessageException("Invalid message type for a Porter message.");
+            throw new MessageException("Invalid message type for a Porter message: " + messageType);
 
         this.messageType = messageType;
         this.passengerID = -1;
@@ -161,16 +189,21 @@ public class Message implements Serializable {
         this.currentIteration = -1;
         this.firstArgument = null;
         this.secondArgument = null;
+        this.thirdArgument = null;
+        this.fourthArgument = null;
+        this.fifthArgument = null;
+        this.sixthArgument = null;
+        this.seventhArgument = null;
         this.returnInfo = null;
     }
 
     public Message(int messageType, boolean isPorterMessage, Object firstArgument) throws MessageException {
-        if(messageType < 0 || messageType > 52)
-            throw new MessageException("Non-existent message type.");
+        if(messageType < 0 || messageType > 60)
+            throw new MessageException("Non-existent message type: " + messageType);
         if(!isPorterMessage && messageType > 5)
-            throw new MessageException("Invalid message type for a Bus Driver message.");
+            throw new MessageException("Invalid message type for a Bus Driver message: " + messageType);
         if(isPorterMessage && (messageType < 15 || messageType > 19))
-            throw new MessageException("Invalid message type for a Porter message.");
+            throw new MessageException("Invalid message type for a Porter message: " + messageType);
 
         this.messageType = messageType;
         this.passengerID = -1;
@@ -179,16 +212,21 @@ public class Message implements Serializable {
         this.currentIteration = -1;
         this.firstArgument = firstArgument;
         this.secondArgument = null;
+        this.thirdArgument = null;
+        this.fourthArgument = null;
+        this.fifthArgument = null;
+        this.sixthArgument = null;
+        this.seventhArgument = null;
         this.returnInfo = null;
     }
 
     public Message(int messageType, boolean isPorterMessage, Object firstArgument, Object secondArgument) throws MessageException {
-        if(messageType < 0 || messageType > 52)
-            throw new MessageException("Non-existent message type.");
+        if(messageType < 0 || messageType > 60)
+            throw new MessageException("Non-existent message type: " + messageType);
         if(!isPorterMessage && messageType > 5)
-            throw new MessageException("Invalid message type for a Bus Driver message.");
+            throw new MessageException("Invalid message type for a Bus Driver message: " + messageType);
         if(isPorterMessage && (messageType < 15 || messageType > 19))
-            throw new MessageException("Invalid message type for a Porter message.");
+            throw new MessageException("Invalid message type for a Porter message: " + messageType);
 
         this.messageType = messageType;
         this.passengerID = -1;
@@ -197,22 +235,27 @@ public class Message implements Serializable {
         this.currentIteration = -1;
         this.firstArgument = firstArgument;
         this.secondArgument = secondArgument;
+        this.thirdArgument = null;
+        this.fourthArgument = null;
+        this.fifthArgument = null;
+        this.sixthArgument = null;
+        this.seventhArgument = null;
         this.returnInfo = null;
     }
 
     public Message(int messageType, boolean isPorterMessage, boolean isAreaRequest) throws MessageException {
-        if(messageType < 0 || messageType > 52)
-            throw new MessageException("Non-existent message type.");
+        if(messageType < 0 || messageType > 60)
+            throw new MessageException("Non-existent message type: " + messageType);
         if(isAreaRequest) {
             if(isPorterMessage)
                 throw new MessageException("A message can not be both a porter and an area message.");
             if(messageType < 20)
-                throw new MessageException("Invalid message type for an area message.");
+                throw new MessageException("Invalid message type for an area message: " + messageType);
         } else {
             if(!isPorterMessage && messageType > 5)
-                throw new MessageException("Invalid message type for a Bus Driver message.");
+                throw new MessageException("Invalid message type for a Bus Driver message: " + messageType);
             if(isPorterMessage && (messageType < 15 || messageType > 19))
-                throw new MessageException("Invalid message type for a Porter message.");
+                throw new MessageException("Invalid message type for a Porter message: " + messageType);
         }
 
         this.messageType = messageType;
@@ -222,22 +265,27 @@ public class Message implements Serializable {
         this.currentIteration = -1;
         this.firstArgument = null;
         this.secondArgument = null;
+        this.thirdArgument = null;
+        this.fourthArgument = null;
+        this.fifthArgument = null;
+        this.sixthArgument = null;
+        this.seventhArgument = null;
         this.returnInfo = null;
     }
 
     public Message(int messageType, boolean isPorterMessage, boolean isAreaRequest, Object firstArgument) throws MessageException {
-        if(messageType < 0 || messageType > 52)
-            throw new MessageException("Non-existent message type.");
+        if(messageType < 0 || messageType > 60)
+            throw new MessageException("Non-existent message type: " + messageType);
         if(isAreaRequest) {
             if(isPorterMessage)
                 throw new MessageException("A message can not be both a porter and an area message.");
             if(messageType < 20)
-                throw new MessageException("Invalid message type for an area message.");
+                throw new MessageException("Invalid message type for an area message: " + messageType);
         } else {
             if(!isPorterMessage && messageType > 5)
-                throw new MessageException("Invalid message type for a Bus Driver message.");
+                throw new MessageException("Invalid message type for a Bus Driver message: " + messageType);
             if(isPorterMessage && (messageType < 15 || messageType > 19))
-                throw new MessageException("Invalid message type for a Porter message.");
+                throw new MessageException("Invalid message type for a Porter message: " + messageType);
         }
 
         this.messageType = messageType;
@@ -247,22 +295,27 @@ public class Message implements Serializable {
         this.currentIteration = -1;
         this.firstArgument = firstArgument;
         this.secondArgument = null;
+        this.thirdArgument = null;
+        this.fourthArgument = null;
+        this.fifthArgument = null;
+        this.sixthArgument = null;
+        this.seventhArgument = null;
         this.returnInfo = null;
     }
 
     public Message(int messageType, boolean isPorterMessage, boolean isAreaRequest, Object firstArgument, Object secondArgument) throws MessageException {
-        if(messageType < 0 || messageType > 52)
-            throw new MessageException("Non-existent message type.");
+        if(messageType < 0 || messageType > 60)
+            throw new MessageException("Non-existent message type: " + messageType);
         if(isAreaRequest) {
             if(isPorterMessage)
                 throw new MessageException("A message can not be both a porter and an area message.");
             if(messageType < 20)
-                throw new MessageException("Invalid message type for an area message.");
+                throw new MessageException("Invalid message type for an area message: " + messageType);
         } else {
             if(!isPorterMessage && messageType > 5)
-                throw new MessageException("Invalid message type for a Bus Driver message.");
+                throw new MessageException("Invalid message type for a Bus Driver message: " + messageType);
             if(isPorterMessage && (messageType < 15 || messageType > 19))
-                throw new MessageException("Invalid message type for a Porter message.");
+                throw new MessageException("Invalid message type for a Porter message: " + messageType);
         }
 
         this.messageType = messageType;
@@ -272,50 +325,60 @@ public class Message implements Serializable {
         this.currentIteration = -1;
         this.firstArgument = firstArgument;
         this.secondArgument = secondArgument;
+        this.thirdArgument = null;
+        this.fourthArgument = null;
+        this.fifthArgument = null;
+        this.sixthArgument = null;
+        this.seventhArgument = null;
         this.returnInfo = null;
     }
 
-    public Message(int messageType, int passengerID, int currentIteration) throws MessageException {
-        if(currentIteration < 0)
-            throw new MessageException("Invalid iteration value. The value must not be negative.");
-        if(messageType < 0 || messageType > 52)
+    public Message(int messageType, Object argument1, Object argument2, Object argument3) throws MessageException {
+        if(messageType < 0 || messageType > 60)
             throw new MessageException("Non-existent message type.");
-        if(passengerID < 0)
-            throw new MessageException("Invalid passengerID given.");
-        if(messageType < 6 || messageType > 14)
-            throw new MessageException("Invalid message type for a Passenger message.");
-
-        this.messageType = messageType;
-        this.passengerID = passengerID;
-        this.isPorterMessage = false;
-        this.currentIteration = currentIteration;
-        this.firstArgument = null;
-        this.secondArgument = null;
-        this.returnInfo = null;
-    }
-
-    public Message(int messageType, boolean isPorterMessage, int currentIteration) throws MessageException {
-        if(currentIteration < 0)
-            throw new MessageException("Invalid iteration value. The value must not be negative.");
-        if(messageType < 0 || messageType > 52)
-            throw new MessageException("Non-existent message type.");
-        if(!isPorterMessage && messageType > 5)
-            throw new MessageException("Invalid message type for a Bus Driver message.");
-        if(isPorterMessage && (messageType < 15 || messageType > 19))
-            throw new MessageException("Invalid message type for a Porter message.");
+        if(messageType < 55)
+            throw new MessageException("Invalid message type for an initial state message: " + messageType);
 
         this.messageType = messageType;
         this.passengerID = -1;
-        this.isPorterMessage = isPorterMessage;
-        this.currentIteration = currentIteration;
-        this.firstArgument = null;
-        this.secondArgument = null;
+        this.isPorterMessage = false;
+        this.isAreaRequest = true;
+        this.currentIteration = -1;
+        this.firstArgument = argument1;
+        this.secondArgument = argument2;
+        this.thirdArgument = argument3;
+        this.fourthArgument = null;
+        this.fifthArgument = null;
+        this.sixthArgument = null;
+        this.seventhArgument = null;
+        this.returnInfo = null;
+    }
+
+    public Message(int messageType, Object argument1, Object argument2, Object argument3,
+                   Object argument4, Object argument5, Object argument6, Object argument7) throws MessageException {
+        if(messageType < 0 || messageType > 60)
+            throw new MessageException("Non-existent message type.");
+        if(messageType != 60)
+            throw new MessageException("Invalid message type for a repository initial state message: " + messageType);
+
+        this.messageType = messageType;
+        this.passengerID = -1;
+        this.isPorterMessage = false;
+        this.isAreaRequest = true;
+        this.currentIteration = -1;
+        this.firstArgument = argument1;
+        this.secondArgument = argument2;
+        this.thirdArgument = argument3;
+        this.fourthArgument = argument4;
+        this.fifthArgument = argument5;
+        this.sixthArgument = argument6;
+        this.seventhArgument = argument7;
         this.returnInfo = null;
     }
 
     public Message(int messageType, Object returnInfo) throws MessageException {
-        if(messageType < 0 || messageType > 52)
-            throw new MessageException("Non-existent message type.");
+        if(messageType < 0 || messageType > 60)
+            throw new MessageException("Non-existent message type: " + messageType);
 
         this.messageType = messageType;
         this.passengerID = -1;
@@ -323,6 +386,11 @@ public class Message implements Serializable {
         this.currentIteration = -1;
         this.firstArgument = null;
         this.secondArgument = null;
+        this.thirdArgument = null;
+        this.fourthArgument = null;
+        this.fifthArgument = null;
+        this.sixthArgument = null;
+        this.seventhArgument = null;
         this.returnInfo = returnInfo;
     }
 
@@ -354,6 +422,26 @@ public class Message implements Serializable {
         return this.secondArgument;
     }
 
+    public Object getThirdArgument() {
+        return this.thirdArgument;
+    }
+
+    public Object getFourthArgument() {
+        return this.fourthArgument;
+    }
+
+    public Object getFifthArgument() {
+        return this.fifthArgument;
+    }
+
+    public Object getSixthArgument() {
+        return this.sixthArgument;
+    }
+
+    public Object getSeventhArgument() {
+        return this.seventhArgument;
+    }
+
     public Object getReturnInfo() {
         return this.returnInfo;
     }
@@ -364,6 +452,26 @@ public class Message implements Serializable {
 
     public boolean isThereNoSecondArgument() {
         return this.secondArgument == null;
+    }
+
+    public boolean isThereNoThirdArgument() {
+        return this.thirdArgument == null;
+    }
+
+    public boolean isThereNoFourthArgument() {
+        return this.fourthArgument == null;
+    }
+
+    public boolean isThereNoFifthArgument() {
+        return this.fifthArgument == null;
+    }
+
+    public boolean isThereNoSixthArgument() {
+        return this.sixthArgument == null;
+    }
+
+    public boolean isThereNoSeventhArgument() {
+        return this.seventhArgument == null;
     }
 
     public boolean isThereNoReturnInfo() {
@@ -380,6 +488,11 @@ public class Message implements Serializable {
                 ", currentIteration=" + this.currentIteration +
                 ", firstArgument=" + this.firstArgument +
                 ", secondArgument=" + this.secondArgument +
+                ", thirdArgument=" + this.thirdArgument +
+                ", fourthArgument=" + this.fourthArgument +
+                ", fifthArgument=" + this.fifthArgument +
+                ", sixthArgument=" + this.sixthArgument +
+                ", seventhArgument=" + this.seventhArgument +
                 ", returnInfo=" + this.returnInfo +
                 '}';
     }

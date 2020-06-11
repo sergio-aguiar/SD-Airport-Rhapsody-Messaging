@@ -1,5 +1,6 @@
 package HybridServerSide.ArrivalLounge;
 
+import ClientSide.Extras.Bag;
 import Communication.Message;
 import Communication.MessageException;
 
@@ -26,9 +27,23 @@ public class ArrivalLoungeInterface {
             case 15:
             case 16:
             case 24:
+            case 53:
+            case 54:
+                break;
+            case 55:
+                if(inMessage.isThereNoFirstArgument())
+                    throw new MessageException("Argument \"totalPassengers\" not supplied.", inMessage);
+                if((int) inMessage.getFirstArgument() < 1)
+                    throw new MessageException("Argument \"totalPassengers\" was given an incorrect value.", inMessage);
+                if(inMessage.isThereNoSecondArgument())
+                    throw new MessageException("Argument \"totalFlights\" not supplied.", inMessage);
+                if((int) inMessage.getSecondArgument() < 1)
+                    throw new MessageException("Argument \"totalFlights\" was given an incorrect value.", inMessage);
+                if(inMessage.isThereNoThirdArgument())
+                    throw new MessageException("Argument \"luggagePerFlight\" not supplied.", inMessage);
                 break;
             default:
-                throw new MessageException("Invalid message type.");
+                throw new MessageException("Invalid message type: " + inMessage.getMessageType());
         }
 
         switch(inMessage.getMessageType()) {
@@ -42,7 +57,7 @@ public class ArrivalLoungeInterface {
                 break;
             case 15:
                 boolean result15 = arrivalLounge.takeARest();
-                outMessage = new Message(Message.MessageType.PO_AL_TAKE_A_REST.getMessageCode(), result15);
+                outMessage = new Message(Message.MessageType.PO_AL_TAKE_A_REST.getMessageCode(), (Object) result15);
                 break;
             case 16:
                 String result16 = arrivalLounge.tryToCollectABag();
@@ -51,6 +66,18 @@ public class ArrivalLoungeInterface {
             case 24:
                 arrivalLounge.prepareForNextFlight();
                 outMessage = new Message(Message.MessageType.AL_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), null);
+                break;
+            case 53:
+                boolean result53 = arrivalLounge.passengersNoLongerNeedTheBus();
+                outMessage = new Message(Message.MessageType.AL_PASSENGERS_NO_LONGER_NEED_THE_BUS.getMessageCode(), (Object) result53);
+                break;
+            case 54:
+                arrivalLounge.incrementCrossFlightPassengerCount();
+                outMessage = new Message(Message.MessageType.AL_INCREMENT_CROSS_FLIGHT_PASSENGER_COUNT.getMessageCode(), null);
+                break;
+            case 55:
+                arrivalLounge.setInitialState((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument(), (Bag[][][]) inMessage.getThirdArgument());
+                outMessage = new Message(Message.MessageType.AL_SET_INITIAL_STATE.getMessageCode(), null);
         }
 
         return (outMessage);
