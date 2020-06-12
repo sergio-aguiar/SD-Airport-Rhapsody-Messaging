@@ -6,9 +6,16 @@ import ClientSide.Interfaces.ALPorter;
 import HybridServerSide.Repository.Repository;
 import HybridServerSide.Stubs.RepositoryStub;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Stack;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Arrival Lounge: Where the Passenger arrives and the Porter awaits a plane to begin working.
  * Used by PORTER and PASSENGER.
@@ -59,6 +66,16 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
     /**
      * The class's Repository instance.
      */
+
+    /**
+     * The class's FIle instance.
+     */
+    private File logFile;
+    /**
+     * The class's BufferedWriter instance.
+     */
+    private BufferedWriter writer;
+
     private final RepositoryStub repositoryStub;
     /**
      * ArrivalLounge constructor.
@@ -87,19 +104,33 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
     public ArrivalLounge(RepositoryStub repositoryStub) {
         this.reentrantLock = new ReentrantLock();
         this.porterCondition = this.reentrantLock.newCondition();
+        this.maxCrossFlightPassengers = 0;
         this.crossFlightPassengerCount = 0;
         this.passengersThatArrived = 0;
         this.flightNumber = 0;
         this.bagsInThePlane = new Stack<>();
         this.repositoryStub = repositoryStub;
+        
+        try {
+            this.logStart();
+        } catch(Exception e) {
+            this.log(e.toString());
+        }
     }
 
     public void setInitialState(int totalPassengers, int totalFlights, Bag[][][] luggagePerFlight) {
-        this.maxCrossFlightPassengers = totalFlights * totalPassengers;
-        this.totalPassengers = totalPassengers;
-        this.totalFlights = totalFlights;
-        this.luggagePerFlight = luggagePerFlight;
-        this.bagArrayToStack(0);
+        this.reentrantLock.lock();
+        try {
+            this.maxCrossFlightPassengers = totalFlights * totalPassengers;
+            this.totalPassengers = totalPassengers;
+            this.totalFlights = totalFlights;
+            this.luggagePerFlight = luggagePerFlight;
+            this.bagArrayToStack(0);
+        } catch (Exception e) {
+            this.log("AL: setInitialState: " + e.toString());
+        } finally {
+            this.reentrantLock.unlock();
+        }
     }
 
     /**
@@ -116,9 +147,16 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
      * Function that allows for a transition to a new flight (new plane landing simulation).
      */
     public void prepareForNextFlight() {
-        this.passengersThatArrived = 0;
-        this.flightNumber++;
-        this.bagArrayToStack(this.flightNumber);
+        this.reentrantLock.lock();
+        try {
+            this.passengersThatArrived = 0;
+            this.flightNumber++;
+            this.bagArrayToStack(this.flightNumber);
+        } catch (Exception e) {
+            this.log("AL: prepareForNextFlight: " + e.toString());
+        } finally {
+            this.reentrantLock.unlock();
+        }
     }
     /**
      * Function that verifies if any more passengers in the future need the bus driver's services.
@@ -130,10 +168,11 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         try {
             maxReached = this.maxCrossFlightPassengers == this.crossFlightPassengerCount;
         } catch (Exception e) {
-            System.out.println("AL: incrementCrossFlightPassengerCount: " + e.toString());
+            this.log("AL: incrementCrossFlightPassengerCount: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
+        if(this.maxCrossFlightPassengers == 0) maxReached = false;
         return maxReached;
     }
     /**
@@ -144,7 +183,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         try {
             this.crossFlightPassengerCount++;
         } catch (Exception e) {
-            System.out.println("AL: incrementCrossFlightPassengerCount: " + e.toString());
+            this.log("AL: incrementCrossFlightPassengerCount: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
@@ -161,7 +200,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
             this.repositoryStub.porterInitiated();
             if(!done) this.porterCondition.await();
         } catch (Exception e) {
-            System.out.println("AL: takeARest: " + e.toString());
+            this.log("AL: takeARest: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
@@ -181,7 +220,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
             if(situation.equals("FDT")) this.incrementCrossFlightPassengerCount();
             if(this.passengersThatArrived == this.totalPassengers) this.porterCondition.signal();
         } catch (Exception e) {
-            System.out.println("AL: whatShouldIDo: " + e.toString());
+            this.log("AL: whatShouldIDo: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
@@ -201,7 +240,7 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
             }
             this.repositoryStub.porterTryCollectingBagFromPlane(false);
         } catch (Exception e) {
-            System.out.println("AL: tryToCollectABag: " + e.toString());
+            this.log("AL: tryToCollectABag: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
@@ -217,7 +256,37 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         try {
             this.repositoryStub.passengerGoingToCollectABag(pid);
         } catch (Exception e) {
-            System.out.println("AL: goCollectABag: " + e.toString());
+            this.log("AL: goCollectABag: " + e.toString());
+        } finally {
+            this.reentrantLock.unlock();
+        }
+    }
+
+    private void logStart() throws IOException {
+        // open data stream to log file
+        this.logFile = new File("logFile_AL_" + System.nanoTime() + ".txt");
+        this.writer = new BufferedWriter(new FileWriter(this.logFile));
+    }
+    /**
+     * Function that closes the BufferedWriter instance.
+     */
+    private void close() {
+        try {
+            this.writer.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    /**
+     * Function that writes the current info onto the log file.
+     */
+    private void log(String logString) {
+        this.reentrantLock.lock();
+        try {
+            this.writer.write((logString + "\n"));
+            this.writer.flush();
+        } catch (Exception e) {
+            this.log("AL: log: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }

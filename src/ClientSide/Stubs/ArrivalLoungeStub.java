@@ -238,4 +238,34 @@ public class ArrivalLoungeStub implements ALPassenger, ALPorter {
         }
         clientCom.close();
     }
+
+    public void everythingFinished() {
+        ClientCom clientCom = new ClientCom (serverHostName, serverHostPort);
+        Message inMessage;
+        Message outMessage = null;
+
+        while (!clientCom.open()) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                System.out.println("Thread " + Thread.currentThread().getName() + ": ALStub: everythingFinished: " + e.toString());
+            }
+        }
+
+        try {
+            outMessage = new Message(Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), false, true);
+        } catch(MessageException e) {
+            System.out.println("Thread " + Thread.currentThread().getName() + ": ALStub: everythingFinished: " + e.toString());
+        }
+
+        clientCom.writeObject(outMessage);
+        inMessage = (Message) clientCom.readObject();
+
+        if(inMessage.getMessageType() != Message.MessageType.EVERYTHING_FINISHED.getMessageCode()) {
+            GenericIO.writelnString("Thread " + Thread.currentThread().getName() + ": ALStub: everythingFinished: Incorrect message type!");
+            GenericIO.writelnString(inMessage.toString());
+            System.exit(1);
+        }
+        clientCom.close();
+    }
 }

@@ -10,6 +10,7 @@ import genclass.GenericIO;
 
 public class RepositoryServer {
 
+    public static  boolean running;
     private  static final int serverPort = 4008;
 
     public static void main(String[] args) {
@@ -30,7 +31,7 @@ public class RepositoryServer {
 
             GenericIO.writelnString("RepositoryServer now listening!");
 
-            boolean running = true;
+            running = true;
             while(running) {
                 serverComL = serverCom.accept();
                 repositoryProxy = new RepositoryProxy(serverComL, repositoryInterface);

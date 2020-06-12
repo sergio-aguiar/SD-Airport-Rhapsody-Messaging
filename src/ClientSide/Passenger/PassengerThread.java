@@ -163,9 +163,7 @@ public class PassengerThread extends Thread {
                     this.currentLuggage++;
                     if(this.currentLuggage == this.luggageAtStart) break;
                 }
-                if(this.currentLuggage != this.luggageAtStart) {
-                    this.broPassenger.reportMissingBags(this.pid, this.luggageAtStart - this.currentLuggage);
-                }
+                if(this.currentLuggage != this.luggageAtStart) this.broPassenger.reportMissingBags(this.pid, this.luggageAtStart - this.currentLuggage);
             }
             this.atePassenger.goHome(this.pid);
         } else {
@@ -174,6 +172,5 @@ public class PassengerThread extends Thread {
             this.dttqPassenger.leaveTheBus(this.pid, this.busSeat);
             this.dtePassenger.prepareNextLeg(this.pid);
         }
-        System.out.println("PASSENGER FINISHED: " + this.pid);
     }
 }

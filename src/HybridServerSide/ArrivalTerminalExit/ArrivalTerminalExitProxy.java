@@ -37,8 +37,11 @@ public class ArrivalTerminalExitProxy extends Thread {
             GenericIO.writelnString(e.getErrorMessage().toString ());
             System.exit(1);
         }
+        System.out.println("BEFORE WRITE!");
         serverCom.writeObject(outMessage);
+        System.out.println("AFTER WRITE!");
         serverCom.close();
+        System.out.println("AFTER CLOSE!");
     }
 
     private static int getProxyID()
@@ -67,4 +70,7 @@ public class ArrivalTerminalExitProxy extends Thread {
         return proxyID;
     }
 
+    public ServerCom getServerCom() {
+        return serverCom;
+    }
 }

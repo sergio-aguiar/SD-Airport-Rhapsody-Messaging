@@ -14,6 +14,8 @@ public class ArrivalLoungeInterface {
 
     public Message processAndReply(Message inMessage) throws MessageException
     {
+        System.out.println("In Message: " + inMessage.toString());
+
         Message outMessage = null;
 
         switch(inMessage.getMessageType()) {
@@ -29,6 +31,7 @@ public class ArrivalLoungeInterface {
             case 24:
             case 53:
             case 54:
+            case 61:
                 break;
             case 55:
                 if(inMessage.isThereNoFirstArgument())
@@ -78,8 +81,15 @@ public class ArrivalLoungeInterface {
             case 55:
                 arrivalLounge.setInitialState((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument(), (Bag[][][]) inMessage.getThirdArgument());
                 outMessage = new Message(Message.MessageType.AL_SET_INITIAL_STATE.getMessageCode(), null);
+                break;
+            case 61:
+                ArrivalLoungeServer.running = false;
+                System.out.println(Thread.currentThread().getName());
+                (((ArrivalLoungeProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
+                outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
+        System.out.println("Out Message: " + outMessage.toString());
         return (outMessage);
     }
 

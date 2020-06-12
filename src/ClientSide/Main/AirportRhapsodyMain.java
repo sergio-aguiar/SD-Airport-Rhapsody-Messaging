@@ -65,25 +65,15 @@ public class AirportRhapsodyMain {
     private static final int[] totalLuggagePerFlight = new int[k];
 
     private static final String serverHostName = "localhost";
-    private static int ALServerPort = 4000;
-    private static int ATEServerPort = 4001;
-    private static int ATTQServerPort = 4002;
-    private static int BCPServerPort = 4003;
-    private static int BROServerPort = 4004;
-    private static int DTEServerPort = 4005;
-    private static int DTTQServerPort = 4006;
-    private static int TSAServerPort = 4007;
-    private static int REPServerPort = 4008;
-
-    private static ArrivalLoungeStub arrivalLoungeStub;
-    private static ArrivalTerminalExitStub arrivalTerminalExitStub;
-    private static ArrivalTerminalTransferQuayStub arrivalTerminalTransferQuayStub;
-    private static BaggageCollectionPointStub baggageCollectionPointStub;
-    private static BaggageReclaimOfficeStub baggageReclaimOfficeStub;
-    private static DepartureTerminalEntranceStub departureTerminalEntranceStub;
-    private static DepartureTerminalTransferQuayStub departureTerminalTransferQuayStub;
-    private static TemporaryStorageAreaStub temporaryStorageAreaStub;
-    private static RepositoryStub repositoryStub;
+    private static final int ALServerPort = 4000;
+    private static final int ATEServerPort = 4001;
+    private static final int ATTQServerPort = 4002;
+    private static final int BCPServerPort = 4003;
+    private static final int BROServerPort = 4004;
+    private static final int DTEServerPort = 4005;
+    private static final int DTTQServerPort = 4006;
+    private static final int TSAServerPort = 4007;
+    private static final int REPServerPort = 4008;
 
     /**
      * The class's main function.
@@ -91,15 +81,15 @@ public class AirportRhapsodyMain {
      */
     public static void main(String[] args) {
 
-        repositoryStub = new RepositoryStub(serverHostName, REPServerPort);
-        arrivalLoungeStub = new ArrivalLoungeStub(serverHostName, ALServerPort);
-        arrivalTerminalExitStub = new ArrivalTerminalExitStub(serverHostName, ATEServerPort);
-        arrivalTerminalTransferQuayStub = new ArrivalTerminalTransferQuayStub(serverHostName, ATTQServerPort);
-        baggageCollectionPointStub = new BaggageCollectionPointStub(serverHostName, BCPServerPort);
-        baggageReclaimOfficeStub = new BaggageReclaimOfficeStub(serverHostName, BROServerPort);
-        departureTerminalEntranceStub = new DepartureTerminalEntranceStub(serverHostName, DTEServerPort);
-        departureTerminalTransferQuayStub = new DepartureTerminalTransferQuayStub(serverHostName, DTTQServerPort);
-        temporaryStorageAreaStub = new TemporaryStorageAreaStub(serverHostName, TSAServerPort);
+        RepositoryStub repositoryStub = new RepositoryStub(serverHostName, REPServerPort);
+        ArrivalLoungeStub arrivalLoungeStub = new ArrivalLoungeStub(serverHostName, ALServerPort);
+        ArrivalTerminalExitStub arrivalTerminalExitStub = new ArrivalTerminalExitStub(serverHostName, ATEServerPort);
+        ArrivalTerminalTransferQuayStub arrivalTerminalTransferQuayStub = new ArrivalTerminalTransferQuayStub(serverHostName, ATTQServerPort);
+        BaggageCollectionPointStub baggageCollectionPointStub = new BaggageCollectionPointStub(serverHostName, BCPServerPort);
+        BaggageReclaimOfficeStub baggageReclaimOfficeStub = new BaggageReclaimOfficeStub(serverHostName, BROServerPort);
+        DepartureTerminalEntranceStub departureTerminalEntranceStub = new DepartureTerminalEntranceStub(serverHostName, DTEServerPort);
+        DepartureTerminalTransferQuayStub departureTerminalTransferQuayStub = new DepartureTerminalTransferQuayStub(serverHostName, DTTQServerPort);
+        TemporaryStorageAreaStub temporaryStorageAreaStub = new TemporaryStorageAreaStub(serverHostName, TSAServerPort);
 
         Arrays.fill(totalLuggagePerFlight, 0);
         generateStartingData();
@@ -146,6 +136,8 @@ public class AirportRhapsodyMain {
             } catch(InterruptedException e) {
                 System.err.println("Main: Interrupted - joins1: " + e.toString());
             }
+
+            System.out.println("FLIGHT " + flight + " DONE!");
         }
 
         try {
@@ -156,6 +148,16 @@ public class AirportRhapsodyMain {
         }
 
         repositoryStub.finalReport();
+
+        repositoryStub.everythingFinished();
+        arrivalLoungeStub.everythingFinished();
+        arrivalTerminalExitStub.everythingFinished();
+        arrivalTerminalTransferQuayStub.everythingFinished();
+        baggageCollectionPointStub.everythingFinished();
+        baggageReclaimOfficeStub.everythingFinished();
+        departureTerminalEntranceStub.everythingFinished();
+        departureTerminalTransferQuayStub.everythingFinished();
+        temporaryStorageAreaStub.everythingFinished();
     }
     /**
      * Function that pseudo-randomly generates the initial case for every flight.

@@ -7,6 +7,7 @@ import genclass.GenericIO;
 
 public class ArrivalLoungeServer {
 
+    public static  boolean running;
     private  static final int serverPort = 4000;
 
     public static void main(String[] args) {
@@ -30,7 +31,7 @@ public class ArrivalLoungeServer {
 
         GenericIO.writelnString("ArrivalLoungeServer now listening!");
 
-        boolean running = true;
+        running = true;
         while(running) {
             try {
                 serverComL = serverCom.accept();

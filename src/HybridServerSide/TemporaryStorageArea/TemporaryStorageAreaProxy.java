@@ -68,4 +68,7 @@ public class TemporaryStorageAreaProxy extends Thread {
         return proxyID;
     }
 
+    public ServerCom getServerCom() {
+        return serverCom;
+    }
 }

@@ -9,6 +9,7 @@ import genclass.GenericIO;
 
 public class DepartureTerminalTransferQuayServer {
 
+    public static  boolean running;
     private  static final int serverPort = 4006;
 
     public static void main(String[] args) {
@@ -32,11 +33,12 @@ public class DepartureTerminalTransferQuayServer {
 
         GenericIO.writelnString("DepartureTerminalTransferQuayServer now listening!");
 
-        boolean running = true;
+        running = true;
         while(running) {
             try {
                 serverComL = serverCom.accept();
                 departureTerminalTransferQuayProxy = new DepartureTerminalTransferQuayProxy(serverComL, departureTerminalTransferQuayInterface);
+                departureTerminalTransferQuayProxy.start();
             } catch (Exception e) {
                 System.out.println(e.toString());
             }

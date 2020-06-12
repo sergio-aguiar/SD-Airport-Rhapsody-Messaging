@@ -2,7 +2,8 @@ package HybridServerSide.ArrivalTerminalExit;
 
 import Communication.Message;
 import Communication.MessageException;
-import HybridServerSide.ArrivalLounge.ArrivalLounge;
+import HybridServerSide.ArrivalLounge.ArrivalLoungeProxy;
+import HybridServerSide.ArrivalLounge.ArrivalLoungeServer;
 
 public class ArrivalTerminalExitInterface {
 
@@ -13,6 +14,8 @@ public class ArrivalTerminalExitInterface {
     }
 
     public Message processAndReply(Message inMessage) throws MessageException {
+        System.out.println("In Message: " + inMessage.toString());
+
         Message outMessage = null;
 
         switch (inMessage.getMessageType()) {
@@ -20,6 +23,7 @@ public class ArrivalTerminalExitInterface {
             case 20:
             case 21:
             case 25:
+            case 61:
                 break;
             case 56:
                 if(inMessage.isThereNoFirstArgument())
@@ -51,8 +55,15 @@ public class ArrivalTerminalExitInterface {
             case 56:
                 arrivalTerminalExit.setInitialState((int) inMessage.getFirstArgument());
                 outMessage = new Message(Message.MessageType.ATE_SET_INITIAL_STATE.getMessageCode(), null);
+                break;
+            case 61:
+                ArrivalTerminalExitServer.running = false;
+                System.out.println(Thread.currentThread().getName());
+                (((ArrivalTerminalExitProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
+                outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
+        System.out.println("Out Message: " + outMessage.toString());
         return (outMessage);
     }
 }

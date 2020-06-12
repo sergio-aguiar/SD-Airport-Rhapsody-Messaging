@@ -88,6 +88,5 @@ public class PorterThread extends Thread {
             }
             this.bcpPorter.noMoreBagsToCollect(this.pid);
         }
-        System.out.println("PORTER FINISHED: " + this.pid);
     }
 }

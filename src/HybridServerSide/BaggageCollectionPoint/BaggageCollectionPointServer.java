@@ -9,6 +9,7 @@ import genclass.GenericIO;
 
 public class BaggageCollectionPointServer {
 
+    public static  boolean running;
     private  static final int serverPort = 4003;
 
     public static void main(String[] args) {
@@ -32,7 +33,7 @@ public class BaggageCollectionPointServer {
 
         GenericIO.writelnString("BaggageCollectionPointServer now listening!");
 
-        boolean running = true;
+        running = true;
         while(running) {
             try {
                 serverComL = serverCom.accept();

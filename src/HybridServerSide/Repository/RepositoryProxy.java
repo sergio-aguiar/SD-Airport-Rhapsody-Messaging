@@ -19,7 +19,7 @@ public class RepositoryProxy extends Thread {
     private RepositoryInterface repositoryInterface;
 
     public RepositoryProxy(ServerCom serverCom, RepositoryInterface repositoryInterface) {
-        super("ALProxy_" + getProxyID());
+        super("REPProxy_" + getProxyID());
         this.serverCom = serverCom;
         this.repositoryInterface = repositoryInterface;
     }
@@ -35,7 +35,7 @@ public class RepositoryProxy extends Thread {
             outMessage = repositoryInterface.processAndReply(inMessage);
         } catch(MessageException e) {
             GenericIO.writelnString("Thread " + getName() + ": " + e.getMessage() + "!");
-            GenericIO.writelnString(e.getErrorMessage().toString ());
+            e.printStackTrace();
             System.exit(1);
         }
         serverCom.writeObject(outMessage);
@@ -68,4 +68,7 @@ public class RepositoryProxy extends Thread {
         return proxyID;
     }
 
+    public ServerCom getServerCom() {
+        return serverCom;
+    }
 }

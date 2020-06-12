@@ -3,14 +3,20 @@ package HybridServerSide.ArrivalTerminalTransferQuay;
 import ClientSide.Interfaces.ATTQBusDriver;
 import ClientSide.Interfaces.ATTQPassenger;
 
-import HybridServerSide.ArrivalLounge.ArrivalLounge;
 import HybridServerSide.Repository.Repository;
 import HybridServerSide.Stubs.ArrivalLoungeStub;
 import HybridServerSide.Stubs.RepositoryStub;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /** Arrival Terminal Transfer Quay: Where passengers await the bus to transfer terminals and the bus driver awaits them.
  * Used by PASSENGER and BUS DRIVER.
  * @author sergiaguiar
@@ -73,6 +79,16 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
      * The class's RepositoryStub instance.
      */
     private final RepositoryStub repositoryStub;
+
+    /**
+     * The class's FIle instance.
+     */
+    private File logFile;
+    /**
+     * The class's BufferedWriter instance.
+     */
+    private BufferedWriter writer;
+
     /**
      * Arrival Terminal Transfer Quay constructor.
      * @param repositoryStub repositoryStub.
@@ -114,15 +130,28 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
         this.busBoarding = false;
         this.arrivalLoungeStub = arrivalLoungeStub;
         this.repositoryStub = repositoryStub;
+
+        try {
+            this.logStart();
+        } catch(Exception e) {
+            this.log(e.toString());
+        }
     }
 
     public void setInitialState(int totalPassengers, int busSeatNumber) {
-        this.totalPassengers = totalPassengers;
-        this.busSeatNumber = busSeatNumber;
-        this.busSeats = new String[busSeatNumber];
-        this.busWaitingQueue = new String[totalPassengers];
-        Arrays.fill(this.busSeats, "-");
-        Arrays.fill(this.busWaitingQueue, "-");
+        this.reentrantLock.lock();
+        try {
+            this.totalPassengers = totalPassengers;
+            this.busSeatNumber = busSeatNumber;
+            this.busSeats = new String[busSeatNumber];
+            this.busWaitingQueue = new String[totalPassengers];
+            Arrays.fill(this.busSeats, "-");
+            Arrays.fill(this.busWaitingQueue, "-");
+        } catch (Exception e) {
+            this.log("ATTQ: setInitialState: " + e.toString());
+        } finally {
+            this.reentrantLock.unlock();
+        }
     }
 
     /**
@@ -190,12 +219,19 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
      * Function that allows for a transition to a new flight (new plane landing simulation).
      */
     public void prepareForNextFlight() {
-        this.queuedPassengers = 0;
-        this.passengersInBus = 0;
-        this.passengersSignaled = 0;
-        this.busBoarding = false;
-        Arrays.fill(this.busSeats, "-");
-        Arrays.fill(this.busWaitingQueue, "-");
+        this.reentrantLock.lock();
+        try {
+            this.queuedPassengers = 0;
+            this.passengersInBus = 0;
+            this.passengersSignaled = 0;
+            this.busBoarding = false;
+            Arrays.fill(this.busSeats, "-");
+            Arrays.fill(this.busWaitingQueue, "-");
+        } catch (Exception e) {
+            this.log("ATTQ: prepareForNextFlight: " + e.toString());
+        } finally {
+            this.reentrantLock.unlock();
+        }
     }
     /**
      * The bus driver announces that the bus is boarding after seeing that at least one passenger is in queue.
@@ -216,7 +252,7 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             }
             if(this.passengersSignaled > 0) this.busDriverCondition.await();
         } catch (Exception e) {
-            System.out.println("ATTQ: announcingBusBoarding: " + e.toString());
+            this.log("ATTQ: announcingBusBoarding: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
@@ -238,7 +274,7 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             this.repositoryStub.passengerEnteringTheBus(pid, this.passengersInBus - 1);
             this.busLeavingCondition.await();
         } catch (Exception e) {
-            System.out.println("ATTQ: enterTheBus: " + e.toString());
+            this.log("ATTQ: enterTheBus: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
@@ -255,7 +291,7 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
         try {
             this.repositoryStub.busDriverInitiated();
         } catch (Exception e) {
-            System.out.print("ATTQ: hasDaysWorkEnded: " + e.toString());
+            this.log("ATTQ: hasDaysWorkEnded: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
@@ -273,7 +309,7 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             this.busBoarding = false;
             this.repositoryStub.busDriverParkingTheBus();
         } catch (Exception e) {
-            System.out.print("ATTQ: parkTheBus: " + e.toString());
+            this.log("ATTQ: parkTheBus: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
@@ -293,7 +329,7 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             this.repositoryStub.passengerTakingABus(pid);
             this.busQueueCondition.await();
         } catch (Exception e) {
-            System.out.print("ATTQ: takeABus: " + e.toString());
+            this.log("ATTQ: takeABus: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
@@ -312,10 +348,40 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             this.repositoryStub.busDriverGoingToDepartureTerminal();
             this.busLeavingCondition.signalAll();
         } catch (Exception e) {
-            System.out.println("ATTQ: goToDepartureTerminal: " + e.toString());
+            this.log("ATTQ: goToDepartureTerminal: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
         return busPassengers;
+    }
+
+    private void logStart() throws IOException {
+        // open data stream to log file
+        this.logFile = new File("logFile_ATTQ_" + System.nanoTime() + ".txt");
+        this.writer = new BufferedWriter(new FileWriter(this.logFile));
+    }
+    /**
+     * Function that closes the BufferedWriter instance.
+     */
+    private void close() {
+        try {
+            this.writer.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    /**
+     * Function that writes the current info onto the log file.
+     */
+    private void log(String logString) {
+        this.reentrantLock.lock();
+        try {
+            this.writer.write((logString + "\n"));
+            this.writer.flush();
+        } catch (Exception e) {
+            this.log("ATTQ: log: " + e.toString());
+        } finally {
+            this.reentrantLock.unlock();
+        }
     }
 }

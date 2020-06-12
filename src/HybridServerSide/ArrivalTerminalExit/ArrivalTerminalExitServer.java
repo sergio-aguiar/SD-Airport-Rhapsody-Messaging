@@ -10,6 +10,7 @@ import genclass.GenericIO;
 
 public class ArrivalTerminalExitServer {
 
+    public static  boolean running;
     private  static final int serverPort = 4001;
 
     public static void main(String[] args) {
@@ -35,12 +36,14 @@ public class ArrivalTerminalExitServer {
 
         GenericIO.writelnString("ArrivalTerminalExitServer now listening!");
 
-        boolean running = true;
+        running = true;
         while(running) {
             try{
+                System.out.println("STILL IN LOOP!");
                 serverComL = serverCom.accept();
                 arrivalTerminalExitProxy = new ArrivalTerminalExitProxy(serverComL, arrivalTerminalExitInterface);
                 arrivalTerminalExitProxy.start();
+                System.out.println("END OF LOOP!");
             } catch (Exception e) {
                 System.out.println(e.toString());
             }

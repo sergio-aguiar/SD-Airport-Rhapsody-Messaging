@@ -10,6 +10,7 @@ import genclass.GenericIO;
 
 public class DepartureTerminalEntranceServer {
 
+    public static  boolean running;
     private  static final int serverPort = 4005;
 
     public static void main(String[] args) {
@@ -35,7 +36,7 @@ public class DepartureTerminalEntranceServer {
 
         GenericIO.writelnString("DepartureTerminalEntranceServer now listening!");
 
-        boolean running = true;
+        running = true;
         while(running) {
             try {
                 serverComL = serverCom.accept();

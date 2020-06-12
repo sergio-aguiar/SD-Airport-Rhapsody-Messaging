@@ -2,7 +2,8 @@ package HybridServerSide.ArrivalTerminalTransferQuay;
 
 import Communication.Message;
 import Communication.MessageException;
-import HybridServerSide.ArrivalLounge.ArrivalLounge;
+import HybridServerSide.ArrivalLounge.ArrivalLoungeProxy;
+import HybridServerSide.ArrivalLounge.ArrivalLoungeServer;
 
 public class ArrivalTerminalTransferQuayInterface {
 
@@ -14,6 +15,8 @@ public class ArrivalTerminalTransferQuayInterface {
 
     public Message processAndReply(Message inMessage) throws MessageException
     {
+        System.out.println("In Message: " + inMessage.toString());
+
         Message outMessage = null;
 
         switch(inMessage.getMessageType()) {
@@ -24,6 +27,7 @@ public class ArrivalTerminalTransferQuayInterface {
             case 9:
             case 10:
             case 26:
+            case 61:
                 break;
             case 57:
                 if(inMessage.isThereNoFirstArgument())
@@ -71,8 +75,15 @@ public class ArrivalTerminalTransferQuayInterface {
             case 57:
                 arrivalTerminalTransferQuay.setInitialState((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument());
                 outMessage = new Message(Message.MessageType.ATTQ_SET_INITIAL_STATE.getMessageCode(), null);
+                break;
+            case 61:
+                ArrivalTerminalTransferQuayServer.running = false;
+                System.out.println(Thread.currentThread().getName());
+                (((ArrivalTerminalTransferQuayProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
+                outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
+        System.out.println("Out Message: " + outMessage.toString());
         return (outMessage);
     }
 

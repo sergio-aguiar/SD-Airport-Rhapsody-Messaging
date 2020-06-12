@@ -68,4 +68,7 @@ public class BaggageCollectionPointProxy extends Thread {
         return proxyID;
     }
 
+    public ServerCom getServerCom() {
+        return serverCom;
+    }
 }

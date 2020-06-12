@@ -2,7 +2,8 @@ package HybridServerSide.DepartureTerminalTransferQuay;
 
 import Communication.Message;
 import Communication.MessageException;
-import HybridServerSide.ArrivalLounge.ArrivalLounge;
+import HybridServerSide.ArrivalLounge.ArrivalLoungeProxy;
+import HybridServerSide.ArrivalLounge.ArrivalLoungeServer;
 
 public class DepartureTerminalTransferQuayInterface {
 
@@ -14,6 +15,8 @@ public class DepartureTerminalTransferQuayInterface {
 
     public Message processAndReply(Message inMessage) throws MessageException
     {
+        System.out.println("In Message: " + inMessage.toString());
+
         Message outMessage = null;
 
         switch(inMessage.getMessageType()) {
@@ -29,6 +32,7 @@ public class DepartureTerminalTransferQuayInterface {
                 break;
             case 5:
             case 29:
+            case 61:
                 break;
             case 14:
                 if(inMessage.isThereNoFirstArgument())
@@ -56,8 +60,14 @@ public class DepartureTerminalTransferQuayInterface {
             case 29:
                 departureTerminalTransferQuay.prepareForNextFlight();
                 outMessage = new Message(Message.MessageType.DTTQ_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), null);
+                break;
+            case 61:
+                DepartureTerminalTransferQuayServer.running = false;
+                (((DepartureTerminalTransferQuayProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
+                outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
+        System.out.println("Out Message: " + outMessage.toString());
         return (outMessage);
     }
 

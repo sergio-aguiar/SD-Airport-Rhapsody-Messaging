@@ -24,8 +24,7 @@ public class ArrivalLoungeProxy extends Thread {
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         Message inMessage = null;
         Message outMessage = null;
 
@@ -67,4 +66,7 @@ public class ArrivalLoungeProxy extends Thread {
         return proxyID;
     }
 
+    public ServerCom getServerCom() {
+        return serverCom;
+    }
 }

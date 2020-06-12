@@ -177,27 +177,34 @@ public class Repository {
                                 PassengerThread.PassengerAndBagSituations[] passengerSituations, int[] passengerLuggageAtStart,
                                 Bag[][][] luggagePerFlight) throws IOException {
 
-        this.flightNumber = flightNumber;
-        this.numberOfLuggageAtThePlane = numberOfPassengerLuggageAtThePlane;
+        this.reentrantLock.lock();
+        try {
+            this.flightNumber = flightNumber;
+            this.numberOfLuggageAtThePlane = numberOfPassengerLuggageAtThePlane;
 
-        this.busSeats = new String[busSeatNumber];
-        this.busWaitingQueue = new String[totalPassengers];
-        Arrays.fill(this.busSeats, "-");
-        Arrays.fill(this.busWaitingQueue, "-");
+            this.busSeats = new String[busSeatNumber];
+            this.busWaitingQueue = new String[totalPassengers];
+            Arrays.fill(this.busSeats, "-");
+            Arrays.fill(this.busWaitingQueue, "-");
 
-        this.passengersInitiated = new boolean[totalPassengers];
-        Arrays.fill(this.passengersInitiated, false);
-        this.passengerStates = new PassengerThread.PassengerStates[totalPassengers];
-        Arrays.fill(this.passengerStates, PassengerThread.PassengerStates.AT_THE_DISEMBARKING_ZONE);
-        this.passengerSituations = passengerSituations;
-        this.passengerLuggageAtStart = passengerLuggageAtStart;
-        this.passengerLuggageCollected = new int[totalPassengers];
-        Arrays.fill(this.passengerLuggageCollected, 0);
+            this.passengersInitiated = new boolean[totalPassengers];
+            Arrays.fill(this.passengersInitiated, false);
+            this.passengerStates = new PassengerThread.PassengerStates[totalPassengers];
+            Arrays.fill(this.passengerStates, PassengerThread.PassengerStates.AT_THE_DISEMBARKING_ZONE);
+            this.passengerSituations = passengerSituations;
+            this.passengerLuggageAtStart = passengerLuggageAtStart;
+            this.passengerLuggageCollected = new int[totalPassengers];
+            Arrays.fill(this.passengerLuggageCollected, 0);
 
-        this.calculatePassengerSituations();
-        this.calculateBagsThatShouldHaveBeenOnThePlane(luggagePerFlight);
+            this.calculatePassengerSituations();
+            this.calculateBagsThatShouldHaveBeenOnThePlane(luggagePerFlight);
 
-        this.logStart();
+            this.logStart();
+        } catch (Exception e) {
+            System.out.println("Repository: setInitialState: " + e.toString());
+        } finally {
+            this.reentrantLock.unlock();
+        }
     }
 
     /**
@@ -273,7 +280,7 @@ public class Repository {
                 Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (Exception e) {
-            System.out.print("ATTQ: parkTheBus: " + e.toString());
+            System.out.print("Repository: log: " + e.toString());
         } finally {
             this.reentrantLock.unlock();
         }
@@ -664,19 +671,27 @@ public class Repository {
      */
     public void prepareForNextFlight(int numberOfPassengerLuggageAtThePlane, PassengerThread.PassengerAndBagSituations[]
                                      passengerSituations) {
-        this.flightNumber++;
-        this.numberOfLuggageAtThePlane = numberOfPassengerLuggageAtThePlane;
-        this.porterState = PorterThread.PorterStates.WAITING_FOR_A_PLANE_TO_LAND;
-        this.numberOfLuggageAtTheStoreRoom = 0;
-        this.numberOfLuggageOnConveyor = 0;
-        this.busDriverState = BusDriverThread.BusDriverStates.PARKING_AT_THE_ARRIVAL_TERMINAL;
-        Arrays.fill(this.busSeats, "-");
-        Arrays.fill(this.busWaitingQueue, "-");
-        Arrays.fill(this.passengersInitiated, false);
-        Arrays.fill(this.passengerStates, PassengerThread.PassengerStates.AT_THE_DISEMBARKING_ZONE);
-        this.passengerSituations = passengerSituations;
-        Arrays.fill(this.passengerLuggageCollected, 0);
-        this.calculatePassengerSituations();
+
+        this.reentrantLock.lock();
+        try {
+            this.flightNumber++;
+            this.numberOfLuggageAtThePlane = numberOfPassengerLuggageAtThePlane;
+            this.porterState = PorterThread.PorterStates.WAITING_FOR_A_PLANE_TO_LAND;
+            this.numberOfLuggageAtTheStoreRoom = 0;
+            this.numberOfLuggageOnConveyor = 0;
+            this.busDriverState = BusDriverThread.BusDriverStates.PARKING_AT_THE_ARRIVAL_TERMINAL;
+            Arrays.fill(this.busSeats, "-");
+            Arrays.fill(this.busWaitingQueue, "-");
+            Arrays.fill(this.passengersInitiated, false);
+            Arrays.fill(this.passengerStates, PassengerThread.PassengerStates.AT_THE_DISEMBARKING_ZONE);
+            this.passengerSituations = passengerSituations;
+            Arrays.fill(this.passengerLuggageCollected, 0);
+            this.calculatePassengerSituations();
+        } catch (Exception e) {
+            System.out.println("Repository: prepareNextFlight: " + e.toString());
+        } finally {
+            this.reentrantLock.unlock();
+        }
     }
 }
 

@@ -11,6 +11,7 @@ import genclass.GenericIO;
 
 public class TemporaryStorageAreaServer {
 
+    public static  boolean running;
     private  static final int serverPort = 4007;
 
     public static void main(String[] args) {
@@ -34,7 +35,7 @@ public class TemporaryStorageAreaServer {
 
         GenericIO.writelnString("TemporaryStorageAreaServer now listening!");
 
-        boolean running = true;
+        running = true;
         while(running) {
             try {
                 serverComL = serverCom.accept();

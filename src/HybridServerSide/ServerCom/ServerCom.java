@@ -159,4 +159,16 @@ public class ServerCom {
         }
     }
 
+    public void setTimeout (int time)
+    {
+        try {
+            listeningSocket.setSoTimeout (time);
+        }
+        catch (SocketException e) {
+            GenericIO.writelnString (Thread.currentThread ().getName () + " - error while establishing a listening timeout!");
+            e.printStackTrace ();
+            System.exit (1);
+        }
+    }
+
 }

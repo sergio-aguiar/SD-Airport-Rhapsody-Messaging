@@ -2,7 +2,8 @@ package HybridServerSide.BaggageCollectionPoint;
 
 import Communication.Message;
 import Communication.MessageException;
-import HybridServerSide.ArrivalLounge.ArrivalLounge;
+import HybridServerSide.ArrivalLounge.ArrivalLoungeProxy;
+import HybridServerSide.ArrivalLounge.ArrivalLoungeServer;
 
 public class BaggageCollectionPointInterface {
 
@@ -14,11 +15,14 @@ public class BaggageCollectionPointInterface {
 
     public Message processAndReply(Message inMessage) throws MessageException
     {
+        System.out.println("In Message: " + inMessage.toString());
+
         Message outMessage = null;
 
         switch(inMessage.getMessageType()) {
             case 11:
             case 27:
+            case 61:
                 break;
             case 17:
                 if(inMessage.isThereNoFirstArgument())
@@ -62,8 +66,14 @@ public class BaggageCollectionPointInterface {
             case 58:
                 baggageCollectionPoint.setInitialState((int) inMessage.getFirstArgument());
                 outMessage = new Message(Message.MessageType.BCP_SET_INITIAL_STATE.getMessageCode(), null);
+                break;
+            case 61:
+                BaggageCollectionPointServer.running = false;
+                (((BaggageCollectionPointProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
+                outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
+        System.out.println("Out Message: " + outMessage.toString());
         return (outMessage);
     }
 

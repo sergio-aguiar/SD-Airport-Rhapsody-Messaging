@@ -4,7 +4,8 @@ import ClientSide.Extras.Bag;
 import ClientSide.Passenger.PassengerThread;
 import Communication.Message;
 import Communication.MessageException;
-import HybridServerSide.ArrivalLounge.ArrivalLounge;
+import HybridServerSide.ArrivalLounge.ArrivalLoungeProxy;
+import HybridServerSide.ArrivalLounge.ArrivalLoungeServer;
 
 public class RepositoryInterface {
 
@@ -16,9 +17,20 @@ public class RepositoryInterface {
 
     public Message processAndReply(Message inMessage) throws MessageException
     {
+        System.out.println("In Message: " + inMessage.toString());
+
         Message outMessage = null;
 
         switch(inMessage.getMessageType()) {
+            case 31:
+                if(inMessage.isThereNoFirstArgument())
+                    throw new MessageException("Argument \"numberOfPassengerLuggageAtThePlane\" not supplied.", inMessage);
+                if(((int) inMessage.getFirstArgument()) < 0)
+                    throw new MessageException("Argument \"numberOfPassengerLuggageAtThePlane\" was given an incorrect value.", inMessage);
+                if(inMessage.isThereNoSecondArgument())
+                    throw new MessageException("Argument \"passengerSituations\" not supplied.", inMessage);
+                break;
+            case 32:
             case 33:
             case 39:
             case 40:
@@ -28,6 +40,7 @@ public class RepositoryInterface {
             case 49:
             case 51:
             case 52:
+            case 61:
                 break;
             case 34:
             case 36:
@@ -104,6 +117,14 @@ public class RepositoryInterface {
         }
 
         switch(inMessage.getMessageType()) {
+            case 31:
+                repository.prepareForNextFlight((int) inMessage.getFirstArgument(), (PassengerThread.PassengerAndBagSituations[]) inMessage.getSecondArgument());
+                outMessage = new Message(Message.MessageType.REP_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), null);
+                break;
+            case 32:
+                repository.finalReport();
+                outMessage = new Message(Message.MessageType.REP_FINAL_REPORT.getMessageCode(), null);
+                break;
             case 33:
                 repository.porterInitiated();
                 outMessage = new Message(Message.MessageType.REP_PORTER_INITIATED.getMessageCode(), null);
@@ -191,8 +212,15 @@ public class RepositoryInterface {
                     System.out.print(e.toString());
                 }
                 outMessage = new Message(Message.MessageType.REP_SET_INITIAL_STATE.getMessageCode(),  null);
+                break;
+            case 61:
+                RepositoryServer.running = false;
+                System.out.println(Thread.currentThread().getName());
+                (((RepositoryProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
+                outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
+        System.out.println("Out Message: " + outMessage.toString());
         return (outMessage);
     }
 
