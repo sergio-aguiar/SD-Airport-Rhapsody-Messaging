@@ -5,10 +5,8 @@ import ClientSide.Passenger.PassengerThread;
 import ClientSide.Porter.PorterThread;
 import ClientSide.Extras.Bag;
 import ClientSide.Stubs.*;
-import HybridServerSide.ArrivalLounge.ArrivalLounge;
 import genclass.GenericIO;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
 /**
@@ -134,19 +132,19 @@ public class AirportRhapsodyMain {
             try {
                 for (PassengerThread passengerThread : passengers[flight]) passengerThread.join();
             } catch(InterruptedException e) {
-                System.err.println("Main: Interrupted - joins1: " + e.toString());
+                GenericIO.writelnString("Main: Interrupted - joins1: " + e.toString());
+                System.exit(1);
             }
-
-            System.out.println("FLIGHT " + flight + " DONE!");
         }
 
         try {
             busDriver.join();
             porter.join();
         } catch(InterruptedException e) {
-            System.out.println("Main: Interrupted - joins2: " + e.toString());
+            GenericIO.writelnString("Main: Interrupted - joins2: " + e.toString());
+            System.exit(1);
         }
-
+        
         repositoryStub.finalReport();
 
         repositoryStub.everythingFinished();

@@ -1,15 +1,24 @@
 package HybridServerSide.DepartureTerminalTransferQuay;
 
-import HybridServerSide.DepartureTerminalEntrance.DepartureTerminalEntrance;
-import HybridServerSide.DepartureTerminalEntrance.DepartureTerminalEntranceInterface;
-import HybridServerSide.DepartureTerminalEntrance.DepartureTerminalEntranceProxy;
 import HybridServerSide.ServerCom.ServerCom;
 import HybridServerSide.Stubs.RepositoryStub;
 import genclass.GenericIO;
 
-public class DepartureTerminalTransferQuayServer {
+import java.net.SocketTimeoutException;
 
+/**
+ * DepartureTerminalTransferQuayServer: The DepartureTerminalTransferQuay's server's main class.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
+public class DepartureTerminalTransferQuayServer {
+    /**
+     * Variable that states whether the server is functional or not.
+     */
     public static  boolean running;
+    /**
+     * The current server's listening port.
+     */
     private  static final int serverPort = 4006;
 
     public static void main(String[] args) {
@@ -29,7 +38,8 @@ public class DepartureTerminalTransferQuayServer {
         repositoryStub = new RepositoryStub("localhost", 4008);
 
         departureTerminalTransferQuay = new DepartureTerminalTransferQuay(repositoryStub);
-        departureTerminalTransferQuayInterface = new DepartureTerminalTransferQuayInterface(departureTerminalTransferQuay);
+        departureTerminalTransferQuayInterface =
+                new DepartureTerminalTransferQuayInterface(departureTerminalTransferQuay);
 
         GenericIO.writelnString("DepartureTerminalTransferQuayServer now listening!");
 
@@ -37,15 +47,15 @@ public class DepartureTerminalTransferQuayServer {
         while(running) {
             try {
                 serverComL = serverCom.accept();
-                departureTerminalTransferQuayProxy = new DepartureTerminalTransferQuayProxy(serverComL, departureTerminalTransferQuayInterface);
+                departureTerminalTransferQuayProxy = new DepartureTerminalTransferQuayProxy(serverComL,
+                        departureTerminalTransferQuayInterface);
                 departureTerminalTransferQuayProxy.start();
-            } catch (Exception e) {
-                System.out.println(e.toString());
+            } catch (SocketTimeoutException ignored) {
             }
         }
 
         serverCom.end();
-        System.out.println("DTTQServer stopped.");
+        GenericIO.writelnString("DepartureTerminalTransferQuayServer stopped.");
     }
 
 }

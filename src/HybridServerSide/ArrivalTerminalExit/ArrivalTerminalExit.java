@@ -2,20 +2,15 @@ package HybridServerSide.ArrivalTerminalExit;
 
 import ClientSide.Interfaces.ATEPassenger;
 import HybridServerSide.Interfaces.ATEforDTE;
-import HybridServerSide.Repository.Repository;
 import HybridServerSide.Stubs.DepartureTerminalEntranceStub;
 import HybridServerSide.Stubs.RepositoryStub;
+import genclass.GenericIO;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/** Arrival Terminal Exit: Where passengers await the last one to reach their destination within the airport to signal them that they can leave.
+/** Arrival Terminal Exit: Where passengers await the last one to reach their destination within the airport to signal
+ * them that they can leave.
  * Used by PASSENGER.
  * @author sergiaguiar
  * @author marcomacedo
@@ -26,7 +21,8 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
      */
     private final ReentrantLock reentrantLock;
     /**
-     * The Condition instance where the passengers wait for the last passenger to arrive at their final destination in the airport.
+     * The Condition instance where the passengers wait for the last passenger to arrive at their final destination in
+     * the airport.
      */
     private final Condition passengerCondition;
     /**
@@ -49,18 +45,8 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
      * The class's RepositoryStub instance.
      */
     private final RepositoryStub repositoryStub;
-
     /**
-     * The class's FIle instance.
-     */
-    private File logFile;
-    /**
-     * The class's BufferedWriter instance.
-     */
-    private BufferedWriter writer;
-
-    /**
-     * ArrivalTerminalExit constructor.
+     * Constructor: ArrivalTerminalExit.
      * @param repositoryStub A reference to a RepositoryStub object.
      * @param totalPassengers Total number of passengers per flight.
      */
@@ -72,7 +58,9 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
         this.repositoryStub = repositoryStub;
     }
     /**
-     * ArrivalTerminalExit constructor.
+     * Constructor: ArrivalTerminalExit.
+     * @param repositoryStub A reference to a RepositoryStub object.
+     * @param dte The class's instance of the Departure Terminal Entrance.
      */
     public ArrivalTerminalExit(RepositoryStub repositoryStub, DepartureTerminalEntranceStub dte) {
         this.reentrantLock = new ReentrantLock(true);
@@ -80,27 +68,25 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
         this.allSignaled = false;
         this.dte = dte;
         this.repositoryStub = repositoryStub;
-
-        try {
-            this.logStart();
-        } catch(Exception e) {
-            this.log(e.toString());
-        }
     }
-
+    /**
+     * Function that sets the initial state of a server's data.
+     * @param totalPassengers Total number of passengers per flight.
+     */
     public void setInitialState(int totalPassengers) {
         this.reentrantLock.lock();
         try {
             this.totalPassengers = totalPassengers;
         } catch (Exception e) {
-            this.log("AL: setInitialState: " + e.toString());
+            GenericIO.writelnString("AL: setInitialState: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
     }
-
     /**
-     * Function that gets the number of passengers waiting for the last one to arrive at their final destination inside the airport.
+     * Function that gets the number of passengers waiting for the last one to arrive at their final destination inside
+     * the airport.
      * @return The number of passengers waiting for the last one to arrive at their final destination inside the airport.
      */
     @Override
@@ -110,7 +96,8 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
         try {
             tmpWaitingPassengers = this.waitingPassengers;
         } catch (Exception e) {
-            this.log("ATE: getWaitingPassengers: " + e.toString());
+            GenericIO.writelnString("ATE: getWaitingPassengers: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -126,7 +113,8 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
             this.allSignaled = true;
             this.passengerCondition.signalAll();
         } catch (Exception e) {
-            this.log("ATE: signalWaitingPassengers: " + e.toString());
+            GenericIO.writelnString("ATE: signalWaitingPassengers: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -140,13 +128,15 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
             this.allSignaled = false;
             this.waitingPassengers = 0;
         } catch (Exception e) {
-            this.log("ATE: prepareForNextFlight: " + e.toString());
+            GenericIO.writelnString("ATE: prepareForNextFlight: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
     }
     /**
-     * The passenger checks if they is the last to make it to their destination inside the airport. If so, they signal all others to leave together. Otherwise, they wait for the last one to signal them.
+     * The passenger checks if they are the last to make it to their destination inside the airport. If so, they signal
+     * all others to leave together. Otherwise, they wait for the last one to signal them.
      * @param pid The passenger's ID.
      */
     @Override
@@ -157,7 +147,8 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
         try {
             this.waitingPassengers++;
         } catch (Exception e) {
-            this.log("ATE: goHome1: " + e.toString());
+            GenericIO.writelnString("ATE: goHome1: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -170,40 +161,11 @@ public class ArrivalTerminalExit implements ATEPassenger, ATEforDTE {
             if(this.allSignaled) this.passengerCondition.signalAll();
             else this.passengerCondition.await();
         } catch (Exception e) {
-            this.log("ATE: goHome2: " + e.toString());
+            GenericIO.writelnString("ATE: goHome2: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
         if(this.allSignaled) this.dte.signalWaitingPassengers();
-    }
-
-    private void logStart() throws IOException {
-        // open data stream to log file
-        this.logFile = new File("logFile_ATE_" + System.nanoTime() + ".txt");
-        this.writer = new BufferedWriter(new FileWriter(this.logFile));
-    }
-    /**
-     * Function that closes the BufferedWriter instance.
-     */
-    private void close() {
-        try {
-            this.writer.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    /**
-     * Function that writes the current info onto the log file.
-     */
-    private void log(String logString) {
-        this.reentrantLock.lock();
-        try {
-            this.writer.write((logString + "\n"));
-            this.writer.flush();
-        } catch (Exception e) {
-            this.log("ATE: log: " + e.toString());
-        } finally {
-            this.reentrantLock.unlock();
-        }
     }
 }

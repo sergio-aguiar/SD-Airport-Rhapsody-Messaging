@@ -2,20 +2,33 @@ package HybridServerSide.BaggageReclaimOffice;
 
 import Communication.Message;
 import Communication.MessageException;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeProxy;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeServer;
+import genclass.GenericIO;
 
+/**
+ * BaggageReclaimOfficeInterface: BaggageReclaimOffice message processing and replying.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
 public class BaggageReclaimOfficeInterface {
-
+    /**
+     * A reference to the server's BaggageReclaimOffice.
+     */
     private BaggageReclaimOffice baggageReclaimOffice;
-
+    /**
+     * Constructor: BaggageReclaimOffice.
+     * @param baggageReclaimOffice A reference to the server's BaggageReclaimOffice.
+     */
     public BaggageReclaimOfficeInterface(BaggageReclaimOffice baggageReclaimOffice) {
         this.baggageReclaimOffice = baggageReclaimOffice;
     }
-
-    public Message processAndReply(Message inMessage) throws MessageException
-    {
-        System.out.println("In Message: " + inMessage.toString());
+    /**
+     * Method that processes an inMessage and returns the appropriate response outMessage.
+     * @param inMessage The message received.
+     * @return The response message based off the message received.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message processAndReply(Message inMessage) throws MessageException {
+        GenericIO.writelnString("[In] : " + inMessage.toString());
 
         Message outMessage = null;
 
@@ -44,7 +57,7 @@ public class BaggageReclaimOfficeInterface {
         }
 
 
-        System.out.println("Out Message: " + outMessage.toString());
+        GenericIO.writelnString("[Out]: " + outMessage.toString());
         return (outMessage);
     }
 

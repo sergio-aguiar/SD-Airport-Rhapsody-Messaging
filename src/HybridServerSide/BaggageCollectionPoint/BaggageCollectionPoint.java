@@ -2,21 +2,16 @@ package HybridServerSide.BaggageCollectionPoint;
 
 import ClientSide.Interfaces.BCPPassenger;
 import ClientSide.Interfaces.BCPPorter;
-import HybridServerSide.Repository.Repository;
 import HybridServerSide.Stubs.RepositoryStub;
+import genclass.GenericIO;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/**Baggage Collection Point: Where passengers pick up their luggage and where the porter leaves final destination luggage.
+/**Baggage Collection Point: Where passengers pick up their luggage and where the porter leaves final destination
+ * luggage.
  * Used by PORTER and PASSENGER.
  * @author sergiaguiar
  * @author marcomacedo
@@ -27,7 +22,8 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
      */
     private final ReentrantLock reentrantLock;
     /**
-     * Array of Condition instances (one for each passenger) where each passenger waits for one of their bags to be put onto the conveyor belt.
+     * Array of Condition instances (one for each passenger) where each passenger waits for one of their bags to be put
+     * onto the conveyor belt.
      */
     private Condition[] passengerLuggageConditions;
     /**
@@ -43,21 +39,11 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
      */
     private final ArrayList<Integer> bcpBags;
     /**
-     * The class's Repository instance.
+     * The class's RepositoryStub instance.
      */
     private final RepositoryStub repositoryStub;
-
     /**
-     * The class's FIle instance.
-     */
-    private File logFile;
-    /**
-     * The class's BufferedWriter instance.
-     */
-    private BufferedWriter writer;
-
-    /**
-     * BaggageCollectionPoint constructor.
+     * Constructor: BaggageCollectionPoint.
      * @param repositoryStub A reference to a repositoryStub object.
      * @param totalPassengers Total number of passengers per flight.
      */
@@ -71,9 +57,8 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
         this.bcpBags = new ArrayList<>();
         this.repositoryStub = repositoryStub;
     }
-
     /**
-     * BaggageCollectionPoint constructor.
+     * Constructor: BaggageCollectionPoint.
      * @param repositoryStub A reference to a repositoryStub object.
      */
     public BaggageCollectionPoint(RepositoryStub repositoryStub) {
@@ -81,28 +66,26 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
         this.noMoreBags = false;
         this.bcpBags = new ArrayList<>();
         this.repositoryStub = repositoryStub;
-
-        try {
-            this.logStart();
-        } catch(Exception e) {
-            this.log(e.toString());
-        }
     }
-
+    /**
+     * Function that sets the initial state of a server's data.
+     * @param totalPassengers Total number of passengers per flight.
+     */
     public void setInitialState(int totalPassengers) {
         this.reentrantLock.lock();
         try {
             this.passengerLuggageConditions = new Condition[totalPassengers];
-            for(int c = 0; c < totalPassengers; c++) this.passengerLuggageConditions[c] = this.reentrantLock.newCondition();
+            for(int c = 0; c < totalPassengers; c++) 
+                this.passengerLuggageConditions[c] = this.reentrantLock.newCondition();
             this.passengerLuggageNumber = new int[totalPassengers];
             Arrays.fill(this.passengerLuggageNumber, 0);
         } catch (Exception e) {
-            this.log("BCP: setInitialState: " + e.toString());
+            GenericIO.writelnString("BCP: setInitialState: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
     }
-
     /**
      * Function that checks whether a passenger's bag is on the conveyor belt.
      * @param pid The passenger's ID.
@@ -149,7 +132,8 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
                 }
             }
         } catch (Exception e) {
-            this.log("BCP: goCollectABag: " + e.toString());
+            GenericIO.writelnString("BCP: goCollectABag: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -168,7 +152,8 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
             this.passengerLuggageNumber[bagID]++;
             this.passengerLuggageConditions[bagID].signal();
         } catch (Exception e) {
-            this.log("BCP: carryItToAppropriateStore: " + e.toString());
+            GenericIO.writelnString("BCP: carryItToAppropriateStore: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -185,37 +170,8 @@ public class BaggageCollectionPoint implements BCPPassenger, BCPPorter {
             this.noMoreBags = true;
             this.repositoryStub.porterAnnouncingNoMoreBagsToCollect();
         } catch (Exception e) {
-            this.log("BCP: noMoreBagsToCollect: " + e.toString());
-        } finally {
-            this.reentrantLock.unlock();
-        }
-    }
-
-    private void logStart() throws IOException {
-        // open data stream to log file
-        this.logFile = new File("logFile_BCP_" + System.nanoTime() + ".txt");
-        this.writer = new BufferedWriter(new FileWriter(this.logFile));
-    }
-    /**
-     * Function that closes the BufferedWriter instance.
-     */
-    private void close() {
-        try {
-            this.writer.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    /**
-     * Function that writes the current info onto the log file.
-     */
-    private void log(String logString) {
-        this.reentrantLock.lock();
-        try {
-            this.writer.write((logString + "\n"));
-            this.writer.flush();
-        } catch (Exception e) {
-            this.log("BCP: log: " + e.toString());
+            GenericIO.writelnString("BCP: noMoreBagsToCollect: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }

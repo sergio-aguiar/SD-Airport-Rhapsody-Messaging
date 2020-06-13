@@ -2,20 +2,15 @@ package HybridServerSide.DepartureTerminalEntrance;
 
 import ClientSide.Interfaces.DTEPassenger;
 import HybridServerSide.Interfaces.DTEforATE;
-import HybridServerSide.Repository.Repository;
 import HybridServerSide.Stubs.ArrivalTerminalExitStub;
 import HybridServerSide.Stubs.RepositoryStub;
+import genclass.GenericIO;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/** Departure Terminal Entrance: Where passengers await the last one to reach their destination within the airport to signal them that they can leave.
+/** Departure Terminal Entrance: Where passengers await the last one to reach their destination within the airport to
+ * signal them that they can leave.
  * Used by PASSENGER.
  * @author sergiaguiar
  * @author marcomacedo
@@ -26,7 +21,8 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
      */
     private final ReentrantLock reentrantLock;
     /**
-     * The Condition instance where the passengers wait for the last passenger to arrive at their final destination in the airport.
+     * The Condition instance where the passengers wait for the last passenger to arrive at their final destination in
+     * the airport.
      */
     private final Condition passengerCondition;
     /**
@@ -46,22 +42,12 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
      */
     private ArrivalTerminalExitStub ate;
     /**
-     * Instance of Repository.
+     * The class's RepositoryStub instance.
      */
     private final RepositoryStub repositoryStub;
-
     /**
-     * The class's FIle instance.
-     */
-    private File logFile;
-    /**
-     * The class's BufferedWriter instance.
-     */
-    private BufferedWriter writer;
-
-    /**
-     * DepartureTerminalEntrance constructor.
-     * @param repositoryStub A reference to a repository object.
+     * Constructor: DepartureTerminalEntrance.
+     * @param repositoryStub The class's RepositoryStub instance.
      * @param totalPassengers Total number of passengers per flight.
      */
     public DepartureTerminalEntrance(RepositoryStub repositoryStub, int totalPassengers) {
@@ -72,10 +58,9 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
         this.waitingPassengers = 0;
         this.repositoryStub = repositoryStub;
     }
-
     /**
-     * DepartureTerminalEntrance constructor.
-     * @param repositoryStub A reference to a repository object.
+     * Constructor: DepartureTerminalEntrance.
+     * @param repositoryStub The class's RepositoryStub instance.
      */
     public DepartureTerminalEntrance(RepositoryStub repositoryStub, ArrivalTerminalExitStub ate) {
         this.reentrantLock = new ReentrantLock(true);
@@ -84,27 +69,25 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
         this.waitingPassengers = 0;
         this.ate = ate;
         this.repositoryStub = repositoryStub;
-
-        try {
-            this.logStart();
-        } catch(Exception e) {
-            this.log(e.toString());
-        }
     }
-
+    /**
+     * Function that sets the initial state of a server's data.
+     * @param totalPassengers Total number of passengers per flight.
+     */
     public void setInitialState(int totalPassengers) {
         this.reentrantLock.lock();
         try {
             this.totalPassengers = totalPassengers;
         } catch (Exception e) {
-            this.log("DTE: setInitialState: " + e.toString());
+            GenericIO.writelnString("DTE: setInitialState: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
     }
-
      /**
-     * Function that gets the number of passengers waiting for the last one to arrive at their final destination inside the airport.
+     * Function that gets the number of passengers waiting for the last one to arrive at their final destination inside 
+      * the airport.
      * @return the number of passengers waiting for the last one to arrive at their final destination inside the airport.
      */
     @Override
@@ -114,7 +97,8 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
         try {
             tmpWaitingPassengers = this.waitingPassengers;
         } catch (Exception e) {
-            this.log("DTE: getWaitingPassengers: " + e.toString());
+            GenericIO.writelnString("DTE: getWaitingPassengers: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -130,7 +114,8 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
             this.allSignaled = true;
             this.passengerCondition.signalAll();
         } catch (Exception e) {
-            this.log("DTE: signalWaitingPassengers: " + e.toString());
+            GenericIO.writelnString("DTE: signalWaitingPassengers: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -144,13 +129,15 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
             this.allSignaled = false;
             this.waitingPassengers = 0;
         } catch (Exception e) {
-            this.log("DTE: prepareForNextFlight: " + e.toString());
+            GenericIO.writelnString("DTE: prepareForNextFlight: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
     }
     /**
-     * The passenger checks if they is the last to make it to their destination inside the airport. If so, they signal all others to leave together. Otherwise, they wait for the last one to signal them.
+     * The passenger checks if they are the last to make it to their destination inside the airport. If so, they signal 
+     * all others to leave together. Otherwise, they wait for the last one to signal them.
      * @param pid The passenger's ID.
      */
     @Override
@@ -161,7 +148,8 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
         try {
             this.waitingPassengers++;
         } catch (Exception e) {
-            this.log("DTE1: goHome: " + e.toString());
+            GenericIO.writelnString("DTE1: goHome: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -174,40 +162,11 @@ public class DepartureTerminalEntrance implements DTEPassenger, DTEforATE {
             if(this.allSignaled) this.passengerCondition.signalAll();
             else this.passengerCondition.await();
         } catch (Exception e) {
-            this.log("DTE2: goHome: " + e.toString());
+            GenericIO.writelnString("DTE2: goHome: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
         if(this.allSignaled) this.ate.signalWaitingPassengers();
-    }
-
-    private void logStart() throws IOException {
-        // open data stream to log file
-        this.logFile = new File("logFile_DTE_" + System.nanoTime() + ".txt");
-        this.writer = new BufferedWriter(new FileWriter(this.logFile));
-    }
-    /**
-     * Function that closes the BufferedWriter instance.
-     */
-    private void close() {
-        try {
-            this.writer.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    /**
-     * Function that writes the current info onto the log file.
-     */
-    private void log(String logString) {
-        this.reentrantLock.lock();
-        try {
-            this.writer.write((logString + "\n"));
-            this.writer.flush();
-        } catch (Exception e) {
-            this.log("DTE: log: " + e.toString());
-        } finally {
-            this.reentrantLock.unlock();
-        }
     }
 }

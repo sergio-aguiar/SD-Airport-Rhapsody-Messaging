@@ -30,7 +30,7 @@ public class BusDriverThread extends Thread {
             this.description = description;
         }
         /**
-         * Enum's toString override
+         * Enum's toString() override.
          */
         @Override
         public String toString(){

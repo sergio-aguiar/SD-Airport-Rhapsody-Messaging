@@ -59,7 +59,7 @@ public class PorterThread extends Thread {
      */
     private final TSAPorter tsaPorter;
     /**
-     * 
+     * Constructor: Porter
      * @param pid Porter's ID.'
      * @param al Porter's Arrival Lounge interface.
      * @param bcp Porter's Baggage Collection Point interface.

@@ -2,20 +2,33 @@ package HybridServerSide.DepartureTerminalEntrance;
 
 import Communication.Message;
 import Communication.MessageException;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeProxy;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeServer;
+import genclass.GenericIO;
 
+/**
+ * DepartureTerminalEntranceInterface: DepartureTerminalEntrance message processing and replying.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
 public class DepartureTerminalEntranceInterface {
-
+    /**
+     * A reference to the server's DepartureTerminalEntrance.
+     */
     private DepartureTerminalEntrance departureTerminalEntrance;
-
+    /**
+     * Constructor: DepartureTerminalEntranceInterface.
+     * @param departureTerminalEntrance A reference to the server's DepartureTerminalEntrance.
+     */
     public DepartureTerminalEntranceInterface(DepartureTerminalEntrance departureTerminalEntrance) {
         this.departureTerminalEntrance = departureTerminalEntrance;
     }
-
-    public Message processAndReply(Message inMessage) throws MessageException
-    {
-        System.out.println("In Message: " + inMessage.toString());
+    /**
+     * Method that processes an inMessage and returns the appropriate response outMessage.
+     * @param inMessage The message received.
+     * @return The response message based off the message received.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message processAndReply(Message inMessage) throws MessageException {
+        GenericIO.writelnString("[In] : " + inMessage.toString());
 
         Message outMessage = null;
 
@@ -43,7 +56,8 @@ public class DepartureTerminalEntranceInterface {
                 break;
             case 22:
                 int result22 = departureTerminalEntrance.getWaitingPassengers();
-                outMessage = new Message(Message.MessageType.DTE_GET_WAITING_PASSENGERS.getMessageCode(), (Object) result22);
+                outMessage = new Message(Message.MessageType.DTE_GET_WAITING_PASSENGERS.getMessageCode(),
+                        (Object) result22);
                 break;
             case 23:
                 departureTerminalEntrance.signalWaitingPassengers();
@@ -63,7 +77,7 @@ public class DepartureTerminalEntranceInterface {
                 outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
-        System.out.println("Out Message: " + outMessage.toString());
+        GenericIO.writelnString("[Out]: " + outMessage.toString());
         return (outMessage);
     }
 

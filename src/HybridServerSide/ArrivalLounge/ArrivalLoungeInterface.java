@@ -3,18 +3,33 @@ package HybridServerSide.ArrivalLounge;
 import ClientSide.Extras.Bag;
 import Communication.Message;
 import Communication.MessageException;
+import genclass.GenericIO;
 
+/**
+ * ArrivalLoungeInterface: ArrivalLounge message processing and replying.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
 public class ArrivalLoungeInterface {
-
+    /**
+     * A reference to the server's ArrivalLounge.
+     */
     private ArrivalLounge arrivalLounge;
-
+    /**
+     * Constructor: ArrivalLoungeInterface.
+     * @param arrivalLounge A reference to the server's ArrivalLounge.
+     */
     public ArrivalLoungeInterface(ArrivalLounge arrivalLounge) {
         this.arrivalLounge = arrivalLounge;
     }
-
-    public Message processAndReply(Message inMessage) throws MessageException
-    {
-        System.out.println("In Message: " + inMessage.toString());
+    /**
+     * Method that processes an inMessage and returns the appropriate response outMessage.
+     * @param inMessage The message received.
+     * @return The response message based off the message received.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message processAndReply(Message inMessage) throws MessageException {
+        GenericIO.writelnString("[In] : " + inMessage.toString());
 
         Message outMessage = null;
 
@@ -72,24 +87,27 @@ public class ArrivalLoungeInterface {
                 break;
             case 53:
                 boolean result53 = arrivalLounge.passengersNoLongerNeedTheBus();
-                outMessage = new Message(Message.MessageType.AL_PASSENGERS_NO_LONGER_NEED_THE_BUS.getMessageCode(), (Object) result53);
+                outMessage = new Message(Message.MessageType.AL_PASSENGERS_NO_LONGER_NEED_THE_BUS.getMessageCode(),
+                        (Object) result53);
                 break;
             case 54:
                 arrivalLounge.incrementCrossFlightPassengerCount();
-                outMessage = new Message(Message.MessageType.AL_INCREMENT_CROSS_FLIGHT_PASSENGER_COUNT.getMessageCode(), null);
+                outMessage = new Message(Message.MessageType.AL_INCREMENT_CROSS_FLIGHT_PASSENGER_COUNT.getMessageCode(),
+                        null);
                 break;
             case 55:
-                arrivalLounge.setInitialState((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument(), (Bag[][][]) inMessage.getThirdArgument());
+                arrivalLounge.setInitialState((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument(),
+                        (Bag[][][]) inMessage.getThirdArgument());
                 outMessage = new Message(Message.MessageType.AL_SET_INITIAL_STATE.getMessageCode(), null);
                 break;
             case 61:
                 ArrivalLoungeServer.running = false;
-                System.out.println(Thread.currentThread().getName());
+                GenericIO.writelnString(Thread.currentThread().getName());
                 (((ArrivalLoungeProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
                 outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
-        System.out.println("Out Message: " + outMessage.toString());
+        GenericIO.writelnString("[Out]: " + outMessage.toString());
         return (outMessage);
     }
 

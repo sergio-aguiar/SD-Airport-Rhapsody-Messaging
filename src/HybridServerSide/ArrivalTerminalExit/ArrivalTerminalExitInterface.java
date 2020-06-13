@@ -2,19 +2,34 @@ package HybridServerSide.ArrivalTerminalExit;
 
 import Communication.Message;
 import Communication.MessageException;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeProxy;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeServer;
+import genclass.GenericIO;
 
+/**
+ * ArrivalTerminalExitInterface: ArrivalTerminalExit message processing and replying.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
 public class ArrivalTerminalExitInterface {
-
+    /**
+     * A reference to the server's ArrivalTerminalExit.
+     */
     private ArrivalTerminalExit arrivalTerminalExit;
 
+    /**
+     * Constructor: ArrivalTerminalExit.
+     * @param arrivalTerminalExit A reference to the server's ArrivalTerminalExit.
+     */
     public ArrivalTerminalExitInterface(ArrivalTerminalExit arrivalTerminalExit) {
         this.arrivalTerminalExit = arrivalTerminalExit;
     }
-
+    /**
+     * Method that processes an inMessage and returns the appropriate response outMessage.
+     * @param inMessage The message received.
+     * @return The response message based off the message received.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
     public Message processAndReply(Message inMessage) throws MessageException {
-        System.out.println("In Message: " + inMessage.toString());
+        GenericIO.writelnString("[In] : " + inMessage.toString());
 
         Message outMessage = null;
 
@@ -42,7 +57,8 @@ public class ArrivalTerminalExitInterface {
                 break;
             case 20:
                 int result20 = arrivalTerminalExit.getWaitingPassengers();
-                outMessage = new Message(Message.MessageType.ATE_GET_WAITING_PASSENGERS.getMessageCode(), (Object) result20);
+                outMessage = new Message(Message.MessageType.ATE_GET_WAITING_PASSENGERS.getMessageCode(),
+                        (Object) result20);
                 break;
             case 21:
                 arrivalTerminalExit.signalWaitingPassengers();
@@ -58,12 +74,12 @@ public class ArrivalTerminalExitInterface {
                 break;
             case 61:
                 ArrivalTerminalExitServer.running = false;
-                System.out.println(Thread.currentThread().getName());
+                GenericIO.writelnString(Thread.currentThread().getName());
                 (((ArrivalTerminalExitProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
                 outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
-        System.out.println("Out Message: " + outMessage.toString());
+        GenericIO.writelnString("[Out]: " + outMessage.toString());
         return (outMessage);
     }
 }

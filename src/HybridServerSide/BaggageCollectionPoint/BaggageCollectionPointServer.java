@@ -1,15 +1,25 @@
 package HybridServerSide.BaggageCollectionPoint;
 
-import HybridServerSide.ArrivalTerminalTransferQuay.ArrivalTerminalTransferQuay;
-import HybridServerSide.ArrivalTerminalTransferQuay.ArrivalTerminalTransferQuayInterface;
-import HybridServerSide.ArrivalTerminalTransferQuay.ArrivalTerminalTransferQuayProxy;
 import HybridServerSide.ServerCom.ServerCom;
 import HybridServerSide.Stubs.RepositoryStub;
 import genclass.GenericIO;
 
-public class BaggageCollectionPointServer {
+import java.net.SocketTimeoutException;
 
+
+/**
+ * BaggageCollectionPointServer: The BaggageCollectionPoint's server's main class.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
+public class BaggageCollectionPointServer {
+    /**
+     * Variable that states whether the server is functional or not.
+     */
     public static  boolean running;
+    /**
+     * The current server's listening port.
+     */
     private  static final int serverPort = 4003;
 
     public static void main(String[] args) {
@@ -37,15 +47,15 @@ public class BaggageCollectionPointServer {
         while(running) {
             try {
                 serverComL = serverCom.accept();
-                baggageCollectionPointProxy = new BaggageCollectionPointProxy(serverComL, baggageCollectionPointInterface);
+                baggageCollectionPointProxy = new BaggageCollectionPointProxy(serverComL,
+                        baggageCollectionPointInterface);
                 baggageCollectionPointProxy.start();
-            } catch (Exception e) {
-                System.out.println(e.toString());
+            } catch (SocketTimeoutException ignored) {
             }
         }
 
         serverCom.end();
-        System.out.println("BCPServer stopped.");
+        GenericIO.writelnString("BaggageCollectionPointServer stopped.");
     }
 
 }

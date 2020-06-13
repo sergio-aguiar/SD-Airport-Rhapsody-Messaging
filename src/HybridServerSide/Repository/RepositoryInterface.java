@@ -4,29 +4,44 @@ import ClientSide.Extras.Bag;
 import ClientSide.Passenger.PassengerThread;
 import Communication.Message;
 import Communication.MessageException;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeProxy;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeServer;
+import genclass.GenericIO;
 
+/**
+ * RepositoryInterface: Repository message processing and replying.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
 public class RepositoryInterface {
-
+    /**
+     * A reference to the server's Repository.
+     */
     private Repository repository;
-
+    /**
+     * Constructor: RepositoryInterface.
+     * @param repository A reference to the server's Repository.
+     */
     public RepositoryInterface(Repository repository) {
         this.repository = repository;
     }
-
-    public Message processAndReply(Message inMessage) throws MessageException
-    {
-        System.out.println("In Message: " + inMessage.toString());
+    /**
+     * Method that processes an inMessage and returns the appropriate response outMessage.
+     * @param inMessage The message received.
+     * @return The response message based off the message received.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message processAndReply(Message inMessage) throws MessageException {
+        GenericIO.writelnString("[In] : " + inMessage.toString());
 
         Message outMessage = null;
 
         switch(inMessage.getMessageType()) {
             case 31:
                 if(inMessage.isThereNoFirstArgument())
-                    throw new MessageException("Argument \"numberOfPassengerLuggageAtThePlane\" not supplied.", inMessage);
+                    throw new MessageException("Argument \"numberOfPassengerLuggageAtThePlane\" not supplied.",
+                            inMessage);
                 if(((int) inMessage.getFirstArgument()) < 0)
-                    throw new MessageException("Argument \"numberOfPassengerLuggageAtThePlane\" was given an incorrect value.", inMessage);
+                    throw new MessageException("Argument \"numberOfPassengerLuggageAtThePlane\" was given " +
+                            "an incorrect value.", inMessage);
                 if(inMessage.isThereNoSecondArgument())
                     throw new MessageException("Argument \"passengerSituations\" not supplied.", inMessage);
                 break;
@@ -94,9 +109,11 @@ public class RepositoryInterface {
                 if(((int) inMessage.getFirstArgument()) < 0)
                     throw new MessageException("Argument \"flightNumber\" was given an incorrect value.", inMessage);
                 if(inMessage.isThereNoSecondArgument())
-                    throw new MessageException("Argument \"numberOfPassengerLuggageAtThePlane\" not supplied.", inMessage);
+                    throw new MessageException("Argument \"numberOfPassengerLuggageAtThePlane\" not supplied.",
+                            inMessage);
                 if(((int) inMessage.getSecondArgument()) < 0)
-                    throw new MessageException("Argument \"numberOfPassengerLuggageAtThePlane\" was given an incorrect value.", inMessage);
+                    throw new MessageException("Argument \"numberOfPassengerLuggageAtThePlane\" was given an " +
+                            "incorrect value.", inMessage);
                 if(inMessage.isThereNoThirdArgument())
                     throw new MessageException("Argument \"busSeatNumber\" not supplied.", inMessage);
                 if(((int) inMessage.getThirdArgument()) < 1)
@@ -118,7 +135,8 @@ public class RepositoryInterface {
 
         switch(inMessage.getMessageType()) {
             case 31:
-                repository.prepareForNextFlight((int) inMessage.getFirstArgument(), (PassengerThread.PassengerAndBagSituations[]) inMessage.getSecondArgument());
+                repository.prepareForNextFlight((int) inMessage.getFirstArgument(),
+                        (PassengerThread.PassengerAndBagSituations[]) inMessage.getSecondArgument());
                 outMessage = new Message(Message.MessageType.REP_PREPARE_FOR_NEXT_FLIGHT.getMessageCode(), null);
                 break;
             case 32:
@@ -135,14 +153,17 @@ public class RepositoryInterface {
                 break;
             case 35:
                 repository.porterTryCollectingBagFromPlane((boolean) inMessage.getFirstArgument());
-                outMessage = new Message(Message.MessageType.REP_PORTER_TRY_COLLECTING_BAG_FROM_PLANE.getMessageCode(),  null);
+                outMessage = new Message(Message.MessageType.REP_PORTER_TRY_COLLECTING_BAG_FROM_PLANE.getMessageCode(),
+                        null);
                 break;
             case 36:
                 repository.passengerGoingToCollectABag((int) inMessage.getFirstArgument());
-                outMessage = new Message(Message.MessageType.REP_PASSENGER_GOING_TO_COLLECT_A_BAG.getMessageCode(),  null);
+                outMessage = new Message(Message.MessageType.REP_PASSENGER_GOING_TO_COLLECT_A_BAG.getMessageCode(),
+                        null);
                 break;
             case 37:
-                repository.passengerEnteringTheBus((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument());
+                repository.passengerEnteringTheBus((int) inMessage.getFirstArgument(),
+                        (int) inMessage.getSecondArgument());
                 outMessage = new Message(Message.MessageType.REP_PASSENGER_ENTERING_THE_BUG.getMessageCode(),  null);
                 break;
             case 38:
@@ -158,8 +179,10 @@ public class RepositoryInterface {
                 outMessage = new Message(Message.MessageType.REP_BUS_DRIVER_PARKING_THE_BUS.getMessageCode(),  null);
                 break;
             case 41:
-                repository.passengerGettingIntoTheWaitingQueue((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument());
-                outMessage = new Message(Message.MessageType.REP_PASSENGER_GETTING_INTO_THE_WAITING_QUEUE.getMessageCode(),  null);
+                repository.passengerGettingIntoTheWaitingQueue((int) inMessage.getFirstArgument(),
+                        (int) inMessage.getSecondArgument());
+                outMessage = new Message(Message.MessageType.REP_PASSENGER_GETTING_INTO_THE_WAITING_QUEUE
+                        .getMessageCode(),  null);
                 break;
             case 42:
                 repository.passengerTakingABus((int) inMessage.getFirstArgument());
@@ -167,7 +190,8 @@ public class RepositoryInterface {
                 break;
             case 43:
                 repository.busDriverGoingToDepartureTerminal();
-                outMessage = new Message(Message.MessageType.REP_BUS_DRIVER_GOING_TO_DEPARTURE_TERMINAL.getMessageCode(),  null);
+                outMessage = new Message(Message.MessageType.REP_BUS_DRIVER_GOING_TO_DEPARTURE_TERMINAL
+                        .getMessageCode(),  null);
                 break;
             case 44:
                 repository.passengerCollectingABag((int) inMessage.getFirstArgument());
@@ -175,15 +199,19 @@ public class RepositoryInterface {
                 break;
             case 45:
                 repository.porterCarryBagToBaggageCollectionPoint();
-                outMessage = new Message(Message.MessageType.REP_PORTER_CARRY_BAG_TO_BAGGAGE_COLLECTION_POINT.getMessageCode(),  null);
+                outMessage = new Message(Message.MessageType.REP_PORTER_CARRY_BAG_TO_BAGGAGE_COLLECTION_POINT
+                        .getMessageCode(),  null);
                 break;
             case 46:
                 repository.porterAnnouncingNoMoreBagsToCollect();
-                outMessage = new Message(Message.MessageType.REP_PORTER_ANNOUNCING_NO_MORE_BAGS_TO_COLLECT.getMessageCode(),  null);
+                outMessage = new Message(Message.MessageType.REP_PORTER_ANNOUNCING_NO_MORE_BAGS_TO_COLLECT
+                        .getMessageCode(),  null);
                 break;
             case 47:
-                repository.passengerReportingMissingBags((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument());
-                outMessage = new Message(Message.MessageType.REP_PASSENGER_REPORTING_MISSING_BAGS.getMessageCode(),  null);
+                repository.passengerReportingMissingBags((int) inMessage.getFirstArgument(),
+                        (int) inMessage.getSecondArgument());
+                outMessage = new Message(Message.MessageType.REP_PASSENGER_REPORTING_MISSING_BAGS.getMessageCode(),
+                        null);
                 break;
             case 48:
                 repository.passengerPreparingNextLeg((int) inMessage.getFirstArgument());
@@ -191,23 +219,30 @@ public class RepositoryInterface {
                 break;
             case 49:
                 repository.busDriverGoingToArrivalTerminal();
-                outMessage = new Message(Message.MessageType.REP_BUS_DRIVER_GOING_TO_ARRIVAL_TERMINAL.getMessageCode(),  null);
+                outMessage = new Message(Message.MessageType.REP_BUS_DRIVER_GOING_TO_ARRIVAL_TERMINAL.getMessageCode(),
+                        null);
                 break;
             case 50:
-                repository.passengerLeavingTheBus((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument());
+                repository.passengerLeavingTheBus((int) inMessage.getFirstArgument(),
+                        (int) inMessage.getSecondArgument());
                 outMessage = new Message(Message.MessageType.REP_PASSENGER_LEAVING_THE_BUS.getMessageCode(),  null);
                 break;
             case 51:
                 repository.busDriverParkingTheBusAndLettingPassengersOff();
-                outMessage = new Message(Message.MessageType.REP_BUS_DRIVER_PARKING_THE_BUS_AND_LETTING_PASS_OFF.getMessageCode(),  null);
+                outMessage = new Message(Message.MessageType.REP_BUS_DRIVER_PARKING_THE_BUS_AND_LETTING_PASS_OFF
+                        .getMessageCode(),  null);
                 break;
             case 52:
                 repository.porterCarryBagToTemporaryStorageArea();
-                outMessage = new Message(Message.MessageType.REP_PORTER_CARRY_BAG_TO_TEMPORARY_STORAGE_AREA.getMessageCode(),  null);
+                outMessage = new Message(Message.MessageType.REP_PORTER_CARRY_BAG_TO_TEMPORARY_STORAGE_AREA
+                        .getMessageCode(),  null);
                 break;
             case 60:
                 try {
-                    repository.setInitialState((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument(), (int) inMessage.getThirdArgument(), (int) inMessage.getFourthArgument(), (PassengerThread.PassengerAndBagSituations[]) inMessage.getFifthArgument(), (int[]) inMessage.getSixthArgument(), (Bag[][][]) inMessage.getSeventhArgument());
+                    repository.setInitialState((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument(),
+                            (int) inMessage.getThirdArgument(), (int) inMessage.getFourthArgument(),
+                            (PassengerThread.PassengerAndBagSituations[]) inMessage.getFifthArgument(),
+                            (int[]) inMessage.getSixthArgument(), (Bag[][][]) inMessage.getSeventhArgument());
                 } catch(Exception e) {
                     System.out.print(e.toString());
                 }
@@ -215,12 +250,12 @@ public class RepositoryInterface {
                 break;
             case 61:
                 RepositoryServer.running = false;
-                System.out.println(Thread.currentThread().getName());
+                GenericIO.writelnString(Thread.currentThread().getName());
                 (((RepositoryProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
                 outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
-        System.out.println("Out Message: " + outMessage.toString());
+        GenericIO.writelnString("[Out]: " + outMessage.toString());
         return (outMessage);
     }
 

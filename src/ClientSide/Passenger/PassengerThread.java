@@ -4,7 +4,6 @@ import ClientSide.Interfaces.*;
 
 import java.io.Serializable;
 
-
 /**
  * Passenger Thread: executes the Passenger's life-cycle.
  * @author sergioaguiar
@@ -13,6 +12,7 @@ import java.io.Serializable;
 public class PassengerThread extends Thread {
 	/**
      * Enumerate with the Passenger states.
+     * Serializable.
      */
     public enum PassengerStates implements Serializable {
         AT_THE_DISEMBARKING_ZONE("WSD"),
@@ -23,9 +23,10 @@ public class PassengerThread extends Thread {
         TERMINAL_TRANSFER("TRT"),
         AT_THE_DEPARTURE_TRANSFER_TERMINAL("DTT"),
         ENTERING_THE_DEPARTURE_TERMINAL("EDT");
-
+        /**
+         *  Serial number for serialization identification purposes.
+         */
         private static final long serialVersionUID = 5555L;
-
         /**
          * Enum's descriptive String.
          */
@@ -38,7 +39,7 @@ public class PassengerThread extends Thread {
             this.description = description;
         }
         /**
-         * Enum's toString override
+         * Enum's toString override.
          */
         @Override
         public String toString(){
@@ -50,9 +51,13 @@ public class PassengerThread extends Thread {
 	 * TRT: if the Passenger is in Transit (has additional flight legs).
 	 * FDT: if the Passenger has reached their final destination.
      */
-    public enum PassengerAndBagSituations {
+    public enum PassengerAndBagSituations implements Serializable {
         TRT("TRT"),
         FDT("FDT");
+        /**
+         *  Serial number for serialization identification purposes.
+         */
+        private static final long serialVersionUID = 7777L;
         /**
          * Enum's descriptive String.
          */
@@ -65,7 +70,7 @@ public class PassengerThread extends Thread {
             this.description = description;
         }
         /**
-         * Enum's toString override
+         * Enum's toString override.
          */
         @Override
         public String toString() {

@@ -2,11 +2,23 @@ package Communication;
 
 import java.io.Serializable;
 
+/**
+ * Message: a class that represents instructions in the client-server communication.
+ * Serializable.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
 public class Message implements Serializable {
-
+    /**
+     *  Serial number for serialization identification purposes.
+     */
     private static final long serialVersionUID = 1001L;
 
-    public enum MessageType {
+    /**
+     * Enumerate with the Message types.
+     * Serializable.
+     */
+    public enum MessageType implements Serializable {
         BD_ATTQ_HAS_DAYS_WORK_ENDED(0),
         BD_ATTQ_ANNOUNCING_BUS_BOARDING(1),
         BD_ATTQ_GO_TO_DEPARTURE_TERMINAL(2),
@@ -69,42 +81,98 @@ public class Message implements Serializable {
         DTE_SET_INITIAL_STATE(59),
         REP_SET_INITIAL_STATE(60),
         EVERYTHING_FINISHED(61);
-
+        /**
+         * The message's numeric value.
+         */
         private int messageCode;
-
+        /**
+         * MessageType's constructor.
+         * @param messageCode The message's numeric value.
+         */
         MessageType(int messageCode) {
             this.messageCode = messageCode;
         }
-
+        /**
+         * Getter method for messageCode.
+         * @return The message's numeric value.
+         */
         public int getMessageCode() {
             return this.messageCode;
         }
-
+        /**
+         * Function that given a certain message code returns the message's formal name, or "Error" if it does not
+         * exist.
+         * @param messageCode The message's numeric value.
+         * @return The Message's formal name, or "Error" if it does not exist.
+         */
         public static String getNameByMessageCode(int messageCode) {
             for(MessageType m : values())
                 if(m.getMessageCode() == messageCode) return m.name();
             return "Error";
         }
-
+        /**
+         * Enum's toString override.
+         */
         @Override
         public String toString() {
             return this.name();
         }
     }
-
+    /**
+     * The message's MessageType numeric value.
+     */
     private int messageType;
+    /**
+     * The passenger ID associated with the request.
+     */
     private int passengerID;
+    /**
+     * States whether this is a porter message (true) or a bus driver message (false).
+     * When false, is an area request if isAreaRequest is true.
+     */
     private boolean isPorterMessage;
+    /**
+     * States whether this is an area message or not.
+     */
     private boolean isAreaRequest;
+    /**
+     * The message's first argument, if existent.
+     */
     private Object firstArgument;
+    /**
+     * The message's second argument, if existent.
+     */
     private Object secondArgument;
+    /**
+     * The message's third argument, if existent.
+     */
     private Object thirdArgument;
+    /**
+     * The message's fourth argument, if existent.
+     */
     private Object fourthArgument;
+    /**
+     * The message's fifth argument, if existent.
+     */
     private Object fifthArgument;
+    /**
+     * The message's sixth argument, if existent.
+     */
     private Object sixthArgument;
+    /**
+     * The message's seventh argument, if existent.
+     */
     private Object seventhArgument;
+    /**
+     * The message's return value, if existent.
+     */
     private Object returnInfo;
-
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param passengerID The passenger ID associated with the request.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
     public Message(int messageType, int passengerID) throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type: " + messageType);
@@ -126,7 +194,13 @@ public class Message implements Serializable {
         this.seventhArgument = null;
         this.returnInfo = null;
     }
-
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param passengerID The passenger ID associated with the request.
+     * @param firstArgument The message's first argument, if existent.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
     public Message(int messageType, int passengerID, Object firstArgument) throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type: " + messageType);
@@ -148,8 +222,16 @@ public class Message implements Serializable {
         this.seventhArgument = null;
         this.returnInfo = null;
     }
-
-    public Message(int messageType, int passengerID, Object firstArgument, Object secondArgument) throws MessageException {
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param passengerID The passenger ID associated with the request.
+     * @param firstArgument The message's first argument, if existent.
+     * @param secondArgument The message's second argument, if existent.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message(int messageType, int passengerID, Object firstArgument, Object secondArgument)
+            throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type: " + messageType);
         if(passengerID < 0)
@@ -170,7 +252,12 @@ public class Message implements Serializable {
         this.seventhArgument = null;
         this.returnInfo = null;
     }
-
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param isPorterMessage States whether this is a porter message (true) or a bus driver message (false).
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
     public Message(int messageType, boolean isPorterMessage) throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type: " + messageType);
@@ -192,7 +279,13 @@ public class Message implements Serializable {
         this.seventhArgument = null;
         this.returnInfo = null;
     }
-
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param isPorterMessage States whether this is a porter message (true) or a bus driver message (false).
+     * @param firstArgument The message's first argument, if existent.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
     public Message(int messageType, boolean isPorterMessage, Object firstArgument) throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type: " + messageType);
@@ -214,8 +307,16 @@ public class Message implements Serializable {
         this.seventhArgument = null;
         this.returnInfo = null;
     }
-
-    public Message(int messageType, boolean isPorterMessage, Object firstArgument, Object secondArgument) throws MessageException {
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param isPorterMessage States whether this is a porter message (true) or a bus driver message (false).
+     * @param firstArgument The message's first argument, if existent.
+     * @param secondArgument The message's second argument, if existent.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message(int messageType, boolean isPorterMessage, Object firstArgument, Object secondArgument)
+            throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type: " + messageType);
         if(!isPorterMessage && messageType > 5)
@@ -236,7 +337,14 @@ public class Message implements Serializable {
         this.seventhArgument = null;
         this.returnInfo = null;
     }
-
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param isPorterMessage States whether this is a porter message (true) or a bus driver message (false).
+     *                        When false, is an area request if isAreaRequest is true.
+     * @param isAreaRequest States whether this is an area message or not.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
     public Message(int messageType, boolean isPorterMessage, boolean isAreaRequest) throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type: " + messageType);
@@ -265,8 +373,17 @@ public class Message implements Serializable {
         this.seventhArgument = null;
         this.returnInfo = null;
     }
-
-    public Message(int messageType, boolean isPorterMessage, boolean isAreaRequest, Object firstArgument) throws MessageException {
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param isPorterMessage States whether this is a porter message (true) or a bus driver message (false).
+     *                        When false, is an area request if isAreaRequest is true.
+     * @param isAreaRequest States whether this is an area message or not.
+     * @param firstArgument The message's first argument, if existent.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message(int messageType, boolean isPorterMessage, boolean isAreaRequest, Object firstArgument)
+            throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type: " + messageType);
         if(isAreaRequest) {
@@ -294,8 +411,18 @@ public class Message implements Serializable {
         this.seventhArgument = null;
         this.returnInfo = null;
     }
-
-    public Message(int messageType, boolean isPorterMessage, boolean isAreaRequest, Object firstArgument, Object secondArgument) throws MessageException {
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param isPorterMessage States whether this is a porter message (true) or a bus driver message (false).
+     *                        When false, is an area request if isAreaRequest is true.
+     * @param isAreaRequest States whether this is an area message or not.
+     * @param firstArgument The message's first argument, if existent.
+     * @param secondArgument The message's second argument, if existent.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message(int messageType, boolean isPorterMessage, boolean isAreaRequest, Object firstArgument,
+                   Object secondArgument) throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type: " + messageType);
         if(isAreaRequest) {
@@ -323,8 +450,16 @@ public class Message implements Serializable {
         this.seventhArgument = null;
         this.returnInfo = null;
     }
-
-    public Message(int messageType, Object argument1, Object argument2, Object argument3) throws MessageException {
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param firstArgument The message's first argument, if existent.
+     * @param secondArgument The message's second argument, if existent.
+     * @param thirdArgument  The message's third argument, if existent.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message(int messageType, Object firstArgument, Object secondArgument, Object thirdArgument)
+            throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type.");
         if(messageType < 55)
@@ -334,18 +469,30 @@ public class Message implements Serializable {
         this.passengerID = -1;
         this.isPorterMessage = false;
         this.isAreaRequest = true;
-        this.firstArgument = argument1;
-        this.secondArgument = argument2;
-        this.thirdArgument = argument3;
+        this.firstArgument = firstArgument;
+        this.secondArgument = secondArgument;
+        this.thirdArgument = thirdArgument;
         this.fourthArgument = null;
         this.fifthArgument = null;
         this.sixthArgument = null;
         this.seventhArgument = null;
         this.returnInfo = null;
     }
-
-    public Message(int messageType, Object argument1, Object argument2, Object argument3,
-                   Object argument4, Object argument5, Object argument6, Object argument7) throws MessageException {
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param firstArgument The message's first argument, if existent.
+     * @param secondArgument The message's second argument, if existent.
+     * @param thirdArgument  The message's third argument, if existent.
+     * @param fourthArgument The message's fourth argument, if existent.
+     * @param fifthArgument The message's fifth argument, if existent.
+     * @param sixthArgument The message's sixth argument, if existent.
+     * @param seventhArgument The message's seventh argument, if existent.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message(int messageType, Object firstArgument, Object secondArgument, Object thirdArgument,
+                   Object fourthArgument, Object fifthArgument, Object sixthArgument, Object seventhArgument)
+            throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type.");
         if(messageType != 60)
@@ -355,16 +502,21 @@ public class Message implements Serializable {
         this.passengerID = -1;
         this.isPorterMessage = false;
         this.isAreaRequest = true;
-        this.firstArgument = argument1;
-        this.secondArgument = argument2;
-        this.thirdArgument = argument3;
-        this.fourthArgument = argument4;
-        this.fifthArgument = argument5;
-        this.sixthArgument = argument6;
-        this.seventhArgument = argument7;
+        this.firstArgument = firstArgument;
+        this.secondArgument = secondArgument;
+        this.thirdArgument = thirdArgument;
+        this.fourthArgument = fourthArgument;
+        this.fifthArgument = fifthArgument;
+        this.sixthArgument = sixthArgument;
+        this.seventhArgument = seventhArgument;
         this.returnInfo = null;
     }
-
+    /**
+     * Constructor: Message.
+     * @param messageType The message's MessageType numeric value.
+     * @param returnInfo The message's return value, if existent.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
     public Message(int messageType, Object returnInfo) throws MessageException {
         if(messageType < 0 || messageType > 61)
             throw new MessageException("Non-existent message type: " + messageType);
@@ -381,79 +533,135 @@ public class Message implements Serializable {
         this.seventhArgument = null;
         this.returnInfo = returnInfo;
     }
-
+    /**
+     * Getter method for messageType.
+     * @return The message's MessageType numeric value.
+     */
     public int getMessageType() {
         return this.messageType;
     }
-
+    /**
+     * Getter method for passengerID.
+     * @return The passenger ID associated with the request.
+     */
     public int getPassengerID() {
         return this.passengerID;
     }
-
+    /**
+     * Getter method for firstArgument.
+     * @return The message's first argument, if existent.
+     */
     public Object getFirstArgument() {
         return this.firstArgument;
     }
-
+    /**
+     * Getter method for secondArgument.
+     * @return The message's second argument, if existent.
+     */
     public Object getSecondArgument() {
         return this.secondArgument;
     }
-
+    /**
+     * Getter method for thirdArgument.
+     * @return The message's third argument, if existent.
+     */
     public Object getThirdArgument() {
         return this.thirdArgument;
     }
-
+    /**
+     * Getter method for fourthArgument.
+     * @return The message's fourth argument, if existent.
+     */
     public Object getFourthArgument() {
         return this.fourthArgument;
     }
-
+    /**
+     * Getter method for fifthArgument.
+     * @return The message's fifth argument, if existent.
+     */
     public Object getFifthArgument() {
         return this.fifthArgument;
     }
-
+    /**
+     * Getter method for sixthArgument.
+     * @return The message's sixth argument, if existent.
+     */
     public Object getSixthArgument() {
         return this.sixthArgument;
     }
-
+    /**
+     * Getter method for seventhArgument.
+     * @return The message's seventh argument, if existent.
+     */
     public Object getSeventhArgument() {
         return this.seventhArgument;
     }
-
+    /**
+     * Getter method for returnInfo.
+     * @return The message's return value, if existent.
+     */
     public Object getReturnInfo() {
         return this.returnInfo;
     }
-
+    /**
+     * Function that returns whether there is no first argument.
+     * @return Whether there is no first argument.
+     */
     public boolean isThereNoFirstArgument() {
         return this.firstArgument == null;
     }
-
+    /**
+     * Function that returns whether there is no second argument.
+     * @return Whether there is no second argument.
+     */
     public boolean isThereNoSecondArgument() {
         return this.secondArgument == null;
     }
-
+    /**
+     * Function that returns whether there is no third argument.
+     * @return Whether there is no third argument.
+     */
     public boolean isThereNoThirdArgument() {
         return this.thirdArgument == null;
     }
-
+    /**
+     * Function that returns whether there is no fourth argument.
+     * @return Whether there is no fourth argument.
+     */
     public boolean isThereNoFourthArgument() {
         return this.fourthArgument == null;
     }
-
+    /**
+     * Function that returns whether there is no fifth argument.
+     * @return Whether there is no fifth argument.
+     */
     public boolean isThereNoFifthArgument() {
         return this.fifthArgument == null;
     }
-
+    /**
+     * Function that returns whether there is no sixth argument.
+     * @return Whether there is no sixth argument.
+     */
     public boolean isThereNoSixthArgument() {
         return this.sixthArgument == null;
     }
-
+    /**
+     * Function that returns whether there is no seventh argument.
+     * @return Whether there is no seventh argument.
+     */
     public boolean isThereNoSeventhArgument() {
         return this.seventhArgument == null;
     }
-
+    /**
+     * Function that returns whether there is no return info.
+     * @return Whether there is no return info.
+     */
     public boolean isThereNoReturnInfo() {
         return this.returnInfo == null;
     }
-
+    /**
+     * Message's toString override.
+     */
     @Override
     public String toString() {
         String out = "Message{" + "messageType=" + Message.MessageType.getNameByMessageCode(this.messageType);

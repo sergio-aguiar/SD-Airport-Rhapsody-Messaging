@@ -3,19 +3,13 @@ package HybridServerSide.ArrivalTerminalTransferQuay;
 import ClientSide.Interfaces.ATTQBusDriver;
 import ClientSide.Interfaces.ATTQPassenger;
 
-import HybridServerSide.Repository.Repository;
 import HybridServerSide.Stubs.ArrivalLoungeStub;
 import HybridServerSide.Stubs.RepositoryStub;
+import genclass.GenericIO;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /** Arrival Terminal Transfer Quay: Where passengers await the bus to transfer terminals and the bus driver awaits them.
  * Used by PASSENGER and BUS DRIVER.
@@ -79,24 +73,15 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
      * The class's RepositoryStub instance.
      */
     private final RepositoryStub repositoryStub;
-
     /**
-     * The class's FIle instance.
-     */
-    private File logFile;
-    /**
-     * The class's BufferedWriter instance.
-     */
-    private BufferedWriter writer;
-
-    /**
-     * Arrival Terminal Transfer Quay constructor.
+     * Constructor: ArrivalTerminalTransferQuay.
      * @param repositoryStub repositoryStub.
      * @param totalPassengers Number of total passengers.
      * @param busSeatNumber Bus seat number.
      * @param arrivalLoungeStub The class's ArrivalLounge instance.
      */
-    public ArrivalTerminalTransferQuay(RepositoryStub repositoryStub, int totalPassengers, int busSeatNumber, ArrivalLoungeStub arrivalLoungeStub){
+    public ArrivalTerminalTransferQuay(RepositoryStub repositoryStub, int totalPassengers, int busSeatNumber,
+                                       ArrivalLoungeStub arrivalLoungeStub){
         this.reentrantLock = new ReentrantLock(true);
         this.busQueueCondition = this.reentrantLock.newCondition();
         this.busLeavingCondition = this.reentrantLock.newCondition();
@@ -115,8 +100,8 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
         this.repositoryStub = repositoryStub;
     }
     /**
-     * Arrival Terminal Transfer Quay constructor.
-     * @param repositoryStub repositoryStub.
+     * Constructor: ArrivalTerminalTransferQuay.
+     * @param repositoryStub The class's RepositoryStub instance.
      * @param arrivalLoungeStub The class's ArrivalLounge instance.
      */
     public ArrivalTerminalTransferQuay(RepositoryStub repositoryStub, ArrivalLoungeStub arrivalLoungeStub){
@@ -130,14 +115,12 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
         this.busBoarding = false;
         this.arrivalLoungeStub = arrivalLoungeStub;
         this.repositoryStub = repositoryStub;
-
-        try {
-            this.logStart();
-        } catch(Exception e) {
-            this.log(e.toString());
-        }
     }
-
+    /**
+     * Function that sets the initial state of a server's data.
+     * @param totalPassengers Total number of passengers per flight.
+     * @param busSeatNumber Number of seats in the bus.
+     */
     public void setInitialState(int totalPassengers, int busSeatNumber) {
         this.reentrantLock.lock();
         try {
@@ -148,12 +131,12 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             Arrays.fill(this.busSeats, "-");
             Arrays.fill(this.busWaitingQueue, "-");
         } catch (Exception e) {
-            this.log("ATTQ: setInitialState: " + e.toString());
+            GenericIO.writelnString("ATTQ: setInitialState: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
     }
-
     /**
      * Function that adds passengers to the waiting queue.
      * @param pid The passenger's ID.
@@ -228,7 +211,8 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             Arrays.fill(this.busSeats, "-");
             Arrays.fill(this.busWaitingQueue, "-");
         } catch (Exception e) {
-            this.log("ATTQ: prepareForNextFlight: " + e.toString());
+            GenericIO.writelnString("ATTQ: prepareForNextFlight: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -252,7 +236,8 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             }
             if(this.passengersSignaled > 0) this.busDriverCondition.await();
         } catch (Exception e) {
-            this.log("ATTQ: announcingBusBoarding: " + e.toString());
+            GenericIO.writelnString("ATTQ: announcingBusBoarding: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -274,7 +259,8 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             this.repositoryStub.passengerEnteringTheBus(pid, this.passengersInBus - 1);
             this.busLeavingCondition.await();
         } catch (Exception e) {
-            this.log("ATTQ: enterTheBus: " + e.toString());
+            GenericIO.writelnString("ATTQ: enterTheBus: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -291,7 +277,8 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
         try {
             this.repositoryStub.busDriverInitiated();
         } catch (Exception e) {
-            this.log("ATTQ: hasDaysWorkEnded: " + e.toString());
+            GenericIO.writelnString("ATTQ: hasDaysWorkEnded: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -309,7 +296,8 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             this.busBoarding = false;
             this.repositoryStub.busDriverParkingTheBus();
         } catch (Exception e) {
-            this.log("ATTQ: parkTheBus: " + e.toString());
+            GenericIO.writelnString("ATTQ: parkTheBus: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -320,7 +308,7 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
      */
     @Override
     public void takeABus(int pid) {
-        int queuePosition = -1;
+        int queuePosition;
         this.reentrantLock.lock();
         try {
             queuePosition = this.getIntoQueue(pid);
@@ -329,7 +317,8 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             this.repositoryStub.passengerTakingABus(pid);
             this.busQueueCondition.await();
         } catch (Exception e) {
-            this.log("ATTQ: takeABus: " + e.toString());
+            GenericIO.writelnString("ATTQ: takeABus: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -348,40 +337,11 @@ public class ArrivalTerminalTransferQuay implements ATTQPassenger, ATTQBusDriver
             this.repositoryStub.busDriverGoingToDepartureTerminal();
             this.busLeavingCondition.signalAll();
         } catch (Exception e) {
-            this.log("ATTQ: goToDepartureTerminal: " + e.toString());
+            GenericIO.writelnString("ATTQ: goToDepartureTerminal: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
         return busPassengers;
-    }
-
-    private void logStart() throws IOException {
-        // open data stream to log file
-        this.logFile = new File("logFile_ATTQ_" + System.nanoTime() + ".txt");
-        this.writer = new BufferedWriter(new FileWriter(this.logFile));
-    }
-    /**
-     * Function that closes the BufferedWriter instance.
-     */
-    private void close() {
-        try {
-            this.writer.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    /**
-     * Function that writes the current info onto the log file.
-     */
-    private void log(String logString) {
-        this.reentrantLock.lock();
-        try {
-            this.writer.write((logString + "\n"));
-            this.writer.flush();
-        } catch (Exception e) {
-            this.log("ATTQ: log: " + e.toString());
-        } finally {
-            this.reentrantLock.unlock();
-        }
     }
 }

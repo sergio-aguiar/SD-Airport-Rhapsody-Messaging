@@ -1,16 +1,25 @@
 package HybridServerSide.ArrivalTerminalExit;
 
-import HybridServerSide.ArrivalLounge.ArrivalLounge;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeInterface;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeProxy;
 import HybridServerSide.ServerCom.ServerCom;
 import HybridServerSide.Stubs.DepartureTerminalEntranceStub;
 import HybridServerSide.Stubs.RepositoryStub;
 import genclass.GenericIO;
 
-public class ArrivalTerminalExitServer {
+import java.net.SocketTimeoutException;
 
+/**
+ * ArrivalTerminalExitServer: The ArrivalTerminalExit's server's main class.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
+public class ArrivalTerminalExitServer {
+    /**
+     * Variable that states whether the server is functional or not.
+     */
     public static  boolean running;
+    /**
+     * The current server's listening port.
+     */
     private  static final int serverPort = 4001;
 
     public static void main(String[] args) {
@@ -39,18 +48,17 @@ public class ArrivalTerminalExitServer {
         running = true;
         while(running) {
             try{
-                System.out.println("STILL IN LOOP!");
+                GenericIO.writelnString("STILL IN LOOP!");
                 serverComL = serverCom.accept();
                 arrivalTerminalExitProxy = new ArrivalTerminalExitProxy(serverComL, arrivalTerminalExitInterface);
                 arrivalTerminalExitProxy.start();
-                System.out.println("END OF LOOP!");
-            } catch (Exception e) {
-                System.out.println(e.toString());
+                GenericIO.writelnString("END OF LOOP!");
+            } catch (SocketTimeoutException ignored) {
             }
         }
 
         serverCom.end();
-        System.out.println("ATEServer stopped.");
+        GenericIO.writelnString("ArrivalTerminalExitServer stopped.");
     }
 
 }

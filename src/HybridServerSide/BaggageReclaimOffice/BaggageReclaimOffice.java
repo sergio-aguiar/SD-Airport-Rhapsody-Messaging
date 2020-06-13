@@ -1,16 +1,10 @@
 package HybridServerSide.BaggageReclaimOffice;
 
 import ClientSide.Interfaces.BROPassenger;
-import HybridServerSide.Repository.Repository;
 import HybridServerSide.Stubs.RepositoryStub;
+import genclass.GenericIO;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**Baggage Reclaim Office: Where passengers report missing bags.
  * Used by PASSENGER.
@@ -23,32 +17,16 @@ public class BaggageReclaimOffice implements BROPassenger {
      */
     private final ReentrantLock reentrantLock;
     /**
-     * The class's Repository instance.
+     * The class's RepositoryStub instance.
      */
     private final RepositoryStub repositoryStub;
-
     /**
-     * The class's FIle instance.
-     */
-    private File logFile;
-    /**
-     * The class's BufferedWriter instance.
-     */
-    private BufferedWriter writer;
-
-    /**
-     * BaggageReclaimOffice constructor.
-     * @param repositoryStub RepositoryStub.
+     * Constructor: BaggageReclaimOffice.
+     * @param repositoryStub The class's RepositoryStub instance.
      */
     public BaggageReclaimOffice(RepositoryStub repositoryStub) {
         this.reentrantLock = new ReentrantLock(true);
         this.repositoryStub = repositoryStub;
-
-        try {
-            this.logStart();
-        } catch(Exception e) {
-            this.log(e.toString());
-        }
     }
     /**
      * Passengers report how many missing bags they have.
@@ -61,40 +39,10 @@ public class BaggageReclaimOffice implements BROPassenger {
         try {
             this.repositoryStub.passengerReportingMissingBags(pid, missingBags);
         } catch (Exception e) {
-            this.log("BRO: reportMissingBags: " + e.toString());
+            GenericIO.writelnString("BRO: reportMissingBags: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
     }
-
-    private void logStart() throws IOException {
-        // open data stream to log file
-        this.logFile = new File("logFile_BRO_" + System.nanoTime() + ".txt");
-        this.writer = new BufferedWriter(new FileWriter(this.logFile));
-    }
-    /**
-     * Function that closes the BufferedWriter instance.
-     */
-    private void close() {
-        try {
-            this.writer.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    /**
-     * Function that writes the current info onto the log file.
-     */
-    private void log(String logString) {
-        this.reentrantLock.lock();
-        try {
-            this.writer.write((logString + "\n"));
-            this.writer.flush();
-        } catch (Exception e) {
-            this.log("BRO: log: " + e.toString());
-        } finally {
-            this.reentrantLock.unlock();
-        }
-    }
-
 }

@@ -1,17 +1,11 @@
 package HybridServerSide.TemporaryStorageArea;
 
 import ClientSide.Interfaces.TSAPorter;
-import HybridServerSide.Repository.Repository;
 import HybridServerSide.Stubs.RepositoryStub;
+import genclass.GenericIO;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Temporary Storage Area: Where the porter takes bags currently in transit.
@@ -29,33 +23,18 @@ public class TemporaryStorageArea implements TSAPorter {
      */
     private final ArrayList<Integer> tsaBags;
     /**
-     * The class's Repository instance.
+     * The class's RepositoryStub instance.
      */
     private final RepositoryStub repositoryStub;
 
     /**
-     * The class's FIle instance.
-     */
-    private File logFile;
-    /**
-     * The class's BufferedWriter instance.
-     */
-    private BufferedWriter writer;
-
-    /**
-     * TemporaryStorageArea constructor.
-     * @param repositoryStub A reference to a repository object.
+     * Constructor: TemporaryStorageArea.
+     * @param repositoryStub The class's RepositoryStub instance.
      */
     public TemporaryStorageArea(RepositoryStub repositoryStub) {
         this.reentrantLock = new ReentrantLock(true);
         this.tsaBags = new ArrayList<>();
         this.repositoryStub = repositoryStub;
-
-        try {
-            this.logStart();
-        } catch(Exception e) {
-            this.log(e.toString());
-        }
     }
     /**
      * Function that allows for a transition to a new flight (new plane landing simulation).
@@ -74,37 +53,8 @@ public class TemporaryStorageArea implements TSAPorter {
             this.repositoryStub.porterCarryBagToTemporaryStorageArea();
             this.tsaBags.add(bagID);
         } catch (Exception e) {
-            this.log("TSA: carryItToAppropriateStore: " + e.toString());
-        } finally {
-            this.reentrantLock.unlock();
-        }
-    }
-
-    private void logStart() throws IOException {
-        // open data stream to log file
-        this.logFile = new File("logFile_TSA_" + System.nanoTime() + ".txt");
-        this.writer = new BufferedWriter(new FileWriter(this.logFile));
-    }
-    /**
-     * Function that closes the BufferedWriter instance.
-     */
-    private void close() {
-        try {
-            this.writer.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    /**
-     * Function that writes the current info onto the log file.
-     */
-    private void log(String logString) {
-        this.reentrantLock.lock();
-        try {
-            this.writer.write((logString + "\n"));
-            this.writer.flush();
-        } catch (Exception e) {
-            this.log("TSA: log: " + e.toString());
+            GenericIO.writelnString("TSA: carryItToAppropriateStore: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }

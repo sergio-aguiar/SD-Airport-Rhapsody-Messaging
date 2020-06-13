@@ -1,15 +1,24 @@
 package HybridServerSide.BaggageReclaimOffice;
 
-import HybridServerSide.BaggageCollectionPoint.BaggageCollectionPoint;
-import HybridServerSide.BaggageCollectionPoint.BaggageCollectionPointInterface;
-import HybridServerSide.BaggageCollectionPoint.BaggageCollectionPointProxy;
 import HybridServerSide.ServerCom.ServerCom;
 import HybridServerSide.Stubs.RepositoryStub;
 import genclass.GenericIO;
 
-public class BaggageReclaimOfficeServer {
+import java.net.SocketTimeoutException;
 
+/**
+ * BaggageReclaimOfficeServer: The BaggageReclaimOffice's server's main class.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
+public class BaggageReclaimOfficeServer {
+    /**
+     * Variable that states whether the server is functional or not.
+     */
     public static  boolean running;
+    /**
+     * The current server's listening port.
+     */
     private  static final int serverPort = 4004;
 
     public static void main(String[] args) {
@@ -39,13 +48,12 @@ public class BaggageReclaimOfficeServer {
                 serverComL = serverCom.accept();
                 baggageReclaimOfficeProxy = new BaggageReclaimOfficeProxy(serverComL, baggageReclaimOfficeInterface);
                 baggageReclaimOfficeProxy.start();
-            } catch (Exception e) {
-                System.out.println(e.toString());
+            } catch (SocketTimeoutException ignored) {
             }
         }
 
         serverCom.end();
-        System.out.println("BROServer stopped.");
+        GenericIO.writelnString("BaggageReclaimOfficeServer stopped.");
     }
 
 }

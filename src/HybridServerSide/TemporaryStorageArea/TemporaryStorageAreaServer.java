@@ -1,17 +1,24 @@
 package HybridServerSide.TemporaryStorageArea;
 
-import ClientSide.Extras.Bag;
-import ClientSide.Passenger.PassengerThread;
-import HybridServerSide.Repository.Repository;
-import HybridServerSide.Repository.RepositoryInterface;
-import HybridServerSide.Repository.RepositoryProxy;
 import HybridServerSide.ServerCom.ServerCom;
 import HybridServerSide.Stubs.RepositoryStub;
 import genclass.GenericIO;
 
-public class TemporaryStorageAreaServer {
+import java.net.SocketTimeoutException;
 
+/**
+ * TemporaryStorageAreaServer: The TemporaryStorageArea's server's main class.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
+public class TemporaryStorageAreaServer {
+    /**
+     * Variable that states whether the server is functional or not.
+     */
     public static  boolean running;
+    /**
+     * The current server's listening port.
+     */
     private  static final int serverPort = 4007;
 
     public static void main(String[] args) {
@@ -41,13 +48,12 @@ public class TemporaryStorageAreaServer {
                 serverComL = serverCom.accept();
                 temporaryStorageAreaProxy = new TemporaryStorageAreaProxy(serverComL, temporaryStorageAreaInterface);
                 temporaryStorageAreaProxy.start();
-            } catch (Exception e) {
-                System.out.println(e.toString());
+            } catch (SocketTimeoutException ignored) {
             }
         }
 
         serverCom.end();
-        System.out.println("TSAServer stopped.");
+        GenericIO.writelnString("TemporaryStorageAreaServer stopped.");
     }
 
 }

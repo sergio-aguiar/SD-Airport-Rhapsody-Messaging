@@ -1,16 +1,24 @@
 package HybridServerSide.Repository;
 
-import ClientSide.Extras.Bag;
-import ClientSide.Passenger.PassengerThread;
-import HybridServerSide.DepartureTerminalTransferQuay.DepartureTerminalTransferQuay;
-import HybridServerSide.DepartureTerminalTransferQuay.DepartureTerminalTransferQuayInterface;
-import HybridServerSide.DepartureTerminalTransferQuay.DepartureTerminalTransferQuayProxy;
 import HybridServerSide.ServerCom.ServerCom;
 import genclass.GenericIO;
 
-public class RepositoryServer {
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 
+/**
+ * RepositoryServer: The Repository's server's main class.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
+public class RepositoryServer {
+    /**
+     * Variable that states whether the server is functional or not.
+     */
     public static  boolean running;
+    /**
+     * The current server's listening port.
+     */
     private  static final int serverPort = 4008;
 
     public static void main(String[] args) {
@@ -37,12 +45,14 @@ public class RepositoryServer {
                 repositoryProxy = new RepositoryProxy(serverComL, repositoryInterface);
                 repositoryProxy.start();
             }
-        } catch(Exception e) {
-            System.out.print(e.toString());
+        } catch (SocketTimeoutException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
         }
 
         serverCom.end();
-        System.out.println("REPServer stopped.");
+        GenericIO.writelnString("RepositoryServer stopped.");
     }
 
 }

@@ -1,13 +1,24 @@
 package HybridServerSide.ArrivalLounge;
 
-import ClientSide.Extras.Bag;
 import HybridServerSide.ServerCom.ServerCom;
 import HybridServerSide.Stubs.RepositoryStub;
 import genclass.GenericIO;
 
-public class ArrivalLoungeServer {
+import java.net.SocketTimeoutException;
 
+/**
+ * ArrivalLoungeServer: The ArrivalLounge's server's main class.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
+public class ArrivalLoungeServer {
+    /**
+     * Variable that states whether the server is functional or not.
+     */
     public static  boolean running;
+    /**
+     * The current server's listening port.
+     */
     private  static final int serverPort = 4000;
 
     public static void main(String[] args) {
@@ -37,13 +48,12 @@ public class ArrivalLoungeServer {
                 serverComL = serverCom.accept();
                 arrivalLoungeProxy = new ArrivalLoungeProxy(serverComL, arrivalLoungeInterface);
                 arrivalLoungeProxy.start();
-            } catch (Exception e) {
-                System.out.println(e.toString());
+            } catch (SocketTimeoutException ignored) {
             }
         }
 
         serverCom.end();
-        System.out.println("ALServer stopped.");
+        GenericIO.writelnString("ArrivalLoungeServer stopped!");
     }
 
 }

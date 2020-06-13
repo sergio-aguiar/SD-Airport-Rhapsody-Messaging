@@ -4,6 +4,7 @@ import ClientSide.BusDriver.BusDriverThread;
 import ClientSide.Extras.Bag;
 import ClientSide.Passenger.PassengerThread;
 import ClientSide.Porter.PorterThread;
+import genclass.GenericIO;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -173,9 +174,9 @@ public class Repository {
         this.numberOfBagsThatWereLost = 0;
     }
 
-    public void setInitialState(int flightNumber, int numberOfPassengerLuggageAtThePlane, int busSeatNumber, int totalPassengers,
-                                PassengerThread.PassengerAndBagSituations[] passengerSituations, int[] passengerLuggageAtStart,
-                                Bag[][][] luggagePerFlight) throws IOException {
+    public void setInitialState(int flightNumber, int numberOfPassengerLuggageAtThePlane, int busSeatNumber,
+                                int totalPassengers, PassengerThread.PassengerAndBagSituations[] passengerSituations,
+                                int[] passengerLuggageAtStart, Bag[][][] luggagePerFlight) {
 
         this.reentrantLock.lock();
         try {
@@ -201,7 +202,8 @@ public class Repository {
 
             this.logStart();
         } catch (Exception e) {
-            System.out.println("Repository: setInitialState: " + e.toString());
+            GenericIO.writelnString("Repository: setInitialState: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -232,7 +234,8 @@ public class Repository {
 
         StringBuilder passengerHeader = new StringBuilder();
         for(int k = 0; k < this.passengersInitiated.length; k++) {
-            passengerHeader.append("St").append(k + 1).append(" Si").append(k + 1).append(" NR").append(k + 1).append(" NA").append(k + 1).append(" ");
+            passengerHeader.append("St").append(k + 1).append(" Si").append(k + 1).append(" NR").append(k + 1)
+                    .append(" NA").append(k + 1).append(" ");
         }
 
         this.writer.write(passengerHeader.toString() + "\n");
@@ -257,7 +260,9 @@ public class Repository {
             StringBuilder line = new StringBuilder();
             line.append(" ").append(this.flightNumber).append("  ").append(this.numberOfLuggageAtThePlane).append("  ");
 
-            if(this.porterInitiated) line.append(this.porterState.toString()).append("  ").append(this.numberOfLuggageOnConveyor).append("  ").append(numberOfLuggageAtTheStoreRoom).append("   ");
+            if(this.porterInitiated) line.append(this.porterState.toString()).append("  ")
+                    .append(this.numberOfLuggageOnConveyor).append("  ").append(numberOfLuggageAtTheStoreRoom)
+                    .append("   ");
             else line.append("---- -- --   ");
 
             if(this.busDriverInitiated) line.append(this.busDriverState.toString()).append("   ");
@@ -269,7 +274,10 @@ public class Repository {
 
             line.append("\n");
             for(int i = 0; i < passengersInitiated.length; i++){
-                if(this.passengersInitiated[i]) line.append(this.passengerStates[i].toString()).append(" ").append(this.passengerSituations[i].toString()).append("  ").append(this.passengerLuggageAtStart[i]).append("   ").append(this.passengerLuggageCollected[i]).append("  ");
+                if(this.passengersInitiated[i]) line.append(this.passengerStates[i].toString()).append(" ")
+                        .append(this.passengerSituations[i].toString()).append("  ")
+                        .append(this.passengerLuggageAtStart[i]).append("   ").append(this.passengerLuggageCollected[i])
+                        .append("  ");
                 else line.append("--- ---  -   -  ");
             }
 
@@ -281,6 +289,7 @@ public class Repository {
             }
         } catch (Exception e) {
             System.out.print("Repository: log: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -291,20 +300,24 @@ public class Repository {
     public void finalReport (){
         String finalReport = "";      
         finalReport += "\nFinal Report\n";
-        finalReport += "N. of passengers which have this airport as their final destination = " + this.numberOfFDTPassengers + "\n";
+        finalReport += "N. of passengers which have this airport as their final destination = "
+                + this.numberOfFDTPassengers + "\n";
         finalReport += "N. of passengers in transit = "+ this.numberOfTRTPassengers + "\n";
-        finalReport += "N. of bags that should have been transported in the the planes hold = " + this.numberOfBagsThatShouldHaveBeenTransported + "\n";
+        finalReport += "N. of bags that should have been transported in the the planes hold = "
+                + this.numberOfBagsThatShouldHaveBeenTransported + "\n";
         finalReport += "N. of bags that were lost = " + this.numberOfBagsThatWereLost + "\n";
         try {
             this.writer.write((finalReport + "\n"));
         } catch (IOException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
         }
 
         this.close();
     }
     /**
-     * Function that calculates the number of final destination passengers/passengers in transit based off on their flight situation.
+     * Function that calculates the number of final destination passengers/passengers in transit based off on their
+     * flight situation.
      */
     private void calculatePassengerSituations() {
         for(PassengerThread.PassengerAndBagSituations situation : this.passengerSituations)
@@ -375,7 +388,8 @@ public class Repository {
         try {
             this.porterInitiated = true;
         } catch (Exception e) {
-            System.out.println("Repository: porterInitiated: " + e.toString());
+            GenericIO.writelnString("Repository: porterInitiated: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -392,7 +406,8 @@ public class Repository {
             if(this.numberOfLuggageAtThePlane < 0) this.numberOfLuggageAtThePlane++;
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: porterTryCollectingBagFromPlane: " + e.toString());
+            GenericIO.writelnString("Repository: porterTryCollectingBagFromPlane: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -407,7 +422,8 @@ public class Repository {
             this.numberOfLuggageOnConveyor++;
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: porterCarryBagToBaggageCollectionPoint: " + e.toString());
+            GenericIO.writelnString("Repository: porterCarryBagToBaggageCollectionPoint: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -422,7 +438,8 @@ public class Repository {
             this.numberOfLuggageAtTheStoreRoom++;
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: porterCarryBagToTemporaryStorageArea: " + e.toString());
+            GenericIO.writelnString("Repository: porterCarryBagToTemporaryStorageArea: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -436,7 +453,8 @@ public class Repository {
             this.setPorterState(PorterThread.PorterStates.WAITING_FOR_A_PLANE_TO_LAND);
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: porterAnnouncingNoMoreBagsToCollect: " + e.toString());
+            GenericIO.writelnString("Repository: porterAnnouncingNoMoreBagsToCollect: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -450,7 +468,8 @@ public class Repository {
         try {
             this.passengersInitiated[pid] = true;
         } catch (Exception e) {
-            System.out.println("Repository: passengerInitiated: " + e.toString());
+            GenericIO.writelnString("Repository: passengerInitiated: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -465,7 +484,8 @@ public class Repository {
             this.setPassengerState(pid, PassengerThread.PassengerStates.AT_THE_LUGGAGE_COLLECTION_POINT);
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: passengerGoingToCollectABag: " + e.toString());
+            GenericIO.writelnString("Repository: passengerGoingToCollectABag: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -481,7 +501,8 @@ public class Repository {
             this.passengerLuggageCollected[pid]++;
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: passengerCollectingABag: " + e.toString());
+            GenericIO.writelnString("Repository: passengerCollectingABag: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -496,7 +517,8 @@ public class Repository {
             this.setPassengerState(pid, PassengerThread.PassengerStates.EXITING_THE_ARRIVAL_TERMINAL);
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: passengerGoingHome: " + e.toString());
+            GenericIO.writelnString("Repository: passengerGoingHome: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -513,7 +535,8 @@ public class Repository {
             this.busSeats[seat] = String.valueOf(pid);
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: passengerEnteringTheBus: " + e.toString());
+            GenericIO.writelnString("Repository: passengerEnteringTheBus: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -528,7 +551,8 @@ public class Repository {
             this.setPassengerState(pid, PassengerThread.PassengerStates.AT_THE_ARRIVAL_TRANSFER_TERMINAL);
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: passengerTakingABus: " + e.toString());
+            GenericIO.writelnString("Repository: passengerTakingABus: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -544,7 +568,8 @@ public class Repository {
             this.numberOfBagsThatWereLost += missingBags;
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: passengerReportingMissingBags: " + e.toString());
+            GenericIO.writelnString("Repository: passengerReportingMissingBags: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -559,7 +584,8 @@ public class Repository {
             this.setPassengerState(pid, PassengerThread.PassengerStates.ENTERING_THE_DEPARTURE_TERMINAL);
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: passengerPreparingNextLeg: " + e.toString());
+            GenericIO.writelnString("Repository: passengerPreparingNextLeg: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -576,7 +602,8 @@ public class Repository {
             this.busSeats[seat] = "-";
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: passengerLeavingTheBus: " + e.toString());
+            GenericIO.writelnString("Repository: passengerLeavingTheBus: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -592,7 +619,8 @@ public class Repository {
             this.busWaitingQueue[position] = String.valueOf(pid);
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: passengerGettingIntoTheWaitingQueue: " + e.toString());
+            GenericIO.writelnString("Repository: passengerGettingIntoTheWaitingQueue: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -605,7 +633,8 @@ public class Repository {
         try {
             this.busDriverInitiated = true;
         } catch (Exception e) {
-            System.out.println("Repository: busDriverInitiated: " + e.toString());
+            GenericIO.writelnString("Repository: busDriverInitiated: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -619,7 +648,8 @@ public class Repository {
             this.setBusDriverState(BusDriverThread.BusDriverStates.PARKING_AT_THE_ARRIVAL_TERMINAL);
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: busDriverParkingTheBus: " + e.toString());
+            GenericIO.writelnString("Repository: busDriverParkingTheBus: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -633,7 +663,8 @@ public class Repository {
             this.setBusDriverState(BusDriverThread.BusDriverStates.DRIVING_FORWARD);
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: busDriverGoingToDepartureTerminal: " + e.toString());
+            GenericIO.writelnString("Repository: busDriverGoingToDepartureTerminal: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -647,7 +678,8 @@ public class Repository {
             this.setBusDriverState(BusDriverThread.BusDriverStates.DRIVING_BACKWARD);
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: busDriverGoingToArrivalTerminal: " + e.toString());
+            GenericIO.writelnString("Repository: busDriverGoingToArrivalTerminal: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -661,7 +693,8 @@ public class Repository {
             this.setBusDriverState(BusDriverThread.BusDriverStates.PARKING_AT_THE_DEPARTURE_TERMINAL);
             this.log();
         } catch (Exception e) {
-            System.out.println("Repository: busDriverParkingTheBusAndLettingPassengersOff: " + e.toString());
+            GenericIO.writelnString("Repository: busDriverParkingTheBusAndLettingPassengersOff: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -688,7 +721,8 @@ public class Repository {
             Arrays.fill(this.passengerLuggageCollected, 0);
             this.calculatePassengerSituations();
         } catch (Exception e) {
-            System.out.println("Repository: prepareNextFlight: " + e.toString());
+            GenericIO.writelnString("Repository: prepareNextFlight: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }

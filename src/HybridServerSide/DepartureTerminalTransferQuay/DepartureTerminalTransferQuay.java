@@ -2,20 +2,15 @@ package HybridServerSide.DepartureTerminalTransferQuay;
 
 import ClientSide.Interfaces.DTTQBusDriver;
 import ClientSide.Interfaces.DTTQPassenger;
-import HybridServerSide.Repository.Repository;
 import HybridServerSide.Stubs.RepositoryStub;
+import genclass.GenericIO;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- * Departure Terminal Transfer Quay: Where the bus driver takes the passengers on his bus and where the passengers go to be able to reach the Departure Terminal Entrance.
+ * Departure Terminal Transfer Quay: Where the bus driver takes the passengers on his bus and where the passengers go to
+ * be able to reach the Departure Terminal Entrance.
  * Used by PASSENGER and BUS DRIVER.
  * @author sergiaguiar
  * @author marcomacedo
@@ -26,7 +21,8 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
      */
     private final ReentrantLock reentrantLock;
     /**
-     * The Condition instance where the passengers wait for the bus driver to signal that they have made it to the Departure Terminal Transfer Quay.
+     * The Condition instance where the passengers wait for the bus driver to signal that they have made it to the 
+     * Departure Terminal Transfer Quay.
      */
     private final Condition passengerCondition;
     /**
@@ -50,22 +46,12 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
      */
     private int flightNumber;
     /**
-     * The class's Repository instance.
+     * The class's RepositoryStub instance.
      */
     private final RepositoryStub repositoryStub;
-
     /**
-     * The class's FIle instance.
-     */
-    private File logFile;
-    /**
-     * The class's BufferedWriter instance.
-     */
-    private BufferedWriter writer;
-
-    /**
-     * DepartureTerminalTransferQuay constructor.
-     * @param repositoryStub A reference to a repository object.
+     * Constructor: DepartureTerminalTransferQuay.
+     * @param repositoryStub The class's RepositoryStub instance.
      */
     public DepartureTerminalTransferQuay(RepositoryStub repositoryStub) {
         this.reentrantLock = new ReentrantLock(true);
@@ -76,12 +62,6 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
         this.canLeaveTheBus = false;
         this.flightNumber = 0;
         this.repositoryStub = repositoryStub;
-
-        try {
-            this.logStart();
-        } catch(Exception e) {
-            this.log(e.toString());
-        }
     }
     /**
      * Function that allows for a transition to a new flight (new plane landing simulation).
@@ -94,7 +74,8 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
             this.canLeaveTheBus = false;
             this.flightNumber++;
         } catch (Exception e) {
-            this.log("DTTQ: prepareForNextFlight: " + e.toString());
+            GenericIO.writelnString("DTTQ: prepareForNextFlight: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -110,7 +91,8 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
             this.passengersThatLeftTheBus = 0;
             this.repositoryStub.busDriverGoingToArrivalTerminal();
         } catch(Exception e) {
-            this.log("DTTQ: goToArrivalTerminal: " + e.toString());
+            GenericIO.writelnString("DTTQ: goToArrivalTerminal: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -122,25 +104,20 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
      */
     @Override
     public void leaveTheBus(int pid, int seat) {
-        this.log("PASSENGER " + pid + " MADE IT TO THE START OF LEAVE THE BUS!");
         this.reentrantLock.lock();
         try {
-            this.log("PASSENGER " + pid + " MADE IT PAST THE LOCK!");
             if(!this.canLeaveTheBus) this.passengerCondition.await();
-            this.log("PASSENGER " + pid + " MADE IT PAST THE AWAIT CONDITION!");
             this.passengersThatLeftTheBus++;
             if(this.passengersThatLeftTheBus == this.passengersThatArrived) {
-                this.log("PASSENGER " + pid + " IS ABOUT TO SIGNAL THE BUS DRIVER!");
                 this.busDriverCondition.signal();
             }
             this.repositoryStub.passengerLeavingTheBus(pid, seat);
-            this.log("PASSENGER " + pid + " MADE IT TO THE END OF THE METHOD!");
         } catch(Exception e) {
-            this.log("DTTQ: leaveTheBus: " + e.toString());
+            GenericIO.writelnString("DTTQ: leaveTheBus: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
-        this.log("PASSENGER " + pid + " IS DONE WITH LEAVING THE BUS!");
     }
     /**
      * The bus driver parks the Bus and let's teh passengers off.
@@ -150,56 +127,20 @@ public class DepartureTerminalTransferQuay implements DTTQPassenger, DTTQBusDriv
      */
     @Override
     public int parkTheBusAndLetPassOff(int passengersThatArrived, int flightNumber) {
-        this.log("passengersThatArrived: " + passengersThatArrived);
-        this.log("this.flightN: " + this.flightNumber + ", flightN: " + flightNumber);
         this.reentrantLock.lock();
         try {
             this.repositoryStub.busDriverParkingTheBusAndLettingPassengersOff();
-            this.log("PTBALPO CHECKPOINT 1");
             this.passengersThatArrived = passengersThatArrived;
-            this.log("PTBALPO CHECKPOINT 2");
             this.passengerCondition.signalAll();
-            this.log("PTBALPO CHECKPOINT 3");
             this.canLeaveTheBus = true;
-            this.log("PTBALPO CHECKPOINT 4");
-            if(this.passengersThatLeftTheBus < this.passengersThatArrived && this.flightNumber == flightNumber) this.busDriverCondition.await();
-            this.log("PTBALPO CHECKPOINT 5");
+            if(this.passengersThatLeftTheBus < this.passengersThatArrived && this.flightNumber == flightNumber) 
+                this.busDriverCondition.await();
         } catch(Exception e) {
-            this.log("DTTQ: parkTheBusAndLetPassOff: " + e.toString());
+            GenericIO.writelnString("DTTQ: parkTheBusAndLetPassOff: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
-        this.log("PTBALPO CHECKPOINT 6");
         return this.flightNumber;
-    }
-
-    private void logStart() throws IOException {
-        // open data stream to log file
-        this.logFile = new File("logFile_DTTQ_" + System.nanoTime() + ".txt");
-        this.writer = new BufferedWriter(new FileWriter(this.logFile));
-    }
-    /**
-     * Function that closes the BufferedWriter instance.
-     */
-    private void close() {
-        try {
-            this.writer.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    /**
-     * Function that writes the current info onto the log file.
-     */
-    private void log(String logString) {
-        this.reentrantLock.lock();
-        try {
-            this.writer.write((logString + "\n"));
-            this.writer.flush();
-        } catch (Exception e) {
-            this.log("DTTQ: log: " + e.toString());
-        } finally {
-            this.reentrantLock.unlock();
-        }
     }
 }

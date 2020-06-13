@@ -3,18 +3,12 @@ package HybridServerSide.ArrivalLounge;
 import ClientSide.Extras.Bag;
 import ClientSide.Interfaces.ALPassenger;
 import ClientSide.Interfaces.ALPorter;
-import HybridServerSide.Repository.Repository;
 import HybridServerSide.Stubs.RepositoryStub;
+import genclass.GenericIO;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Stack;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Arrival Lounge: Where the Passenger arrives and the Porter awaits a plane to begin working.
@@ -36,7 +30,8 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
      */
     private int maxCrossFlightPassengers;
     /**
-     * A count for the amount of passengers throughout every planned flight who have made it past where the bus driver is needed.
+     * A count for the amount of passengers throughout every planned flight who have made it past where the bus driver
+     * is needed.
      */
     private int crossFlightPassengerCount;
     /**
@@ -64,27 +59,18 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
      */
     private Stack<Bag> bagsInThePlane;
     /**
-     * The class's Repository instance.
+     * The class's RepositoryStub instance.
      */
-
-    /**
-     * The class's FIle instance.
-     */
-    private File logFile;
-    /**
-     * The class's BufferedWriter instance.
-     */
-    private BufferedWriter writer;
-
     private final RepositoryStub repositoryStub;
     /**
-     * ArrivalLounge constructor.
+     * Constructor: ArrivalLounge
      * @param repositoryStub A reference to a RepositoryStub object.
      * @param totalPassengers Total number of passengers per flight.
      * @param totalFlights Total number of flights.
      * @param luggagePerFlight Array that contains the bags of each passenger per flight.
      */
-    public ArrivalLounge(RepositoryStub repositoryStub, int totalPassengers, int totalFlights, Bag[][][] luggagePerFlight) {
+    public ArrivalLounge(RepositoryStub repositoryStub, int totalPassengers, int totalFlights,
+                         Bag[][][] luggagePerFlight) {
         this.reentrantLock = new ReentrantLock();
         this.porterCondition = this.reentrantLock.newCondition();
         this.maxCrossFlightPassengers = totalFlights * totalPassengers;
@@ -99,7 +85,8 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         this.repositoryStub = repositoryStub;
     }
     /**
-     * ArrivalLounge constructor.
+     * Constructor: ArrivalLounge
+     * @param repositoryStub A reference to a RepositoryStub object.
      */
     public ArrivalLounge(RepositoryStub repositoryStub) {
         this.reentrantLock = new ReentrantLock();
@@ -110,14 +97,13 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         this.flightNumber = 0;
         this.bagsInThePlane = new Stack<>();
         this.repositoryStub = repositoryStub;
-        
-        try {
-            this.logStart();
-        } catch(Exception e) {
-            this.log(e.toString());
-        }
     }
-
+    /**
+     * Function that sets the initial
+     * @param totalPassengers Total number of passengers per flight.
+     * @param totalFlights Total number of flights.
+     * @param luggagePerFlight Array that contains the bags of each passenger per flight.
+     */
     public void setInitialState(int totalPassengers, int totalFlights, Bag[][][] luggagePerFlight) {
         this.reentrantLock.lock();
         try {
@@ -127,12 +113,12 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
             this.luggagePerFlight = luggagePerFlight;
             this.bagArrayToStack(0);
         } catch (Exception e) {
-            this.log("AL: setInitialState: " + e.toString());
+            GenericIO.writelnString("AL: setInitialState: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
     }
-
     /**
      * Function that fills the plane's bag Stack depending on the current flight number.
      * @param flightNumber Flight number.
@@ -153,7 +139,8 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
             this.flightNumber++;
             this.bagArrayToStack(this.flightNumber);
         } catch (Exception e) {
-            this.log("AL: prepareForNextFlight: " + e.toString());
+            GenericIO.writelnString("AL: prepareForNextFlight: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -168,7 +155,8 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         try {
             maxReached = this.maxCrossFlightPassengers == this.crossFlightPassengerCount;
         } catch (Exception e) {
-            this.log("AL: incrementCrossFlightPassengerCount: " + e.toString());
+            GenericIO.writelnString("AL: incrementCrossFlightPassengerCount: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -176,14 +164,16 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         return maxReached;
     }
     /**
-     * Function that increments the count for the number of passengers throughout every planned flight who have made it past where the bus driver is needed.
+     * Function that increments the count for the number of passengers throughout every planned flight who have made it
+     * past where the bus driver is needed.
      */
     public void incrementCrossFlightPassengerCount() {
         this.reentrantLock.lock();
         try {
             this.crossFlightPassengerCount++;
         } catch (Exception e) {
-            this.log("AL: incrementCrossFlightPassengerCount: " + e.toString());
+            GenericIO.writelnString("AL: incrementCrossFlightPassengerCount: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -200,7 +190,8 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
             this.repositoryStub.porterInitiated();
             if(!done) this.porterCondition.await();
         } catch (Exception e) {
-            this.log("AL: takeARest: " + e.toString());
+            GenericIO.writelnString("AL: takeARest: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -220,7 +211,8 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
             if(situation.equals("FDT")) this.incrementCrossFlightPassengerCount();
             if(this.passengersThatArrived == this.totalPassengers) this.porterCondition.signal();
         } catch (Exception e) {
-            this.log("AL: whatShouldIDo: " + e.toString());
+            GenericIO.writelnString("AL: whatShouldIDo: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -240,7 +232,8 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
             }
             this.repositoryStub.porterTryCollectingBagFromPlane(false);
         } catch (Exception e) {
-            this.log("AL: tryToCollectABag: " + e.toString());
+            GenericIO.writelnString("AL: tryToCollectABag: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }
@@ -256,37 +249,8 @@ public class ArrivalLounge implements ALPassenger, ALPorter {
         try {
             this.repositoryStub.passengerGoingToCollectABag(pid);
         } catch (Exception e) {
-            this.log("AL: goCollectABag: " + e.toString());
-        } finally {
-            this.reentrantLock.unlock();
-        }
-    }
-
-    private void logStart() throws IOException {
-        // open data stream to log file
-        this.logFile = new File("logFile_AL_" + System.nanoTime() + ".txt");
-        this.writer = new BufferedWriter(new FileWriter(this.logFile));
-    }
-    /**
-     * Function that closes the BufferedWriter instance.
-     */
-    private void close() {
-        try {
-            this.writer.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    /**
-     * Function that writes the current info onto the log file.
-     */
-    private void log(String logString) {
-        this.reentrantLock.lock();
-        try {
-            this.writer.write((logString + "\n"));
-            this.writer.flush();
-        } catch (Exception e) {
-            this.log("AL: log: " + e.toString());
+            GenericIO.writelnString("AL: goCollectABag: " + e.toString());
+            System.exit(1);
         } finally {
             this.reentrantLock.unlock();
         }

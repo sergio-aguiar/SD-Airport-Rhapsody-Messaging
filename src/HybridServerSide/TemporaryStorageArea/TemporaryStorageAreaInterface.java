@@ -2,20 +2,33 @@ package HybridServerSide.TemporaryStorageArea;
 
 import Communication.Message;
 import Communication.MessageException;
-import HybridServerSide.Repository.RepositoryProxy;
-import HybridServerSide.Repository.RepositoryServer;
+import genclass.GenericIO;
 
+/**
+ * TemporaryStorageAreaInterface: TemporaryStorageArea message processing and replying.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
 public class TemporaryStorageAreaInterface {
-
+    /**
+     * A reference to the server's TemporaryStorageArea.
+     */
     private TemporaryStorageArea temporaryStorageArea;
-
+    /**
+     * Constructor: TemporaryStorageArea.
+     * @param temporaryStorageArea A reference to the server's TemporaryStorageArea.
+     */
     public TemporaryStorageAreaInterface(TemporaryStorageArea temporaryStorageArea) {
         this.temporaryStorageArea = temporaryStorageArea;
     }
-
-    public Message processAndReply(Message inMessage) throws MessageException
-    {
-        System.out.println("In Message: " + inMessage.toString());
+    /**
+     * Method that processes an inMessage and returns the appropriate response outMessage.
+     * @param inMessage The message received.
+     * @return The response message based off the message received.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message processAndReply(Message inMessage) throws MessageException {
+        GenericIO.writelnString("[In] : " + inMessage.toString());
 
         Message outMessage = null;
 
@@ -36,7 +49,8 @@ public class TemporaryStorageAreaInterface {
         switch(inMessage.getMessageType()) {
             case 19:
                 temporaryStorageArea.carryItToAppropriateStore((int) inMessage.getFirstArgument());
-                outMessage = new Message(Message.MessageType.PO_TSA_CARRY_IT_TO_APPROPRIATE_STORE.getMessageCode(), null);
+                outMessage = new Message(Message.MessageType.PO_TSA_CARRY_IT_TO_APPROPRIATE_STORE.getMessageCode(),
+                        null);
                 break;
             case 30:
                 temporaryStorageArea.prepareForNextFlight();
@@ -48,7 +62,7 @@ public class TemporaryStorageAreaInterface {
                 outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
-        System.out.println("Out Message: " + outMessage.toString());
+        GenericIO.writelnString("[Out]: " + outMessage.toString());
         return (outMessage);
     }
 

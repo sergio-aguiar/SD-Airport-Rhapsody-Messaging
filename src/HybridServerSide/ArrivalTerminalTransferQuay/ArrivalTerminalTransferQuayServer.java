@@ -1,16 +1,25 @@
 package HybridServerSide.ArrivalTerminalTransferQuay;
 
-import HybridServerSide.ArrivalTerminalExit.ArrivalTerminalExit;
-import HybridServerSide.ArrivalTerminalExit.ArrivalTerminalExitInterface;
-import HybridServerSide.ArrivalTerminalExit.ArrivalTerminalExitProxy;
 import HybridServerSide.ServerCom.ServerCom;
 import HybridServerSide.Stubs.ArrivalLoungeStub;
 import HybridServerSide.Stubs.RepositoryStub;
 import genclass.GenericIO;
 
-public class ArrivalTerminalTransferQuayServer {
+import java.net.SocketTimeoutException;
 
+/**
+ * ArrivalTerminalTransferQuayServer: The ArrivalTerminalTransferQuay's server's main class.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
+public class ArrivalTerminalTransferQuayServer {
+    /**
+     * Variable that states whether the server is functional or not.
+     */
     public static  boolean running;
+    /**
+     * The current server's listening port.
+     */
     private  static final int serverPort = 4002;
 
     public static void main(String[] args) {
@@ -40,15 +49,15 @@ public class ArrivalTerminalTransferQuayServer {
         while(running) {
             try {
                 serverComL = serverCom.accept();
-                arrivalTerminalTransferQuayProxy = new ArrivalTerminalTransferQuayProxy(serverComL, arrivalTerminalTransferQuayInterface);
+                arrivalTerminalTransferQuayProxy = new ArrivalTerminalTransferQuayProxy(serverComL,
+                        arrivalTerminalTransferQuayInterface);
                 arrivalTerminalTransferQuayProxy.start();
-            } catch (Exception e) {
-                System.out.println(e.toString());
+            } catch (SocketTimeoutException ignored) {
             }
         }
 
         serverCom.end();
-        System.out.println("ATTQServer stopped.");
+        GenericIO.writelnString("ArrivalTerminalTransferQuayServer stopped.");
     }
 
 }

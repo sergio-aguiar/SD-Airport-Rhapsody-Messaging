@@ -2,20 +2,33 @@ package HybridServerSide.DepartureTerminalTransferQuay;
 
 import Communication.Message;
 import Communication.MessageException;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeProxy;
-import HybridServerSide.ArrivalLounge.ArrivalLoungeServer;
+import genclass.GenericIO;
 
+/**
+ * DepartureTerminalTransferQuayInterface: DepartureTerminalTransferQuay message processing and replying.
+ * @author sergioaguiar
+ * @author marcomacedo
+ */
 public class DepartureTerminalTransferQuayInterface {
-
+    /**
+     * A reference to the server's DepartureTerminalTransferQuay.
+     */
     private DepartureTerminalTransferQuay departureTerminalTransferQuay;
-
+    /**
+     * Constructor: DepartureTerminalTransferQuay.
+     * @param departureTerminalTransferQuay A reference to the server's DepartureTerminalTransferQuay.
+     */
     public DepartureTerminalTransferQuayInterface(DepartureTerminalTransferQuay departureTerminalTransferQuay) {
         this.departureTerminalTransferQuay = departureTerminalTransferQuay;
     }
-
-    public Message processAndReply(Message inMessage) throws MessageException
-    {
-        System.out.println("In Message: " + inMessage.toString());
+    /**
+     * Method that processes an inMessage and returns the appropriate response outMessage.
+     * @param inMessage The message received.
+     * @return The response message based off the message received.
+     * @throws MessageException Exception that states why the message object could not be created.
+     */
+    public Message processAndReply(Message inMessage) throws MessageException {
+        GenericIO.writelnString("[In] : " + inMessage.toString());
 
         Message outMessage = null;
 
@@ -24,7 +37,8 @@ public class DepartureTerminalTransferQuayInterface {
                 if(inMessage.isThereNoFirstArgument())
                     throw new MessageException("Argument \"passengersThatArrived\" not supplied.", inMessage);
                 if(((int) inMessage.getFirstArgument()) < 1)
-                    throw new MessageException("Argument \"passengersThatArrived\" was given an incorrect value.", inMessage);
+                    throw new MessageException("Argument \"passengersThatArrived\" was given an incorrect value.",
+                            inMessage);
                 if(inMessage.isThereNoSecondArgument())
                     throw new MessageException("Argument \"flightNumber\" not supplied.", inMessage);
                 if(((int) inMessage.getSecondArgument()) < 0)
@@ -46,15 +60,18 @@ public class DepartureTerminalTransferQuayInterface {
 
         switch(inMessage.getMessageType()) {
             case 4:
-                int result4 = departureTerminalTransferQuay.parkTheBusAndLetPassOff((int) inMessage.getFirstArgument(), (int) inMessage.getSecondArgument());
-                outMessage = new Message(Message.MessageType.BD_DTTQ_PARK_THE_BUS_AND_LET_PASS_OFF.getMessageCode(), (Object) result4);
+                int result4 = departureTerminalTransferQuay.parkTheBusAndLetPassOff((int) inMessage.getFirstArgument(),
+                        (int) inMessage.getSecondArgument());
+                outMessage = new Message(Message.MessageType.BD_DTTQ_PARK_THE_BUS_AND_LET_PASS_OFF.getMessageCode(),
+                        (Object) result4);
                 break;
             case 5:
                 departureTerminalTransferQuay.goToArrivalTerminal();
                 outMessage = new Message(Message.MessageType.BD_DTTQ_GO_TO_ARRIVAL_TERMINAL.getMessageCode(), null);
                 break;
             case 14:
-                departureTerminalTransferQuay.leaveTheBus(inMessage.getPassengerID(), (int) inMessage.getFirstArgument());
+                departureTerminalTransferQuay.leaveTheBus(inMessage.getPassengerID(),
+                        (int) inMessage.getFirstArgument());
                 outMessage = new Message(Message.MessageType.PA_DTTQ_LEAVE_THE_BUS.getMessageCode(), null);
                 break;
             case 29:
@@ -67,7 +84,7 @@ public class DepartureTerminalTransferQuayInterface {
                 outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
 
-        System.out.println("Out Message: " + outMessage.toString());
+        GenericIO.writelnString("[Out]: " + outMessage.toString());
         return (outMessage);
     }
 
