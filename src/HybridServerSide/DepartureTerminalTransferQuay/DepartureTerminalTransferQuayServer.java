@@ -55,7 +55,7 @@ public class DepartureTerminalTransferQuayServer {
         }
 
         serverCom.end();
-        GenericIO.writelnString("DepartureTerminalTransferQuayServer stopped.");
+        GenericIO.writelnString("DepartureTerminalTransferQuayServer stopped!");
     }
 
 }

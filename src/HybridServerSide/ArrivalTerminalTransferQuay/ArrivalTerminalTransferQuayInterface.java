@@ -2,7 +2,6 @@ package HybridServerSide.ArrivalTerminalTransferQuay;
 
 import Communication.Message;
 import Communication.MessageException;
-import genclass.GenericIO;
 
 /**
  * ArrivalTerminalTransferQuayInterface: ArrivalTerminalTransferQuay message processing and replying.
@@ -28,8 +27,6 @@ public class ArrivalTerminalTransferQuayInterface {
      * @throws MessageException Exception that states why the message object could not be created.
      */
     public Message processAndReply(Message inMessage) throws MessageException {
-        GenericIO.writelnString("[In] : " + inMessage.toString());
-
         Message outMessage = null;
 
         switch(inMessage.getMessageType()) {
@@ -91,12 +88,9 @@ public class ArrivalTerminalTransferQuayInterface {
                 break;
             case 61:
                 ArrivalTerminalTransferQuayServer.running = false;
-                GenericIO.writelnString(Thread.currentThread().getName());
                 (((ArrivalTerminalTransferQuayProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
                 outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
-
-        GenericIO.writelnString("[Out]: " + outMessage.toString());
         return (outMessage);
     }
 

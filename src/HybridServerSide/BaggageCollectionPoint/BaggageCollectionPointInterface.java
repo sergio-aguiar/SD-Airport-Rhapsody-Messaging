@@ -2,7 +2,6 @@ package HybridServerSide.BaggageCollectionPoint;
 
 import Communication.Message;
 import Communication.MessageException;
-import genclass.GenericIO;
 
 /**
  * BaggageCollectionPointInterface: BaggageCollectionPoint message processing and replying.
@@ -28,8 +27,6 @@ public class BaggageCollectionPointInterface {
      * @throws MessageException Exception that states why the message object could not be created.
      */
     public Message processAndReply(Message inMessage) throws MessageException {
-        GenericIO.writelnString("[In] : " + inMessage.toString());
-
         Message outMessage = null;
 
         switch(inMessage.getMessageType()) {
@@ -87,8 +84,6 @@ public class BaggageCollectionPointInterface {
                 (((BaggageCollectionPointProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
                 outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
-
-        GenericIO.writelnString("[Out]: " + outMessage.toString());
         return (outMessage);
     }
 

@@ -53,7 +53,7 @@ public class TemporaryStorageAreaServer {
         }
 
         serverCom.end();
-        GenericIO.writelnString("TemporaryStorageAreaServer stopped.");
+        GenericIO.writelnString("TemporaryStorageAreaServer stopped!");
     }
 
 }

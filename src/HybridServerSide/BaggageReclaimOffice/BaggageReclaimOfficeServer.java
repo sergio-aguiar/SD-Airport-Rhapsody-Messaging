@@ -53,7 +53,7 @@ public class BaggageReclaimOfficeServer {
         }
 
         serverCom.end();
-        GenericIO.writelnString("BaggageReclaimOfficeServer stopped.");
+        GenericIO.writelnString("BaggageReclaimOfficeServer stopped!");
     }
 
 }

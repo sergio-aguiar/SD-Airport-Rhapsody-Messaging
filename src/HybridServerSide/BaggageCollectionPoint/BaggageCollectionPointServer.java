@@ -55,7 +55,7 @@ public class BaggageCollectionPointServer {
         }
 
         serverCom.end();
-        GenericIO.writelnString("BaggageCollectionPointServer stopped.");
+        GenericIO.writelnString("BaggageCollectionPointServer stopped!");
     }
 
 }

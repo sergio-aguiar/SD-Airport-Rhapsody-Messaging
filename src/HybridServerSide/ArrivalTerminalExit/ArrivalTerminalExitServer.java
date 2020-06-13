@@ -48,17 +48,15 @@ public class ArrivalTerminalExitServer {
         running = true;
         while(running) {
             try{
-                GenericIO.writelnString("STILL IN LOOP!");
                 serverComL = serverCom.accept();
                 arrivalTerminalExitProxy = new ArrivalTerminalExitProxy(serverComL, arrivalTerminalExitInterface);
                 arrivalTerminalExitProxy.start();
-                GenericIO.writelnString("END OF LOOP!");
             } catch (SocketTimeoutException ignored) {
             }
         }
 
         serverCom.end();
-        GenericIO.writelnString("ArrivalTerminalExitServer stopped.");
+        GenericIO.writelnString("ArrivalTerminalExitServer stopped!");
     }
 
 }

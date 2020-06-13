@@ -4,7 +4,6 @@ import ClientSide.Extras.Bag;
 import ClientSide.Passenger.PassengerThread;
 import Communication.Message;
 import Communication.MessageException;
-import genclass.GenericIO;
 
 /**
  * RepositoryInterface: Repository message processing and replying.
@@ -30,8 +29,6 @@ public class RepositoryInterface {
      * @throws MessageException Exception that states why the message object could not be created.
      */
     public Message processAndReply(Message inMessage) throws MessageException {
-        GenericIO.writelnString("[In] : " + inMessage.toString());
-
         Message outMessage = null;
 
         switch(inMessage.getMessageType()) {
@@ -250,12 +247,9 @@ public class RepositoryInterface {
                 break;
             case 61:
                 RepositoryServer.running = false;
-                GenericIO.writelnString(Thread.currentThread().getName());
                 (((RepositoryProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
                 outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
-
-        GenericIO.writelnString("[Out]: " + outMessage.toString());
         return (outMessage);
     }
 

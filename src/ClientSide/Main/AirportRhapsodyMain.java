@@ -156,6 +156,8 @@ public class AirportRhapsodyMain {
         departureTerminalEntranceStub.everythingFinished();
         departureTerminalTransferQuayStub.everythingFinished();
         temporaryStorageAreaStub.everythingFinished();
+
+        GenericIO.writelnString("Client main terminated!");
     }
     /**
      * Function that pseudo-randomly generates the initial case for every flight.

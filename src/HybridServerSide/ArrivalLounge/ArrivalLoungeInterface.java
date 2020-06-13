@@ -3,7 +3,6 @@ package HybridServerSide.ArrivalLounge;
 import ClientSide.Extras.Bag;
 import Communication.Message;
 import Communication.MessageException;
-import genclass.GenericIO;
 
 /**
  * ArrivalLoungeInterface: ArrivalLounge message processing and replying.
@@ -29,8 +28,6 @@ public class ArrivalLoungeInterface {
      * @throws MessageException Exception that states why the message object could not be created.
      */
     public Message processAndReply(Message inMessage) throws MessageException {
-        GenericIO.writelnString("[In] : " + inMessage.toString());
-
         Message outMessage = null;
 
         switch(inMessage.getMessageType()) {
@@ -102,12 +99,9 @@ public class ArrivalLoungeInterface {
                 break;
             case 61:
                 ArrivalLoungeServer.running = false;
-                GenericIO.writelnString(Thread.currentThread().getName());
                 (((ArrivalLoungeProxy) (Thread.currentThread ())).getServerCom()).setTimeout(10);
                 outMessage = new Message (Message.MessageType.EVERYTHING_FINISHED.getMessageCode(), null);
         }
-
-        GenericIO.writelnString("[Out]: " + outMessage.toString());
         return (outMessage);
     }
 

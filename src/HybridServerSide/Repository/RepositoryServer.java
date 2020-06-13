@@ -52,7 +52,7 @@ public class RepositoryServer {
         }
 
         serverCom.end();
-        GenericIO.writelnString("RepositoryServer stopped.");
+        GenericIO.writelnString("RepositoryServer stopped!");
     }
 
 }

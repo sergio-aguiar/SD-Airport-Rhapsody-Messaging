@@ -57,7 +57,7 @@ public class DepartureTerminalEntranceServer {
         }
 
         serverCom.end();
-        GenericIO.writelnString("DepartureTerminalEntranceServer stopped.");
+        GenericIO.writelnString("DepartureTerminalEntranceServer stopped!");
     }
 
 }

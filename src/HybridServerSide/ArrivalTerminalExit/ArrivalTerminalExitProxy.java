@@ -57,11 +57,8 @@ public class ArrivalTerminalExitProxy extends Thread {
             GenericIO.writelnString(e.getErrorMessage().toString ());
             System.exit(1);
         }
-        GenericIO.writelnString("BEFORE WRITE!");
         serverCom.writeObject(outMessage);
-        GenericIO.writelnString("AFTER WRITE!");
         serverCom.close();
-        GenericIO.writelnString("AFTER CLOSE!");
     }
     /**
      * Function that returns the next proxy's ID number.
